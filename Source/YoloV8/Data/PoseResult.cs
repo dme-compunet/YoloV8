@@ -4,18 +4,18 @@ namespace Compunet.YoloV8.Data;
 
 internal class PoseResult : YoloV8Result, IPoseResult
 {
-    public IReadOnlyList<IPose> Poses { get; }
+    public IReadOnlyList<IPose> Persons { get; }
 
     public PoseResult(Size image,
                       SpeedResult speed,
                       IReadOnlyList<IPose> poses)
         : base(image, speed)
     {
-        Poses = poses;
+        Persons = poses;
     }
 
     public override string ToString()
     {
-        return $"{Poses.Count} Persons";
+        return $"{Persons.Count} Persons";
     }
 }

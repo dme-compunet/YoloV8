@@ -49,17 +49,17 @@ internal class DetectOutputParser
                 yMax = float.Clamp(yMax, 0, origin.Height);
 
                 var rectangle = Rectangle.FromLTRB((int)xMin, (int)yMin, (int)xMax, (int)yMax);
-                var name = _metadata.Names[j - 4];
+                var cls = _metadata.Names[j - 4];
 
-                var box = new BoundingBox(name, rectangle, confidence);
+                var box = new BoundingBox(cls, rectangle, confidence);
                 boxes.Add(box);
             });
         });
 
-        var suppresed = boxes.NonMaxSuppression(x => x.Rectangle,
-                                                x => x.Confidence,
-                                                _parameters.IoU);
+        var suppressed = boxes.NonMaxSuppression(x => x.Rectangle,
+                                                 x => x.Confidence,
+                                                 _parameters.IoU);
 
-        return suppresed;
+        return suppressed;
     }
 }

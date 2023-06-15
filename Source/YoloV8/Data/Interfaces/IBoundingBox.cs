@@ -4,7 +4,7 @@ namespace Compunet.YoloV8.Data;
 
 public interface IBoundingBox
 {
-    YoloV8Class Name { get; }
+    YoloV8Class Class { get; }
 
     public Rectangle Rectangle { get; }
 

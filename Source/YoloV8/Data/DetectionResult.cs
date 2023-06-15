@@ -18,7 +18,7 @@ internal class DetectionResult : YoloV8Result, IDetectionResult
 
     public override string ToString()
     {
-        var sort = Boxes.Select(x => x.Name)
+        var sort = Boxes.Select(x => x.Class)
                         .GroupBy(x => x.Id)
                         .OrderBy(x => x.Key)
                         .Select(x => $"{x.Count()} {x.First().Name}");
