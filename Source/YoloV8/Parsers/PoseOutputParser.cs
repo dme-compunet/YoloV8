@@ -19,8 +19,8 @@ internal class PoseOutputParser
 
     public IReadOnlyList<IPose> Parse(Tensor<float> output, Size origin)
     {
-        var xRatio = origin.Width / _metadata.ImageSize.Width;
-        var yRatio = origin.Height / _metadata.ImageSize.Height;
+        var xRatio = (float)origin.Width / _metadata.ImageSize.Width;
+        var yRatio = (float)origin.Height / _metadata.ImageSize.Height;
 
         var poses = new List<Pose>();
 
