@@ -18,14 +18,14 @@ public class YoloV8Metadata
         };
 
         var imageSize = ParseSize(metadata["imgsz"]);
-        var names = ParseNames(metadata["names"]);
+        var classes = ParseClasses(metadata["names"]);
 
         return new YoloV8Metadata(author,
                                   description,
                                   version,
                                   task,
                                   imageSize,
-                                  names);
+                                  classes);
     }
 
     public string Author { get; }
@@ -38,21 +38,21 @@ public class YoloV8Metadata
 
     public Size ImageSize { get; }
 
-    public YoloV8Class[] Names { get; }
+    public YoloV8Class[] Classes { get; }
 
     public YoloV8Metadata(string author,
                           string description,
                           string version,
                           YoloV8Task task,
                           Size imageSize,
-                          YoloV8Class[] names)
+                          YoloV8Class[] classes)
     {
         Author = author;
         Description = description;
         Version = version;
         Task = task;
         ImageSize = imageSize;
-        Names = names;
+        Classes = classes;
     }
 
     private static Size ParseSize(string text)
@@ -67,7 +67,7 @@ public class YoloV8Metadata
         return new Size(x, y);
     }
 
-    private static YoloV8Class[] ParseNames(string text)
+    private static YoloV8Class[] ParseClasses(string text)
     {
         text = text[1..^1];
 
@@ -83,7 +83,7 @@ public class YoloV8Metadata
             var valueSplit = value.Split(": ");
 
             var id = int.Parse(valueSplit[0]);
-            var name = valueSplit[1][1..^1];
+            var name = valueSplit[1][1..^1].Replace('_', ' ');
 
             names[i] = new YoloV8Class(id, name);
         }

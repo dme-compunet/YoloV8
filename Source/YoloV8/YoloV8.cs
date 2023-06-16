@@ -12,20 +12,28 @@ namespace Compunet.YoloV8;
 
 public class YoloV8 : IDisposable
 {
+    #region Private Memebers
+
     private readonly YoloV8Metadata _metadata;
     private readonly YoloV8Parameters _parameters;
 
-    private readonly DetectOutputParser _detectParser;
     private readonly PoseOutputParser _poseParser;
+    private readonly DetectOutputParser _detectParser;
 
     private readonly InferenceSession _inference;
     private readonly string[] _inputNames;
 
     private bool _disposed;
 
+    #endregion
+
+    #region Public Properties
+
     public YoloV8Metadata Metadata => _metadata;
 
     public YoloV8Parameters Parameters => _parameters;
+
+    #endregion
 
     #region Ctors
 
@@ -99,7 +107,37 @@ public class YoloV8 : IDisposable
 
     #endregion
 
-    #region Private
+    #region Classify
+
+    public IClassificationResult Classify(ImageSelector selector)
+    {
+        EnsureTask(YoloV8Task.Classify);
+
+        return RunPreprocessAndInference<IClassificationResult>(selector, (outputs, image, timer) =>
+        {
+            var output = outputs.First().AsEnumerable<float>().ToList();
+
+            var probs = new List<(YoloV8Class Class, float Confidence)>(output.Count);
+
+            for (int i = 0; i < output.Count; i++)
+            {
+                var cls = _metadata.Classes[i];
+                var scr = output[i];
+
+                var prob = (Class: cls, Confidence: scr);
+
+                probs.Add(prob);
+            }
+
+            var speed = timer.Stop();
+
+            return new ClassificationResult(image, speed, probs);
+        });
+    }
+
+    #endregion
+
+    #region Private Methods
 
     private TResult RunPreprocessAndInference<TResult>(ImageSelector selector,
                                                        PostprocessContext<TResult> postprocess)

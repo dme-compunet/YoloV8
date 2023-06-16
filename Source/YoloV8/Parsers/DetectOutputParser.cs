@@ -49,7 +49,7 @@ internal class DetectOutputParser
                 yMax = float.Clamp(yMax, 0, origin.Height);
 
                 var rectangle = Rectangle.FromLTRB((int)xMin, (int)yMin, (int)xMax, (int)yMax);
-                var cls = _metadata.Names[j - 4];
+                var cls = _metadata.Classes[j - 4];
 
                 var box = new BoundingBox(cls, rectangle, confidence);
                 boxes.Add(box);

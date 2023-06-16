@@ -13,9 +13,4 @@ internal abstract class YoloV8Result : IYoloV8Result
         Image = image;
         Speed = speed;
     }
-
-    public YoloV8Result()
-    {
-        throw new NotImplementedException();
-    }
 }
