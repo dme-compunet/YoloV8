@@ -71,7 +71,7 @@ public class YoloV8 : IDisposable
 
         return RunPreprocessAndInference(selector, (outputs, image, timer) =>
         {
-            var output = outputs.First().AsTensor<float>();
+            var output = outputs[0].AsTensor<float>();
 
             var boxes = _detectParser.Parse(output, image);
 
@@ -93,7 +93,7 @@ public class YoloV8 : IDisposable
 
         return RunPreprocessAndInference(selector, (outputs, image, timer) =>
         {
-            var output = outputs.First().AsTensor<float>();
+            var output = outputs[0].AsTensor<float>();
 
             var poses = _poseParser.Parse(output, image);
 
@@ -115,7 +115,7 @@ public class YoloV8 : IDisposable
 
         return RunPreprocessAndInference<IClassificationResult>(selector, (outputs, image, timer) =>
         {
-            var output = outputs.First().AsEnumerable<float>().ToList();
+            var output = outputs[0].AsEnumerable<float>().ToList();
 
             var probs = new List<(YoloV8Class Class, float Confidence)>(output.Count);
 
@@ -160,9 +160,11 @@ public class YoloV8 : IDisposable
 
         using var outputs = _inference.Run(inputs);
 
+        var list = new List<NamedOnnxValue>(outputs);
+
         timer.StartPostprocess();
 
-        return postprocess(outputs, origin, timer);
+        return postprocess(list, origin, timer);
     }
 
     private Tensor<float> Preprocess(Image<Rgb24> image)
