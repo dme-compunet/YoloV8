@@ -6,12 +6,12 @@ using Compunet.YoloV8.Extensions;
 
 namespace Compunet.YoloV8.Parsers;
 
-internal class DetectOutputParser
+internal class DetectionOutputParser
 {
     private readonly YoloV8Metadata _metadata;
     private readonly YoloV8Parameters _parameters;
 
-    public DetectOutputParser(YoloV8Metadata metadata, YoloV8Parameters parameters)
+    public DetectionOutputParser(YoloV8Metadata metadata, YoloV8Parameters parameters)
     {
         _metadata = metadata;
         _parameters = parameters;

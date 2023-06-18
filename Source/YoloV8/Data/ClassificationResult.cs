@@ -16,12 +16,12 @@ internal class ClassificationResult : YoloV8Result, IClassificationResult
                                 IReadOnlyList<(YoloV8Class Class, float Confidence)> probabilities)
         : base(image, speed)
     {
-        Probabilities = probabilities;
-
-        var top = Probabilities.MaxBy(x => x.Confidence);
+        var top = probabilities.MaxBy(x => x.Confidence);
 
         Class = top.Class;
         Confidence = top.Confidence;
+
+        Probabilities = probabilities;
     }
 
     public override string ToString()

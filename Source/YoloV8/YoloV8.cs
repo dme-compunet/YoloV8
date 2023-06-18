@@ -18,7 +18,7 @@ public class YoloV8 : IDisposable
     private readonly YoloV8Parameters _parameters;
 
     private readonly PoseOutputParser _poseParser;
-    private readonly DetectOutputParser _detectParser;
+    private readonly DetectionOutputParser _detectionParser;
 
     private readonly InferenceSession _inference;
     private readonly string[] _inputNames;
@@ -45,7 +45,7 @@ public class YoloV8 : IDisposable
         _metadata = YoloV8Metadata.Parse(_inference.ModelMetadata.CustomMetadataMap);
         _parameters = YoloV8Parameters.Default;
 
-        _detectParser = new DetectOutputParser(Metadata, Parameters);
+        _detectionParser = new DetectionOutputParser(Metadata, Parameters);
         _poseParser = new PoseOutputParser(Metadata, Parameters);
     }
 
@@ -57,7 +57,7 @@ public class YoloV8 : IDisposable
         _metadata = metadata;
         _parameters = YoloV8Parameters.Default;
 
-        _detectParser = new DetectOutputParser(Metadata, Parameters);
+        _detectionParser = new DetectionOutputParser(Metadata, Parameters);
         _poseParser = new PoseOutputParser(Metadata, Parameters);
     }
 
@@ -73,7 +73,7 @@ public class YoloV8 : IDisposable
         {
             var output = outputs[0].AsTensor<float>();
 
-            var boxes = _detectParser.Parse(output, image);
+            var boxes = _detectionParser.Parse(output, image);
 
             var speed = timer.Stop();
 
