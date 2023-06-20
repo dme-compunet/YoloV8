@@ -2,7 +2,7 @@
 
 public class YoloV8Parameters
 {
-    public static readonly YoloV8Parameters Default = new(confidence: .25f,
+    public static readonly YoloV8Parameters Default = new(confidence: .3f,
                                                           iou: .45f);
 
     public float Confidence { get; set; }
