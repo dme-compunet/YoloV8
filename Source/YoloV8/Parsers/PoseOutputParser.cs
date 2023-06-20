@@ -68,10 +68,10 @@ internal class PoseOutputParser
             poses.Add(pose);
         }
 
-        var suppressed = poses.NonMaxSuppression(x => x.Rectangle,
-                                                 x => x.Confidence,
-                                                 _parameters.IoU);
+        var selected = poses.NonMaxSuppression(x => x.Rectangle,
+                                               x => x.Confidence,
+                                               _parameters.IoU);
 
-        return suppressed;
+        return selected;
     }
 }

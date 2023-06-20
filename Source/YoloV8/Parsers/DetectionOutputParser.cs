@@ -56,10 +56,10 @@ internal class DetectionOutputParser
             });
         });
 
-        var suppressed = boxes.NonMaxSuppression(x => x.Rectangle,
-                                                 x => x.Confidence,
-                                                 _parameters.IoU);
+        var selected = boxes.NonMaxSuppression(x => x.Rectangle,
+                                               x => x.Confidence,
+                                               _parameters.IoU);
 
-        return suppressed;
+        return selected;
     }
 }
