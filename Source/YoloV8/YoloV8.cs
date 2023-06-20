@@ -205,7 +205,7 @@ public class YoloV8 : IDisposable
     private void EnsureTask(YoloV8Task task)
     {
         if (Metadata.Task != task)
-            throw new InvalidOperationException();
+            throw new InvalidOperationException("The loaded model does not support this task");
     }
 
     #endregion
