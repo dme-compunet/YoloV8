@@ -2,15 +2,15 @@
 
 internal class Keypoint : IKeypoint
 {
-    public int Index { get; }
+    public int Id { get; }
 
     public Point Point { get; }
 
     public float Confidence { get; }
 
-    public Keypoint(int index, int x, int y, float confidence)
+    public Keypoint(int id, int x, int y, float confidence)
     {
-        Index = index;
+        Id = id;
         Point = new Point(x, y);
         Confidence = confidence;
     }

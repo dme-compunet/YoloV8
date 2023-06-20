@@ -2,7 +2,7 @@
 {
     public interface IKeypoint
     {
-        int Index { get; }
+        int Id { get; }
 
         Point Point { get; }
 
