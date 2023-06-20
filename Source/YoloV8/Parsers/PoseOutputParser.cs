@@ -52,6 +52,7 @@ internal class PoseOutputParser
             for (int j = 0; j < 17; j++)
             {
                 var offset = j * 3 + 5;
+                var id = j + 1;
 
                 var px = output[0, offset + 0, i] * xRatio;
                 var py = output[0, offset + 1, i] * yRatio;
@@ -60,7 +61,7 @@ internal class PoseOutputParser
                 if (pc < _parameters.Confidence)
                     continue;
 
-                var keypoint = new Keypoint(j, (int)px, (int)py, pc);
+                var keypoint = new Keypoint(id, (int)px, (int)py, pc);
                 keypoints.Add(keypoint);
             }
 
