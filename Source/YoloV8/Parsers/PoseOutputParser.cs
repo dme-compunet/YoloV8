@@ -52,7 +52,7 @@ internal class PoseOutputParser
             for (int j = 0; j < 17; j++)
             {
                 var offset = j * 3 + 5;
-                var id = i + 1;
+                var id = j + 1;
 
                 var px = output[0, offset + 0, i] * xRatio;
                 var py = output[0, offset + 1, i] * yRatio;
