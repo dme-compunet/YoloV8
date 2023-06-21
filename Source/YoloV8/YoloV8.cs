@@ -37,23 +37,30 @@ public class YoloV8 : IDisposable
     #region Ctors
 
     public YoloV8(ModelSelector selector)
-    {
-        _inference = new(selector.Load());
-        _inputNames = _inference.InputMetadata.Keys.ToArray();
+        : this(selector.Load(), null, false)
+    { }
 
-        _metadata = YoloV8Metadata.Parse(_inference.ModelMetadata.CustomMetadataMap);
-        _parameters = YoloV8Parameters.Default;
-
-        _detectionParser = new DetectionOutputParser(_metadata, _parameters);
-        _poseParser = new PoseOutputParser(_metadata, _parameters);
-    }
+    public YoloV8(ModelSelector selector, bool useCuda)
+        : this(selector.Load(), null, useCuda)
+    { }
 
     public YoloV8(ModelSelector selector, YoloV8Metadata metadata)
+        : this(selector.Load(), metadata, false)
+    { }
+
+    public YoloV8(ModelSelector selector, YoloV8Metadata metadata, bool useCuda)
+        : this(selector.Load(), metadata, useCuda)
+    { }
+
+    private YoloV8(byte[] model, YoloV8Metadata? metadata, bool useCuda)
     {
-        _inference = new(selector.Load());
+        var options = useCuda ? SessionOptions.MakeSessionOptionWithCudaProvider()
+                              : new SessionOptions();
+
+        _inference = new(model, options);
         _inputNames = _inference.InputMetadata.Keys.ToArray();
 
-        _metadata = metadata;
+        _metadata = metadata ?? YoloV8Metadata.Parse(_inference.ModelMetadata.CustomMetadataMap);
         _parameters = YoloV8Parameters.Default;
 
         _detectionParser = new DetectionOutputParser(_metadata, _parameters);
