@@ -5,6 +5,8 @@ VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YoloV8", "YoloV8\YoloV8.csproj", "{B6F82D56-FB43-486E-89AB-2A13492D6EED}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YoloV8.Demo", "YoloV8.Demo\YoloV8.Demo.csproj", "{BCCB458B-B931-40B3-A507-C7F15EC62CA8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{B6F82D56-FB43-486E-89AB-2A13492D6EED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B6F82D56-FB43-486E-89AB-2A13492D6EED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B6F82D56-FB43-486E-89AB-2A13492D6EED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCCB458B-B931-40B3-A507-C7F15EC62CA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCCB458B-B931-40B3-A507-C7F15EC62CA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCCB458B-B931-40B3-A507-C7F15EC62CA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCCB458B-B931-40B3-A507-C7F15EC62CA8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
