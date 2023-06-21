@@ -14,4 +14,9 @@ internal class Pose : IPose
         Confidence = confidence;
         Keypoints = keypoints;
     }
+
+    public IKeypoint? GetKeypoint(int id)
+    {
+        return Keypoints.SingleOrDefault(x => x.Id == id);
+    }
 }
