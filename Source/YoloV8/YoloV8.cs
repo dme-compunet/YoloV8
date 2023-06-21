@@ -44,8 +44,8 @@ public class YoloV8 : IDisposable
         _metadata = YoloV8Metadata.Parse(_inference.ModelMetadata.CustomMetadataMap);
         _parameters = YoloV8Parameters.Default;
 
-        _detectionParser = new DetectionOutputParser(Metadata, Parameters);
-        _poseParser = new PoseOutputParser(Metadata, Parameters);
+        _detectionParser = new DetectionOutputParser(_metadata, _parameters);
+        _poseParser = new PoseOutputParser(_metadata, _parameters);
     }
 
     public YoloV8(ModelSelector selector, YoloV8Metadata metadata)
@@ -56,8 +56,8 @@ public class YoloV8 : IDisposable
         _metadata = metadata;
         _parameters = YoloV8Parameters.Default;
 
-        _detectionParser = new DetectionOutputParser(Metadata, Parameters);
-        _poseParser = new PoseOutputParser(Metadata, Parameters);
+        _detectionParser = new DetectionOutputParser(_metadata, _parameters);
+        _poseParser = new PoseOutputParser(_metadata, _parameters);
     }
 
     #endregion
@@ -168,7 +168,7 @@ public class YoloV8 : IDisposable
 
     private Tensor<float> Preprocess(Image<Rgb24> image)
     {
-        var size = Metadata.ImageSize;
+        var size = _metadata.ImageSize;
 
         image.Mutate(x => x.Resize(size));
 
@@ -203,7 +203,7 @@ public class YoloV8 : IDisposable
 
     private void EnsureTask(YoloV8Task task)
     {
-        if (Metadata.Task != task)
+        if (_metadata.Task != task)
             throw new InvalidOperationException("The loaded model does not support this task");
     }
 
