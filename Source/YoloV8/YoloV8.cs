@@ -5,7 +5,6 @@ using Compunet.YoloV8.Data;
 using Compunet.YoloV8.Timing;
 using Compunet.YoloV8.Parsers;
 using Compunet.YoloV8.Metadata;
-using Compunet.YoloV8.Selectors;
 using Compunet.YoloV8.Extensions;
 
 namespace Compunet.YoloV8;
