@@ -37,27 +37,24 @@ public class YoloV8 : IDisposable
     #region Ctors
 
     public YoloV8(ModelSelector selector)
-        : this(selector.Load(), null, false)
+        : this(selector.Load(), null, null)
     { }
 
-    public YoloV8(ModelSelector selector, bool useCuda)
-        : this(selector.Load(), null, useCuda)
+    public YoloV8(ModelSelector selector, SessionOptions options)
+        : this(selector.Load(), null, options) 
     { }
 
     public YoloV8(ModelSelector selector, YoloV8Metadata metadata)
-        : this(selector.Load(), metadata, false)
+        : this(selector.Load(), metadata, null)
     { }
 
-    public YoloV8(ModelSelector selector, YoloV8Metadata metadata, bool useCuda)
-        : this(selector.Load(), metadata, useCuda)
+    public YoloV8(ModelSelector selector, YoloV8Metadata metadata, SessionOptions options)
+        : this(selector.Load(), metadata, options)
     { }
 
-    private YoloV8(byte[] model, YoloV8Metadata? metadata, bool useCuda)
+    private YoloV8(byte[] model, YoloV8Metadata? metadata, SessionOptions? options)
     {
-        var options = useCuda ? SessionOptions.MakeSessionOptionWithCudaProvider()
-                              : new SessionOptions();
-
-        _inference = new(model, options);
+        _inference = new(model, options ?? new SessionOptions());
         _inputNames = _inference.InputMetadata.Keys.ToArray();
 
         _metadata = metadata ?? YoloV8Metadata.Parse(_inference.ModelMetadata.CustomMetadataMap);
