@@ -24,9 +24,9 @@ Note: Pay attention to specify `opset=15` because the ONNX Runtime currently onl
 ```csharp
 using var predictor = new YoloV8(model);
 
-var detectionResult = predictor.Detect("path/to/image");
+var result = predictor.Detect("path/to/image");
 
-Console.WriteLine(detectionResult);
+Console.WriteLine(result);
 ```
 
 # Plotting
@@ -38,10 +38,11 @@ var image = "path/to/image";
 
 using var predictor = new YoloV8("path/to/model");
 
-var poseResult = predictor.Pose(image);
+var result = predictor.Pose(image);
 
 using var origin = Image.Load<Rgb24>(image);
-using var ploted = PlottingUtilities.PlotImage(origin, result);
+using var ploted = result.PlotImage(origin);
+
 
 ploted.Save("./pose_demo.jpg")
 ```
