@@ -1,4 +1,4 @@
-﻿namespace Compunet.YoloV8.Selectors;
+﻿namespace Compunet.YoloV8;
 
 public class ImageSelector
 {
