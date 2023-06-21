@@ -6,7 +6,7 @@ using Compunet.YoloV8.Data;
 
 namespace Compunet.YoloV8.Plotting;
 
-public static class PlottingUtilities
+internal static class PlottingUtilities
 {
     #region Privates
 
@@ -212,9 +212,9 @@ public static class PlottingUtilities
 
     #region PlotImage
 
-    public static Image PlotImage(Image image, IPoseResult result)
+    public static Image PlotImage(Image origin, IPoseResult result)
     {
-        var processed = image.Clone(x => x.AutoOrient());
+        var processed = origin.Clone(x => x.AutoOrient());
 
         if (processed.Size != result.Image)
             throw new InvalidOperationException("The size of the original image is different from the size of the image in the result");
@@ -229,9 +229,9 @@ public static class PlottingUtilities
         return processed;
     }
 
-    public static Image PlotImage(Image image, IDetectionResult result)
+    public static Image PlotImage(Image origin, IDetectionResult result)
     {
-        var processed = image.Clone(x => x.AutoOrient());
+        var processed = origin.Clone(x => x.AutoOrient());
 
         if (processed.Size != result.Image)
             throw new InvalidOperationException();

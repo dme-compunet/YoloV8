@@ -34,7 +34,7 @@ void DetectDemo(string image, string model)
     Console.WriteLine("Plotting and saving...");
     using var origin = Image.Load(image);
 
-    using var ploted = PlottingUtilities.PlotImage(origin, result);
+    using var ploted = result.PlotImage(origin);
 
     var directory = Path.GetDirectoryName(image);
     var filename = Path.GetFileNameWithoutExtension(image);
@@ -68,7 +68,7 @@ void PoseDemo(string image, string model)
     Console.WriteLine("Plotting and saving...");
     using var origin = Image.Load(image);
 
-    using var ploted = PlottingUtilities.PlotImage(origin, result);
+    using var ploted = result.PlotImage(origin);
 
     var directory = Path.GetDirectoryName(image);
     var filename = Path.GetFileNameWithoutExtension(image);
