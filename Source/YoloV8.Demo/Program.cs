@@ -31,7 +31,7 @@ void DetectDemo(string image, string model)
 
     Console.WriteLine();
 
-    Console.WriteLine("Plotting image...");
+    Console.WriteLine("Plotting and saving...");
     using var origin = Image.Load(image);
 
     using var ploted = PlottingUtilities.PlotImage(origin, result);
@@ -42,7 +42,6 @@ void DetectDemo(string image, string model)
 
     var pathToSave = Path.Combine(output, Path.GetFileName(image));
 
-    Console.WriteLine("Saving...");
     ploted.Save(pathToSave);
 }
 
@@ -66,7 +65,7 @@ void PoseDemo(string image, string model)
 
     Console.WriteLine();
 
-    Console.WriteLine("Plotting image...");
+    Console.WriteLine("Plotting and saving...");
     using var origin = Image.Load(image);
 
     using var ploted = PlottingUtilities.PlotImage(origin, result);
@@ -77,6 +76,5 @@ void PoseDemo(string image, string model)
 
     var pathToSave = Path.Combine(output, Path.GetFileName(image));
 
-    Console.WriteLine("Saving...");
     ploted.Save(pathToSave);
 }
