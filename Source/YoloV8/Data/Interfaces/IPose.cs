@@ -7,4 +7,6 @@ public interface IPose
     float Confidence { get; }
 
     IReadOnlyList<IKeypoint> Keypoints { get; }
+
+    IKeypoint? GetKeypoint(int id);
 }

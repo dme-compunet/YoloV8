@@ -145,8 +145,8 @@ public static class PlottingUtilities
                     var first = _skeleton[i, 0];
                     var second = _skeleton[i, 1];
 
-                    IKeypoint? firstKp = person.Keypoints.SingleOrDefault(x => x.Id == first);
-                    IKeypoint? secondKp = person.Keypoints.SingleOrDefault(x => x.Id == second);
+                    IKeypoint? firstKp = person.GetKeypoint(first);
+                    IKeypoint? secondKp = person.GetKeypoint(second);
 
                     if (firstKp is null || secondKp is null)
                         continue;
