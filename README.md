@@ -1,4 +1,4 @@
-# YoloV8
+# YOLOv8
 Use [YOLOv8](https://github.com/ultralytics/ultralytics) in your C# project, for object detection, pose estimation and more, in a simple and intuitive way, using [ONNX Runtime](https://github.com/microsoft/onnxruntime)
 
 # Use
@@ -50,10 +50,10 @@ ploted.Save("./pose_demo.jpg")
 ## Examples:
 
 #### Detection:
-![detect_demo!](https://raw.githubusercontent.com/dme-compunet/YoloV8/main/assets/detect_demo.jpg)
+![detect_demo!](https://raw.githubusercontent.com/dme-compunet/YOLOv8/main/assets/detect_demo.jpg)
 
 #### Pose:
-![pose_demo!](https://raw.githubusercontent.com/dme-compunet/YoloV8/main/assets/pose_demo.jpg)
+![pose_demo!](https://raw.githubusercontent.com/dme-compunet/YOLOv8/main/assets/pose_demo.jpg)
 
 # License
 
