@@ -2,5 +2,5 @@
 
 public interface IPoseResult : IYoloV8Result
 {
-    IReadOnlyList<IPose> Persons { get; }
+    IReadOnlyList<IPoseBoundingBox> Boxes { get; }
 }

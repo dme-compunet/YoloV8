@@ -1,11 +1,7 @@
 ﻿namespace Compunet.YoloV8.Data;
 
-public interface IPose
+public interface IPoseBoundingBox : IBoundingBox
 {
-    Rectangle Rectangle { get; }
-
-    float Confidence { get; }
-
     IReadOnlyList<IKeypoint> Keypoints { get; }
 
     IKeypoint? GetKeypoint(int id);
