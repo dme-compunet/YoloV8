@@ -2,7 +2,7 @@
 
 namespace Compunet.YoloV8.Timing;
 
-internal class SpeedTimer
+public class SpeedTimer
 {
     private readonly Stopwatch _stopwatch;
 

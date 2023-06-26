@@ -34,30 +34,6 @@ internal static class PlottingUtilities
         "FF37C7",
     };
 
-    private static readonly string[] _poseColors = new[]
-    {
-        "FF8000",
-        "FF9933",
-        "FFB266",
-        "E6E600",
-        "FF99FF",
-        "99CCFF",
-        "FF66FF",
-        "FF33FF",
-        "66B2FF",
-        "3399FF",
-        "FF9999",
-        "FF6666",
-        "FF3333",
-        "99FF99",
-        "66FF66",
-        "33FF33",
-        "00FF00",
-        "0000FF",
-        "FF0000",
-        "FFFFFF",
-    };
-
     private const string _fontName = "Arial";
     private const float _fontSize = 12F;
     private const float _textPadding = 5F;
@@ -66,44 +42,13 @@ internal static class PlottingUtilities
     private const float _keypointRadius = 3F;
     private const float _keypointLineWidth = 1.5F;
 
-    private static readonly int[,] _skeleton = new[,]
-    {
-        {16, 14},
-        {14, 12},
-        {17, 15},
-        {15, 13},
-        {12, 13},
-        {6, 12},
-        {7, 13},
-        {6, 7},
-        {6, 8},
-        {7, 9},
-        {8, 10},
-        {9, 11},
-        {2, 3},
-        {1, 2},
-        {1, 3},
-        {2, 4},
-        {3, 5},
-        {4, 6},
-        {5, 7}
-    };
-
-    private static readonly int[] _keypointColorMap = new[]
-    {
-        16, 16, 16, 16, 16, 0, 0, 0, 0, 0, 0, 9, 9, 9, 9, 9, 9
-    };
-
-    private static readonly int[] _keypointLineColorMap = new[]
-    {
-        9, 9, 9, 9, 7, 7, 7, 0, 0, 0, 0, 0, 16, 16, 16, 16, 16, 16, 16
-    };
+    private static readonly ISkeleton _humanSkeleton = new HumanSkeleton();
 
     #endregion
 
     #region CreatePlottingLayer
 
-    public static Image CreatePlottingLayer(IPoseResult result)
+    public static Image CreatePlottingLayer(IPoseResult result, ISkeleton skeleton)
     {
         var size = result.Image;
 
@@ -120,33 +65,32 @@ internal static class PlottingUtilities
         var radius = _keypointRadius * ratio;
         var lineWidth = _keypointLineWidth * ratio;
 
-        foreach (var person in result.Persons)
+        foreach (var box in result.Boxes)
         {
-            var text = $"person {person.Confidence:N}";
+            var text = $"{box.Class.Name} {box.Confidence:N}";
 
             canvas.Mutate(x =>
             {
                 DrawBoundingBox(x,
-                                person.Rectangle,
+                                box.Rectangle,
                                 thickness,
                                 color);
 
                 DrawTextLabel(x,
                               text,
                               textOptions,
-                              person.Rectangle.Location,
+                              box.Rectangle.Location,
                               padding,
                               color,
                               thickness);
 
                 // drawing lines
-                for (int i = 0; i < _skeleton.GetLength(0); i++)
+                for (int i = 0; i < skeleton.Connections.Count; i++)
                 {
-                    var first = _skeleton[i, 0];
-                    var second = _skeleton[i, 1];
+                    var connection = skeleton.Connections[i];
 
-                    IKeypoint? firstKp = person.GetKeypoint(first);
-                    IKeypoint? secondKp = person.GetKeypoint(second);
+                    IKeypoint? firstKp = box.GetKeypoint(connection.First);
+                    IKeypoint? secondKp = box.GetKeypoint(connection.Second);
 
                     if (firstKp is null || secondKp is null)
                         continue;
@@ -157,21 +101,21 @@ internal static class PlottingUtilities
                         secondKp.Point,
                     };
 
-                    var lineColor = GetPoseColor(i, true);
+                    var lineColor = skeleton.GetLineColor(i);
 
                     x.DrawLines(lineColor, lineWidth, points);
                 }
 
                 // drawing keypoints
-                for (int i = 0; i < person.Keypoints.Count; i++)
+                for (int i = 0; i < box.Keypoints.Count; i++)
                 {
-                    var keypoint = person.Keypoints[i];
+                    var keypoint = box.Keypoints[i];
 
                     var ellipse = new EllipsePolygon(keypoint.Point, radius);
 
-                    var kpColor = GetPoseColor(keypoint.Id - 1, false);
+                    var keypointColor = skeleton.GetKeypointColor(keypoint.Index);
 
-                    x.Fill(kpColor, ellipse);
+                    x.Fill(keypointColor, ellipse);
                 }
             });
         }
@@ -212,14 +156,16 @@ internal static class PlottingUtilities
 
     #region PlotImage
 
-    public static Image PlotImage(Image origin, IPoseResult result)
+    public static Image PlotImage(Image origin, IPoseResult result) => PlotImage(origin, result, _humanSkeleton);
+
+    public static Image PlotImage(Image origin, IPoseResult result, ISkeleton skeleton)
     {
         var processed = origin.Clone(x => x.AutoOrient());
 
         if (processed.Size != result.Image)
             throw new InvalidOperationException("The size of the original image is different from the size of the image in the result");
 
-        var plottinLayer = CreatePlottingLayer(result);
+        var plottinLayer = CreatePlottingLayer(result, skeleton);
 
         processed.Mutate(x =>
         {
@@ -254,16 +200,6 @@ internal static class PlottingUtilities
     {
         index %= _colors.Length;
         var hex = _colors[index];
-
-        return Color.ParseHex(hex);
-    }
-
-    private static Color GetPoseColor(int index, bool line)
-    {
-        index = line ? _keypointLineColorMap[index]
-                     : _keypointColorMap[index];
-
-        var hex = _poseColors[index];
 
         return Color.ParseHex(hex);
     }

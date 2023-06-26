@@ -6,7 +6,7 @@ using Compunet.YoloV8.Extensions;
 
 namespace Compunet.YoloV8.Parsers;
 
-internal class DetectionOutputParser
+internal readonly struct DetectionOutputParser
 {
     private readonly YoloV8Metadata _metadata;
     private readonly YoloV8Parameters _parameters;
@@ -19,18 +19,21 @@ internal class DetectionOutputParser
 
     public IReadOnlyList<IBoundingBox> Parse(Tensor<float> output, Size origin)
     {
-        var xRatio = (float)origin.Width / _metadata.ImageSize.Width;
-        var yRatio = (float)origin.Height / _metadata.ImageSize.Height;
+        var metadata = _metadata;
+        var parameters = _parameters;
+
+        var xRatio = (float)origin.Width / metadata.ImageSize.Width;
+        var yRatio = (float)origin.Height / metadata.ImageSize.Height;
 
         var boxes = new List<BoundingBox>();
 
         Parallel.For(0, output.Dimensions[2], i =>
         {
-            Parallel.For(4, output.Dimensions[1], j =>
+            Parallel.For(0, metadata.Classes.Count, j =>
             {
-                var confidence = output[0, j, i];
+                var confidence = output[0, j + 4, i];
 
-                if (confidence <= _parameters.Confidence)
+                if (confidence <= parameters.Confidence)
                     return;
 
                 var x = output[0, 0, i];
@@ -38,20 +41,20 @@ internal class DetectionOutputParser
                 var w = output[0, 2, i];
                 var h = output[0, 3, i];
 
-                var xMin = (x - w / 2) * xRatio;
-                var yMin = (y - h / 2) * yRatio;
-                var xMax = (x + w / 2) * xRatio;
-                var yMax = (y + h / 2) * yRatio;
+                var xMin = (int)((x - w / 2) * xRatio);
+                var yMin = (int)((y - h / 2) * yRatio);
+                var xMax = (int)((x + w / 2) * xRatio);
+                var yMax = (int)((y + h / 2) * yRatio);
 
-                xMin = float.Clamp(xMin, 0, origin.Width);
-                yMin = float.Clamp(yMin, 0, origin.Height);
-                xMax = float.Clamp(xMax, 0, origin.Width);
-                yMax = float.Clamp(yMax, 0, origin.Height);
+                xMin = Math.Clamp(xMin, 0, origin.Width);
+                yMin = Math.Clamp(yMin, 0, origin.Height);
+                xMax = Math.Clamp(xMax, 0, origin.Width);
+                yMax = Math.Clamp(yMax, 0, origin.Height);
 
-                var rectangle = Rectangle.FromLTRB((int)xMin, (int)yMin, (int)xMax, (int)yMax);
-                var cls = _metadata.Classes[j - 4];
+                var rectangle = Rectangle.FromLTRB(xMin, yMin, xMax, yMax);
+                var _class = metadata.Classes[j];
 
-                var box = new BoundingBox(cls, rectangle, confidence);
+                var box = new BoundingBox(_class, rectangle, confidence);
                 boxes.Add(box);
             });
         });

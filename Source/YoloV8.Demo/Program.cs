@@ -2,6 +2,7 @@
 
 using Compunet.YoloV8;
 using Compunet.YoloV8.Plotting;
+using Compunet.YoloV8.Extensions;
 
 var output = "./assets/output";
 
