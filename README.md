@@ -17,9 +17,9 @@ model = YOLO('path/to/model')
 model.export(format='onnx', opset=15)
 ```
 
-Note: Pay attention to specify `opset=15` because the ONNX Runtime currently only supports up to Opset 15.
+#### Note: Pay attention to specify `opset=15` because the ONNX Runtime currently only supports up to Opset 15.
 
-## Use in ONNX-Runtime
+## Use in C# with ONNX Runtime
 
 ```csharp
 using var predictor = new YoloV8(model);
