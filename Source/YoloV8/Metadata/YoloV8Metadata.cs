@@ -20,6 +20,19 @@ public class YoloV8Metadata
         var imageSize = ParseSize(metadata["imgsz"]);
         var classes = ParseClasses(metadata["names"]);
 
+        if (task is YoloV8Task.Pose)
+        {
+            var keypointShape = ParseKeypointShape(metadata["kpt_shape"]);
+
+            return new YoloV8PoseMetadata(author,
+                                          description,
+                                          version,
+                                          task,
+                                          imageSize,
+                                          classes,
+                                          keypointShape);
+        }
+
         return new YoloV8Metadata(author,
                                   description,
                                   version,
@@ -38,7 +51,7 @@ public class YoloV8Metadata
 
     public Size ImageSize { get; }
 
-    public YoloV8Class[] Classes { get; }
+    public IReadOnlyList<YoloV8Class> Classes { get; }
 
     public YoloV8Metadata(string author,
                           string description,
@@ -55,6 +68,8 @@ public class YoloV8Metadata
         Classes = classes;
     }
 
+    #region Static Parsers
+
     private static Size ParseSize(string text)
     {
         text = text[1..^1]; // '[640, 641]' => '640, 640'
@@ -65,6 +80,18 @@ public class YoloV8Metadata
         var y = int.Parse(split[1]);
 
         return new Size(x, y);
+    }
+
+    private static KeypointShape ParseKeypointShape(string text)
+    {
+        text = text[1..^1]; // '[17, 3]' => '17, 3'
+
+        var split = text.Split(", ");
+
+        var count = int.Parse(split[0]);
+        var channels = int.Parse(split[1]);
+
+        return new KeypointShape(count, channels);
     }
 
     private static YoloV8Class[] ParseClasses(string text)
@@ -90,4 +117,6 @@ public class YoloV8Metadata
 
         return names;
     }
+
+    #endregion
 }
