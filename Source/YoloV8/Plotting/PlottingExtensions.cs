@@ -22,7 +22,7 @@ public static class PlottingExtensions
 
     #endregion
 
-    #region PlotImage
+    #region Pose
 
     public static Image PlotImage(this IPoseResult result, Image origin) => PlotImage(result, origin, _humanSkeleton);
 
@@ -93,6 +93,10 @@ public static class PlottingExtensions
 
         return process;
     }
+
+    #endregion
+
+    #region Detection
 
     public static Image PlotImage(this IDetectionResult result, Image origin)
     {
