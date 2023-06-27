@@ -13,7 +13,7 @@ public static class NonMaxSuppressionExtensions
         var activeCount = count;
         var isActiveBoxes = Enumerable.Repeat(true, count).ToArray();
 
-        var suppresed = new List<T>();
+        var selected = new List<T>();
 
         for (int i = 0; i < count; i++)
         {
@@ -21,7 +21,7 @@ public static class NonMaxSuppressionExtensions
             {
                 var boxA = sorted[i];
 
-                suppresed.Add(boxA);
+                selected.Add(boxA);
 
                 for (var j = i + 1; j < count; j++)
                 {
@@ -45,7 +45,7 @@ public static class NonMaxSuppressionExtensions
             }
         }
 
-        return suppresed;
+        return selected;
     }
 
     private static float CalculateIoU(Rectangle first, Rectangle second)
