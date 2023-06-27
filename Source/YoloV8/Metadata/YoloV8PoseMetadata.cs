@@ -9,7 +9,7 @@ public class YoloV8PoseMetadata : YoloV8Metadata
                               string version,
                               YoloV8Task task,
                               Size imageSize,
-                              YoloV8Class[] classes,
+                              IReadOnlyList<YoloV8Class> classes,
                               KeypointShape keypointShape) 
         : base(author,
                description,

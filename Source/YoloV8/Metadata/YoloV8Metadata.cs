@@ -58,7 +58,7 @@ public class YoloV8Metadata
                           string version,
                           YoloV8Task task,
                           Size imageSize,
-                          YoloV8Class[] classes)
+                          IReadOnlyList<YoloV8Class> classes)
     {
         Author = author;
         Description = description;
@@ -94,7 +94,7 @@ public class YoloV8Metadata
         return new KeypointShape(count, channels);
     }
 
-    private static YoloV8Class[] ParseClasses(string text)
+    private static IReadOnlyList<YoloV8Class> ParseClasses(string text)
     {
         text = text[1..^1];
 
