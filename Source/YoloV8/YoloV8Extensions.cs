@@ -2,7 +2,7 @@
 using Compunet.YoloV8.Parsers;
 using Compunet.YoloV8.Metadata;
 
-namespace Compunet.YoloV8.Extensions;
+namespace Compunet.YoloV8;
 
 public static class YoloV8Extensions
 {
