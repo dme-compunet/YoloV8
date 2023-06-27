@@ -8,7 +8,7 @@ public static class YoloV8Extensions
 {
     public static IPoseResult Pose(this YoloV8 predictor, ImageSelector selector)
     {
-        predictor.EnsurePoseShape();
+        predictor.CheckPoseShape();
 
         return predictor.Run(selector, (outputs, image, timer) =>
         {
@@ -80,7 +80,7 @@ public static class YoloV8Extensions
             throw new InvalidOperationException("The loaded model does not support this task");
     }
 
-    private static void EnsurePoseShape(this YoloV8 predictor)
+    private static void CheckPoseShape(this YoloV8 predictor)
     {
         predictor.EnsureTask(YoloV8Task.Pose);
 
