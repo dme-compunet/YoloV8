@@ -18,6 +18,8 @@ public static class PlottingExtensions
     private const float _keypointRadius = 3F;
     private const float _keypointLineWidth = 1.5F;
 
+    private const float _keypointConfidence = .5F;
+
     private static readonly ISkeleton _humanSkeleton = new HumanSkeleton();
 
     #endregion
@@ -60,16 +62,16 @@ public static class PlottingExtensions
                 {
                     var connection = skeleton.Connections[i];
 
-                    IKeypoint? firstKp = box.GetKeypoint(connection.First);
-                    IKeypoint? secondKp = box.GetKeypoint(connection.Second);
+                    IKeypoint first = box.Keypoints[connection.First];
+                    IKeypoint second = box.Keypoints[connection.Second];
 
-                    if (firstKp is null || secondKp is null)
+                    if (first.Confidence < _keypointConfidence || second.Confidence < _keypointConfidence)
                         continue;
 
                     var points = new PointF[]
                     {
-                        firstKp.Point,
-                        secondKp.Point,
+                        first.Point,
+                        second.Point,
                     };
 
                     var lineColor = skeleton.GetLineColor(i);
@@ -81,6 +83,9 @@ public static class PlottingExtensions
                 for (int i = 0; i < box.Keypoints.Count; i++)
                 {
                     var keypoint = box.Keypoints[i];
+
+                    if (keypoint.Confidence < _keypointConfidence)
+                        continue;
 
                     var ellipse = new EllipsePolygon(keypoint.Point, radius);
 
