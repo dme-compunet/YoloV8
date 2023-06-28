@@ -72,9 +72,6 @@ internal readonly struct PoseOutputParser
                         _ => throw new NotSupportedException("Unexpected keypoint shape")
                     };
 
-                    if (pointConfidence < parameters.Confidence)
-                        return;
-
                     var keypoint = new Keypoint(k, pointX, pointY, pointConfidence);
                     keypoints.Add(keypoint);
                 });
