@@ -129,6 +129,8 @@ internal readonly struct SegmentationOutputParser
         return final;
     }
 
+    #region Privates
+
     private static float Sigmoid(float value)
     {
         var k = MathF.Exp(value);
@@ -144,4 +146,6 @@ internal readonly struct SegmentationOutputParser
     {
         return (luminance - 255) * -1 / 255F;
     }
+
+    #endregion
 }

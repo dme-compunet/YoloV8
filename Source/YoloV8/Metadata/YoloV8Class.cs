@@ -6,7 +6,7 @@ public class YoloV8Class
 
     public string Name { get; }
 
-    public YoloV8Class( int id, string name)
+    public YoloV8Class(int id, string name)
     {
         Id = id;
         Name = name;
