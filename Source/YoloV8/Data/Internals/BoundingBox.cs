@@ -10,9 +10,9 @@ internal class BoundingBox : IBoundingBox
 
     public float Confidence { get; }
 
-    public BoundingBox(YoloV8Class cls, Rectangle rectangle, float confidence)
+    public BoundingBox(YoloV8Class name, Rectangle rectangle, float confidence)
     {
-        Class = cls;
+        Class = name;
         Rectangle = rectangle;
         Confidence = confidence;
     }

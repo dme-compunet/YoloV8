@@ -52,9 +52,9 @@ internal readonly struct DetectionOutputParser
                 yMax = Math.Clamp(yMax, 0, origin.Height);
 
                 var rectangle = Rectangle.FromLTRB(xMin, yMin, xMax, yMax);
-                var _class = metadata.Classes[j];
+                var name = metadata.Classes[j];
 
-                var box = new BoundingBox(_class, rectangle, confidence);
+                var box = new BoundingBox(name, rectangle, confidence);
                 boxes.Add(box);
             });
         });

@@ -36,7 +36,7 @@ public class YoloV8 : IDisposable
     { }
 
     public YoloV8(ModelSelector selector, SessionOptions options)
-        : this(selector.Load(), null, options) 
+        : this(selector.Load(), null, options)
     { }
 
     public YoloV8(ModelSelector selector, YoloV8Metadata metadata)
