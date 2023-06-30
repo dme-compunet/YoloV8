@@ -44,7 +44,26 @@ public static class YoloV8Extensions
                                        speed,
                                        boxes);
         });
+    }
 
+    public static ISegmentationResult Segment(this YoloV8 predictor, ImageSelector selector)
+    {
+        predictor.EnsureTask(YoloV8Task.Segment);
+
+        return predictor.Run(selector, (outputs, image, timer) =>
+        {
+            var list = outputs.Select(x => x.AsTensor<float>()).ToList();
+
+            var parser = new SegmentationOutputParser(predictor.Metadata, predictor.Parameters);
+
+            var boxes = parser.Parse(list, image);
+
+            var speed = timer.Stop();
+
+            return new SegmentationResult(image,
+                                          speed,
+                                          boxes);
+        });
     }
 
     public static IClassificationResult Classify(this YoloV8 predictor, ImageSelector selector)
