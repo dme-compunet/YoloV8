@@ -19,6 +19,7 @@ public static class PlottingExtensions
     private const float _keypointLineWidth = 1.5F;
 
     private const float _keypointConfidence = .5F;
+    private const float _segmentationConfidence = .5F;
 
     private static readonly ISkeleton _humanSkeleton = new HumanSkeleton();
 
@@ -130,6 +131,81 @@ public static class PlottingExtensions
                 DrawBoundingBox(context, box.Rectangle, color, thickness, .1F, label, textOptions, textPadding);
             });
         }
+
+        return process;
+    }
+
+    #endregion
+
+    #region Segmentation
+
+    public static Image PlotImage(this ISegmentationResult result, Image origin)
+    {
+        var process = origin.CloneAs<Rgba32>();
+        process.Mutate(x => x.AutoOrient());
+
+        CheckSize(process.Size, result.Image);
+
+        var size = result.Image;
+
+        var ratio = Math.Max(size.Width, size.Height) / 640F;
+
+        var textOptions = new TextOptions(SystemFonts.CreateFont(_fontName, _fontSize * ratio));
+
+        var textPadding = _textPadding * ratio;
+
+        var thickness = _boxThickness * ratio;
+
+        #region Draw Masks
+
+        using var segmentation = new Image<Rgba32>(size.Width, size.Height);
+
+        for (int i = 0; i < result.Boxes.Count; i++)
+        {
+            var box = result.Boxes[i];
+            var color = GetColor(box.Class.Id);
+
+            using var mask = new Image<Rgba32>(box.Rectangle.Width, box.Rectangle.Height);
+
+            for (int x = 0; x < box.Mask.GetLength(0); x++)
+            {
+                for (int y = 0; y < box.Mask.GetLength(1); y++)
+                {
+                    var value = box.Mask[x, y];
+
+                    if (value > _segmentationConfidence)
+                        mask[x, y] = color;
+                }
+            }
+
+            segmentation.Mutate(x => x.DrawImage(mask, box.Rectangle.Location, 1F));
+        }
+
+        process.Mutate(x => x.DrawImage(segmentation, .5F));
+
+        #endregion
+
+        #region Draw Boxes
+
+        foreach (var box in result.Boxes)
+        {
+            var label = $"{box.Class.Name} {box.Confidence:N}";
+            var color = GetColor(box.Class.Id);
+
+            process.Mutate(context =>
+            {
+                DrawBoundingBox(context,
+                                box.Rectangle,
+                                color,
+                                thickness,
+                                0F,
+                                label,
+                                textOptions,
+                                textPadding);
+            });
+        }
+
+        #endregion
 
         return process;
     }
