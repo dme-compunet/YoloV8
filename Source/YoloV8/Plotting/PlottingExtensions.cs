@@ -55,7 +55,7 @@ public static class PlottingExtensions
 
             process.Mutate(context =>
             {
-                DrawBoundingBox(context, box.Rectangle, color, thickness, label, textOptions, textPadding);
+                DrawBoundingBox(context, box.Rectangle, color, thickness, .1F, label, textOptions, textPadding);
 
                 // drawing lines
                 for (int i = 0; i < skeleton.Connections.Count; i++)
@@ -127,7 +127,7 @@ public static class PlottingExtensions
 
             process.Mutate(context =>
             {
-                DrawBoundingBox(context, box.Rectangle, color, thickness, label, textOptions, textPadding);
+                DrawBoundingBox(context, box.Rectangle, color, thickness, .1F, label, textOptions, textPadding);
             });
         }
 
@@ -142,6 +142,7 @@ public static class PlottingExtensions
                                         Rectangle rectangle,
                                         Color color,
                                         float thickness,
+                                        float fillOpacity,
                                         string label,
                                         TextOptions textOptions,
                                         float textPadding)
@@ -149,7 +150,9 @@ public static class PlottingExtensions
         var polygon = new RectangularPolygon(rectangle);
 
         context.Draw(color, thickness, polygon);
-        context.Fill(color.WithAlpha(.1F), polygon);
+
+        if (fillOpacity > 0F)
+            context.Fill(color.WithAlpha(fillOpacity), polygon);
 
         var rendered = TextMeasurer.Measure(label, textOptions);
         var renderedSize = new Size((int)(rendered.Width + textPadding), (int)rendered.Height);
