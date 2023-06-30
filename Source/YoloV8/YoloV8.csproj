@@ -10,7 +10,7 @@
 	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Title>YoloV8</Title>
-		<Description>Use YOLOv8 in your C# project, for object detection, pose estimation and more, in a simple and intuitive way, using ONNX Runtime</Description>
+		<Description>Use YOLOv8 in your C# project, for object detection, pose estimation and more, via ONNX Runtime</Description>
 		<RepositoryUrl>https://github.com/dme-compunet/YoloV8</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<Authors>Compunet</Authors>
