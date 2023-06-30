@@ -2,7 +2,7 @@
 
 namespace Compunet.YoloV8.Data;
 
-internal class SegmentationBoundingBox : BoundingBox,  ISegmentationBoundingBox
+internal class SegmentationBoundingBox : BoundingBox, ISegmentationBoundingBox
 {
     public float[,] Mask { get; }
 

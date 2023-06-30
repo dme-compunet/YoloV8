@@ -54,7 +54,7 @@ internal readonly struct PoseOutputParser
                 yMax = Math.Clamp(yMax, 0, origin.Height);
 
                 var rectangle = Rectangle.FromLTRB(xMin, yMin, xMax, yMax);
-                var _class = metadata.Classes[j];
+                var name = metadata.Classes[j];
 
                 var keypoints = new List<Keypoint>();
 
@@ -76,7 +76,7 @@ internal readonly struct PoseOutputParser
                     keypoints.Add(keypoint);
                 });
 
-                var box = new PoseBoundingBox(_class, rectangle, confidence, keypoints);
+                var box = new PoseBoundingBox(name, rectangle, confidence, keypoints);
                 boxes.Add(box);
             });
         });

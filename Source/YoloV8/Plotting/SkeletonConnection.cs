@@ -8,7 +8,7 @@ public readonly struct SkeletonConnection
 
     public SkeletonConnection(int first, int second)
     {
-        First = first; 
+        First = first;
         Second = second;
     }
 }
