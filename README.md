@@ -55,6 +55,9 @@ ploted.Save("./pose_demo.jpg")
 #### Pose:
 ![pose_demo!](https://raw.githubusercontent.com/dme-compunet/YOLOv8/main/assets/pose_demo.jpg)
 
+#### Segmentation:
+![seg_demo!](https://raw.githubusercontent.com/dme-compunet/YOLOv8/main/assets/seg_demo.jpg)
+
 # License
 
 MIT License
