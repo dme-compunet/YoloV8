@@ -1,4 +1,5 @@
 # YOLOv8
+
 Use [YOLOv8](https://github.com/ultralytics/ultralytics) in your C# project, for object detection, pose estimation and more, in a simple and intuitive way, using [ONNX Runtime](https://github.com/microsoft/onnxruntime)
 
 # Use
@@ -8,7 +9,7 @@ Use [YOLOv8](https://github.com/ultralytics/ultralytics) in your C# project, for
 Run the following Python code to export the model to ONNX format:
 
 ```python
-from ultralytics import YOLO 
+from ultralytics import YOLO
 
 # Load a model
 model = YOLO('path/to/model')
@@ -50,12 +51,15 @@ ploted.Save("./pose_demo.jpg")
 ## Examples:
 
 #### Detection:
+
 ![detect_demo!](https://raw.githubusercontent.com/dme-compunet/YOLOv8/main/assets/detect_demo.jpg)
 
 #### Pose:
+
 ![pose_demo!](https://raw.githubusercontent.com/dme-compunet/YOLOv8/main/assets/pose_demo.jpg)
 
 #### Segmentation:
+
 ![seg_demo!](https://raw.githubusercontent.com/dme-compunet/YOLOv8/main/assets/seg_demo.jpg)
 
 # License
