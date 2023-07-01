@@ -1,4 +1,5 @@
-﻿using Compunet.YoloV8.Timing;
+﻿using Compunet.YoloV8.Extensions;
+using Compunet.YoloV8.Timing;
 
 namespace Compunet.YoloV8.Data;
 
@@ -16,11 +17,6 @@ internal class SegmentationResult : YoloV8Result, ISegmentationResult
 
     public override string ToString()
     {
-        var sort = Boxes.Select(x => x.Class)
-                        .GroupBy(x => x.Id)
-                        .OrderBy(x => x.Key)
-                        .Select(x => $"{x.Count()} {x.First().Name}");
-
-        return string.Join(", ", sort);
+        return Boxes.Summary();
     }
 }
