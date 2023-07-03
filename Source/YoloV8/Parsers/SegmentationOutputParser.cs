@@ -81,7 +81,7 @@ internal readonly struct SegmentationOutputParser
         return selected;
     }
 
-    private static float[,] ProcessMask(Tensor<float> prototypes, float[] weights, Rectangle rectangle, Size origin)
+    private static IMask ProcessMask(Tensor<float> prototypes, float[] weights, Rectangle rectangle, Size origin)
     {
         var maskChannels = prototypes.Dimensions[1];
         var maskHeight = prototypes.Dimensions[2];
@@ -126,7 +126,7 @@ internal readonly struct SegmentationOutputParser
             final[point.X, point.Y] = confidence;
         });
 
-        return final;
+        return new Mask(final);
     }
 
     #region Privates

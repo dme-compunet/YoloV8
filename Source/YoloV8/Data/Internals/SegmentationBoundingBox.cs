@@ -4,12 +4,12 @@ namespace Compunet.YoloV8.Data;
 
 internal class SegmentationBoundingBox : BoundingBox, ISegmentationBoundingBox
 {
-    public float[,] Mask { get; }
+    public IMask Mask { get; }
 
     public SegmentationBoundingBox(YoloV8Class name,
                                    Rectangle rectangle,
                                    float confidence,
-                                   float[,] mask) : base(name, rectangle, confidence)
+                                   IMask mask) : base(name, rectangle, confidence)
     {
         Mask = mask;
     }
