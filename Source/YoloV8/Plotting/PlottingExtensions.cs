@@ -167,9 +167,9 @@ public static class PlottingExtensions
 
             using var mask = new Image<Rgba32>(box.Rectangle.Width, box.Rectangle.Height);
 
-            for (int x = 0; x < box.Mask.GetLength(0); x++)
+            for (int x = 0; x < box.Mask.Width; x++)
             {
-                for (int y = 0; y < box.Mask.GetLength(1); y++)
+                for (int y = 0; y < box.Mask.Height; y++)
                 {
                     var value = box.Mask[x, y];
 
