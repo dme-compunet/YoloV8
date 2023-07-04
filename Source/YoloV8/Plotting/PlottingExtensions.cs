@@ -3,6 +3,8 @@ using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.Drawing.Processing;
 
 using Compunet.YoloV8.Data;
+using Compunet.YoloV8.Extensions;
+using System.Data;
 
 namespace Compunet.YoloV8.Plotting;
 
@@ -158,7 +160,8 @@ public static class PlottingExtensions
 
         #region Draw Masks
 
-        using var segmentation = new Image<Rgba32>(size.Width, size.Height);
+        using var masks = new Image<Rgba32>(size.Width, size.Height);
+        using var contours = new Image<Rgba32>(size.Width, size.Height);
 
         for (int i = 0; i < result.Boxes.Count; i++)
         {
@@ -178,10 +181,14 @@ public static class PlottingExtensions
                 }
             }
 
-            segmentation.Mutate(x => x.DrawImage(mask, box.Rectangle.Location, 1F));
+            using var contour = mask.CreateContours(color, thickness);
+
+            contours.Mutate(x => x.DrawImage(contour, box.Rectangle.Location, 1F));
+            masks.Mutate(x => x.DrawImage(mask, box.Rectangle.Location, 1F));
         }
 
-        process.Mutate(x => x.DrawImage(segmentation, .5F));
+        process.Mutate(x => x.DrawImage(masks, .4F));
+        process.Mutate(x => x.DrawImage(contours, 1F));
 
         #endregion
 
