@@ -27,7 +27,7 @@ public static class PlottingExtensions
 
         var textPadding = options.TextHorizontalPadding * ratio;
 
-        var thickness = options.BoxBorderWith * ratio;
+        var thickness = options.BoxBorderThickness * ratio;
 
         var radius = options.KeypointRadius * ratio;
         var lineWidth = options.KeypointLineWidth * ratio;
@@ -104,7 +104,7 @@ public static class PlottingExtensions
 
         var textPadding = options.TextHorizontalPadding * ratio;
 
-        var thickness = options.BoxBorderWith * ratio;
+        var thickness = options.BoxBorderThickness * ratio;
 
         foreach (var box in result.Boxes)
         {
@@ -141,7 +141,7 @@ public static class PlottingExtensions
 
         var textPadding = options.TextHorizontalPadding * ratio;
 
-        var thickness = options.BoxBorderWith * ratio;
+        var thickness = options.BoxBorderThickness * ratio;
 
         #region Draw Masks
 
