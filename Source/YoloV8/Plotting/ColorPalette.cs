@@ -6,6 +6,11 @@ public class ColorPalette
 
     private readonly Func<int, string> _selector;
 
+    public ColorPalette(string color)
+    {
+        _selector = _ => color;
+    }
+
     public ColorPalette(string[] colors)
     {
         _selector = index => colors[index % colors.Length];
