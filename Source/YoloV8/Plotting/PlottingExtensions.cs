@@ -168,7 +168,7 @@ public static class PlottingExtensions
                 }
             }
 
-            using var contour = mask.CreateContours(color, thickness);
+            using var contour = CreateContours(mask, color, thickness);
 
             contours.Mutate(x => x.DrawImage(contour, box.Rectangle.Location, 1F));
             masks.Mutate(x => x.DrawImage(mask, box.Rectangle.Location, 1F));
@@ -240,6 +240,29 @@ public static class PlottingExtensions
 
         context.DrawText(label, textOptions.Font, Color.White, textLocation);
     }
+
+    private static Image CreateContours(this Image source, Color color, float thickness)
+    {
+        var contours = source.GetContours();
+
+        var result = new Image<Rgba32>(source.Width, source.Height);
+
+        foreach (var points in contours)
+        {
+            var pathb = new PathBuilder();
+            pathb.AddLines(points.Select(x => (PointF)x));
+
+            var path = pathb.Build();
+
+            result.Mutate(x =>
+            {
+                x.Draw(color, thickness, path);
+            });
+        }
+
+        return result;
+    }
+
 
     private static void CheckSize(Size origin, Size result)
     {

@@ -1,7 +1,4 @@
-﻿using SixLabors.ImageSharp.Drawing;
-using SixLabors.ImageSharp.Drawing.Processing;
-
-namespace Compunet.YoloV8.Extensions;
+﻿namespace Compunet.YoloV8.Extensions;
 
 public static class ImageSharpContoursExtensions
 {
@@ -21,29 +18,6 @@ public static class ImageSharpContoursExtensions
             (point => new Point(point.X -1, point.Y + 1), 5)
         };
     }
-
-    public static Image CreateContours(this Image source, Color color, float thickness)
-    {
-        var contours = source.GetContours();
-
-        var result = new Image<Rgba32>(source.Width, source.Height);
-
-        foreach (var points in contours)
-        {
-            var pathb = new PathBuilder();
-            pathb.AddLines(points.Select(x => (PointF)x));
-
-            var path = pathb.Build();
-
-            result.Mutate(x =>
-            {
-                x.Draw(color, thickness, path);
-            });
-        }
-
-        return result;
-    }
-
 
     public static IReadOnlyList<IReadOnlyList<Point>> GetContours(this Image image)
     {
