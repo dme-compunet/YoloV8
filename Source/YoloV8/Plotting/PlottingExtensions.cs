@@ -8,28 +8,11 @@ namespace Compunet.YoloV8.Plotting;
 
 public static class PlottingExtensions
 {
-    #region Privates
-
-    private const string _fontName = "Arial";
-    private const float _fontSize = 12F;
-    private const float _textPadding = 5F;
-    private const float _boxThickness = 1F;
-
-    private const float _keypointRadius = 3F;
-    private const float _keypointLineWidth = 1.5F;
-
-    private const float _keypointConfidence = .5F;
-    private const float _segmentationConfidence = .5F;
-
-    private static readonly ISkeleton _humanSkeleton = new HumanSkeleton();
-
-    #endregion
-
     #region Pose
 
-    public static Image PlotImage(this IPoseResult result, Image origin) => PlotImage(result, origin, _humanSkeleton);
+    public static Image PlotImage(this IPoseResult result, Image origin) => PlotImage(result, origin, PosePlottingOptions.Default);
 
-    public static Image PlotImage(this IPoseResult result, Image origin, ISkeleton skeleton)
+    public static Image PlotImage(this IPoseResult result, Image origin, PosePlottingOptions options)
     {
         var process = origin.CloneAs<Rgba32>();
         process.Mutate(x => x.AutoOrient());
@@ -40,33 +23,33 @@ public static class PlottingExtensions
 
         var ratio = Math.Max(size.Width, size.Height) / 640F;
 
-        var textOptions = new TextOptions(SystemFonts.CreateFont(_fontName, _fontSize * ratio));
+        var textOptions = new TextOptions(SystemFonts.CreateFont(options.FontName, options.FontSize * ratio));
 
-        var textPadding = _textPadding * ratio;
+        var textPadding = options.TextHorizontalPadding * ratio;
 
-        var thickness = _boxThickness * ratio;
+        var thickness = options.BoxBorderWith * ratio;
 
-        var radius = _keypointRadius * ratio;
-        var lineWidth = _keypointLineWidth * ratio;
+        var radius = options.KeypointRadius * ratio;
+        var lineWidth = options.KeypointLineWidth * ratio;
 
         foreach (var box in result.Boxes)
         {
             var label = $"{box.Class.Name} {box.Confidence:N}";
-            var color = GetColor(box.Class.Id);
+            var color = options.ColorPalette.GetColor(box.Class.Id);
 
             process.Mutate(context =>
             {
                 DrawBoundingBox(context, box.Rectangle, color, thickness, .1F, label, textOptions, textPadding);
 
                 // drawing lines
-                for (int i = 0; i < skeleton.Connections.Count; i++)
+                for (int i = 0; i < options.Skeleton.Connections.Count; i++)
                 {
-                    var connection = skeleton.Connections[i];
+                    var connection = options.Skeleton.Connections[i];
 
                     IKeypoint first = box.Keypoints[connection.First];
                     IKeypoint second = box.Keypoints[connection.Second];
 
-                    if (first.Confidence < _keypointConfidence || second.Confidence < _keypointConfidence)
+                    if (first.Confidence < options.KeypointConfidence || second.Confidence < options.KeypointConfidence)
                         continue;
 
                     var points = new PointF[]
@@ -75,7 +58,7 @@ public static class PlottingExtensions
                         second.Point,
                     };
 
-                    var lineColor = skeleton.GetLineColor(i);
+                    var lineColor = options.Skeleton.GetLineColor(i);
 
                     context.DrawLines(lineColor, lineWidth, points);
                 }
@@ -85,12 +68,12 @@ public static class PlottingExtensions
                 {
                     var keypoint = box.Keypoints[i];
 
-                    if (keypoint.Confidence < _keypointConfidence)
+                    if (keypoint.Confidence < options.KeypointConfidence)
                         continue;
 
                     var ellipse = new EllipsePolygon(keypoint.Point, radius);
 
-                    var keypointColor = skeleton.GetKeypointColor(keypoint.Index);
+                    var keypointColor = options.Skeleton.GetKeypointColor(keypoint.Index);
 
                     context.Fill(keypointColor, ellipse);
                 }
@@ -104,7 +87,9 @@ public static class PlottingExtensions
 
     #region Detection
 
-    public static Image PlotImage(this IDetectionResult result, Image origin)
+    public static Image PlotImage(this IDetectionResult result, Image origin) => result.PlotImage(origin, PlottingOptions.Default);
+
+    public static Image PlotImage(this IDetectionResult result, Image origin, PlottingOptions options)
     {
         var process = origin.CloneAs<Rgba32>();
         process.Mutate(x => x.AutoOrient());
@@ -115,16 +100,16 @@ public static class PlottingExtensions
 
         var ratio = Math.Max(size.Width, size.Height) / 640F;
 
-        var textOptions = new TextOptions(SystemFonts.CreateFont(_fontName, _fontSize * ratio));
+        var textOptions = new TextOptions(SystemFonts.CreateFont(options.FontName, options.FontSize * ratio));
 
-        var textPadding = _textPadding * ratio;
+        var textPadding = options.TextHorizontalPadding * ratio;
 
-        var thickness = _boxThickness * ratio;
+        var thickness = options.BoxBorderWith * ratio;
 
         foreach (var box in result.Boxes)
         {
             var label = $"{box.Class.Name} {box.Confidence:N}";
-            var color = GetColor(box.Class.Id);
+            var color = options.ColorPalette.GetColor(box.Class.Id);
 
             process.Mutate(context =>
             {
@@ -139,7 +124,9 @@ public static class PlottingExtensions
 
     #region Segmentation
 
-    public static Image PlotImage(this ISegmentationResult result, Image origin)
+    public static Image PlotImage(this ISegmentationResult result, Image origin) => result.PlotImage(origin, SegmentationPlottingOptions.Default);
+
+    public static Image PlotImage(this ISegmentationResult result, Image origin, SegmentationPlottingOptions options)
     {
         var process = origin.CloneAs<Rgba32>();
         process.Mutate(x => x.AutoOrient());
@@ -150,11 +137,11 @@ public static class PlottingExtensions
 
         var ratio = Math.Max(size.Width, size.Height) / 640F;
 
-        var textOptions = new TextOptions(SystemFonts.CreateFont(_fontName, _fontSize * ratio));
+        var textOptions = new TextOptions(SystemFonts.CreateFont(options.FontName, options.FontSize * ratio));
 
-        var textPadding = _textPadding * ratio;
+        var textPadding = options.TextHorizontalPadding * ratio;
 
-        var thickness = _boxThickness * ratio;
+        var thickness = options.BoxBorderWith * ratio;
 
         #region Draw Masks
 
@@ -163,7 +150,7 @@ public static class PlottingExtensions
         for (int i = 0; i < result.Boxes.Count; i++)
         {
             var box = result.Boxes[i];
-            var color = GetColor(box.Class.Id);
+            var color = options.ColorPalette.GetColor(box.Class.Id);
 
             using var mask = new Image<Rgba32>(box.Rectangle.Width, box.Rectangle.Height);
 
@@ -173,7 +160,7 @@ public static class PlottingExtensions
                 {
                     var value = box.Mask[x, y];
 
-                    if (value > _segmentationConfidence)
+                    if (value > options.MaskConfidence)
                         mask[x, y] = color;
                 }
             }
@@ -190,7 +177,7 @@ public static class PlottingExtensions
         foreach (var box in result.Boxes)
         {
             var label = $"{box.Class.Name} {box.Confidence:N}";
-            var color = GetColor(box.Class.Id);
+            var color = options.ColorPalette.GetColor(box.Class.Id);
 
             process.Mutate(context =>
             {
@@ -251,36 +238,6 @@ public static class PlottingExtensions
     {
         if (origin != result)
             throw new InvalidOperationException("The size of the original image is different from the size of the image in the result");
-    }
-
-    private static Color GetColor(int index)
-    {
-        string hex = (index % 20) switch
-        {
-            0 => "FF3838",
-            1 => "FF9D97",
-            2 => "FF701F",
-            3 => "FFB21D",
-            4 => "CFD231",
-            5 => "48F90A",
-            6 => "92CC17",
-            7 => "3DDB86",
-            8 => "1A9334",
-            9 => "00D4BB",
-            10 => "2C99A8",
-            11 => "00C2FF",
-            12 => "344593",
-            13 => "6473FF",
-            14 => "0018EC",
-            15 => "8438FF",
-            16 => "520085",
-            17 => "CB38FF",
-            18 => "FF95C8",
-            19 => "FF37C7",
-            _ => throw new IndexOutOfRangeException()
-        };
-
-        return Color.ParseHex(hex);
     }
 
     #endregion
