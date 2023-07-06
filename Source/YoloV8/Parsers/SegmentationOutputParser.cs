@@ -129,7 +129,7 @@ internal readonly struct SegmentationOutputParser
         return new Mask(final);
     }
 
-    #region Privates
+    #region Helpers
 
     private static float Sigmoid(float value)
     {
