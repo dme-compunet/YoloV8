@@ -26,6 +26,6 @@ internal class ClassificationResult : YoloV8Result, IClassificationResult
 
     public override string ToString()
     {
-        return $"{Class.Name} {Confidence:N}";
+        return $"{Class.Name} ({Confidence:N})";
     }
 }
