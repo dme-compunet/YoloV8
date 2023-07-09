@@ -168,10 +168,13 @@ public static class PlottingExtensions
                 }
             }
 
-            using var contour = CreateContours(mask, color, thickness);
-
-            contours.Mutate(x => x.DrawImage(contour, box.Rectangle.Location, 1F));
             masks.Mutate(x => x.DrawImage(mask, box.Rectangle.Location, 1F));
+
+            if (options.ContoursThickness > 0F)
+            {
+                using var contour = CreateContours(mask, color, options.ContoursThickness * ratio);
+                contours.Mutate(x => x.DrawImage(contour, box.Rectangle.Location, 1F));
+            }
         }
 
         process.Mutate(x => x.DrawImage(masks, .4F));
