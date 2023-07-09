@@ -6,8 +6,11 @@ public class SegmentationPlottingOptions : PlottingOptions
 
     public float MaskConfidence { get; set; }
 
+    public float ContoursThickness { get; set; }
+
     public SegmentationPlottingOptions()
     {
         MaskConfidence = .5F;
+        ContoursThickness = 1f;
     }
 }
