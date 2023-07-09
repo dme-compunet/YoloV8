@@ -30,7 +30,6 @@ public static class ImageSharpContoursExtensions
         var contours = new List<IReadOnlyList<Point>>();
 
         for (int y = 0; y < luminance.Height; y++)
-        {
             for (int x = 0; x < luminance.Width; x++)
             {
                 Point point = new(x, y);
@@ -97,19 +96,13 @@ public static class ImageSharpContoursExtensions
                             checkLocationNr = 1 + (checkLocationNr % 8);
 
                             if (counter2 > 8)
-                            {
-                                counter2 = 0;
                                 break;
-                            }
                             else
-                            {
                                 counter2++;
-                            }
                         }
                     }
                 }
             }
-        }
 
         return contours;
     }
@@ -120,7 +113,7 @@ public static class ImageSharpContoursExtensions
                || pixel.X < 0
                || pixel.Y > image.Height - 1
                || pixel.Y < 0
-               || image[pixel.X, pixel.Y] .PackedValue == 0;
+               || image[pixel.X, pixel.Y].PackedValue == 0;
 
     }
 }
