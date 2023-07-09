@@ -22,7 +22,7 @@ void PoseDemo(string image, string model)
     using var predictor = new YoloV8(model);
     predictor.Parameters.Confidence = .4F;
 
-    Console.WriteLine("Detecting...");
+    Console.WriteLine("Working...");
     var result = predictor.Pose(image);
 
     Console.WriteLine();
@@ -51,7 +51,7 @@ void DetectDemo(string image, string model)
     Console.WriteLine("Loading model...");
     using var predictor = new YoloV8(model);
 
-    Console.WriteLine("Detecting...");
+    Console.WriteLine("Working...");
     var result = predictor.Detect(image);
 
     Console.WriteLine();
@@ -80,7 +80,7 @@ void SegmentDemo(string image, string model)
     Console.WriteLine("Loading model...");
     using var predictor = new YoloV8(model);
 
-    Console.WriteLine("Detecting...");
+    Console.WriteLine("Working...");
     var result = predictor.Segment(image);
 
     Console.WriteLine();
@@ -93,7 +93,7 @@ void SegmentDemo(string image, string model)
     Console.WriteLine("Plotting and saving...");
     using var origin = Image.Load(image);
 
-    using var ploted = result.PlotImage(origin);
+    using var ploted = result.PlotImage(origin, new SegmentationPlottingOptions { MaskConfidence = .65F});
 
     var filename = $"{Path.GetFileNameWithoutExtension(image)}_seg";
     var extension = Path.GetExtension(image);

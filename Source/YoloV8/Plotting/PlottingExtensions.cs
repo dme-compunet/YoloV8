@@ -29,7 +29,7 @@ public static class PlottingExtensions
 
         var textPadding = options.TextHorizontalPadding * ratio;
 
-        var thickness = options.BoxBorderWith * ratio;
+        var thickness = options.BoxBorderThickness * ratio;
 
         var radius = options.KeypointRadius * ratio;
         var lineWidth = options.KeypointLineWidth * ratio;
@@ -106,7 +106,7 @@ public static class PlottingExtensions
 
         var textPadding = options.TextHorizontalPadding * ratio;
 
-        var thickness = options.BoxBorderWith * ratio;
+        var thickness = options.BoxBorderThickness * ratio;
 
         foreach (var box in result.Boxes)
         {
@@ -143,7 +143,7 @@ public static class PlottingExtensions
 
         var textPadding = options.TextHorizontalPadding * ratio;
 
-        var thickness = options.BoxBorderWith * ratio;
+        var thickness = options.BoxBorderThickness * ratio;
 
         #region Draw Masks
 
@@ -206,6 +206,36 @@ public static class PlottingExtensions
 
     #endregion
 
+    #region Classification
+
+    public static Image PlotImage(this IClassificationResult result, Image origin, ClassificationPlottingOptions options)
+    {
+        var process = origin.CloneAs<Rgba32>();
+        process.Mutate(x => x.AutoOrient());
+
+        CheckSize(process.Size, result.Image);
+
+        var size = result.Image;
+
+        var ratio = Math.Max(size.Width, size.Height) / 640F;
+
+        var textOptions = new TextOptions(SystemFonts.CreateFont(options.FontName, options.FontSize * ratio));
+
+        var label = $"{result.Class.Name} {result.Confidence:N}";
+        var fill = options.FillColorPalette.GetColor(result.Class.Id);
+        var border = options.BorderColorPalette.GetColor(result.Class.Id);
+
+        var pen = new Pen(border, options.BorderThickness * ratio);
+        var brush = new SolidBrush(fill);
+        var location = new PointF(options.XOffset * ratio, options.YOffset * ratio);
+
+        process.Mutate(x => x.DrawText(label, textOptions.Font, brush, pen, location));
+
+        return process;
+    }
+
+    #endregion
+
     #region Private Methods
 
     private static void DrawBoundingBox(IImageProcessingContext context,
@@ -231,7 +261,8 @@ public static class PlottingExtensions
 
         location.Offset(0, -renderedSize.Height);
 
-        var textLocation = new Point((int)(location.X + textPadding / 2), location.Y);
+        //var textLocation = new Point((int)(location.X + textPadding / 2), location.Y);
+        var textLocation = new PointF(location.X + textPadding / 2, location.Y);
 
         var textBoxPolygon = new RectangularPolygon(location, renderedSize);
 

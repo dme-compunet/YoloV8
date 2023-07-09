@@ -10,7 +10,7 @@ public class PlottingOptions
 
     public float TextHorizontalPadding { get; set; }
 
-    public float BoxBorderWith { get; set; }
+    public float BoxBorderThickness { get; set; }
 
     public ColorPalette ColorPalette { get; set; }
 
@@ -19,7 +19,7 @@ public class PlottingOptions
         FontName = "Arial";
         FontSize = 12F;
         TextHorizontalPadding = 5F;
-        BoxBorderWith = 1F;
+        BoxBorderThickness = 1F;
         ColorPalette = ColorPalette.Default;
     }
 }
