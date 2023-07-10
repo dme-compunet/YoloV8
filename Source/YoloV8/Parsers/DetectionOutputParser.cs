@@ -22,10 +22,14 @@ internal readonly struct DetectionOutputParser
         var metadata = _metadata;
         var parameters = _parameters;
 
-        var xRatio = (float)origin.Width / metadata.ImageSize.Width;
-        var yRatio = (float)origin.Height / metadata.ImageSize.Height;
+        var reductionRatio = Math.Min(metadata.ImageSize.Width / (float)origin.Width, metadata.ImageSize.Height / (float)origin.Height);
 
-        var boxes = new List<BoundingBox>();
+        var xPadding = (metadata.ImageSize.Width - origin.Width * reductionRatio) / 2;
+        var yPadding = (metadata.ImageSize.Height - origin.Height * reductionRatio) / 2;
+
+        var magnificationRatio = Math.Max((float)origin.Width / metadata.ImageSize.Width, (float)origin.Height / metadata.ImageSize.Height);
+
+        var boxes = new List<BoundingBox>(output.Dimensions[2]);
 
         Parallel.For(0, output.Dimensions[2], i =>
         {
@@ -41,10 +45,10 @@ internal readonly struct DetectionOutputParser
                 var w = output[0, 2, i];
                 var h = output[0, 3, i];
 
-                var xMin = (int)((x - w / 2) * xRatio);
-                var yMin = (int)((y - h / 2) * yRatio);
-                var xMax = (int)((x + w / 2) * xRatio);
-                var yMax = (int)((y + h / 2) * yRatio);
+                var xMin = (int)((x - w / 2 - xPadding) * magnificationRatio);
+                var yMin = (int)((y - h / 2 - yPadding) * magnificationRatio);
+                var xMax = (int)((x + w / 2 - xPadding) * magnificationRatio);
+                var yMax = (int)((y + h / 2 - yPadding) * magnificationRatio);
 
                 xMin = Math.Clamp(xMin, 0, origin.Width);
                 yMin = Math.Clamp(yMin, 0, origin.Height);
