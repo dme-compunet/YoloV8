@@ -20,7 +20,6 @@ void PoseDemo(string image, string model)
 
     Console.WriteLine("Loading model...");
     using var predictor = new YoloV8(model);
-    predictor.Parameters.Confidence = .4F;
 
     Console.WriteLine("Working...");
     var result = predictor.Pose(image);
