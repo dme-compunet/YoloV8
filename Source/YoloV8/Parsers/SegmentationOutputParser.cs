@@ -22,13 +22,17 @@ internal readonly struct SegmentationOutputParser
         var metadata = _metadata;
         var parameters = _parameters;
 
-        var xRatio = (float)origin.Width / metadata.ImageSize.Width;
-        var yRatio = (float)origin.Height / metadata.ImageSize.Height;
+        var reductionRatio = Math.Min(metadata.ImageSize.Width / (float)origin.Width, metadata.ImageSize.Height / (float)origin.Height);
+
+        var xPadding = (int)((metadata.ImageSize.Width - origin.Width * reductionRatio) / 2);
+        var yPadding = (int)((metadata.ImageSize.Height - origin.Height * reductionRatio) / 2);
+
+        var magnificationRatio = Math.Max((float)origin.Width / metadata.ImageSize.Width, (float)origin.Height / metadata.ImageSize.Height);
 
         var output0 = outputs[0];
         var output1 = outputs[1];
 
-        var boxes = new List<SegmentationBoundingBox>();
+        var boxes = new List<SegmentationBoundingBox>(output0.Dimensions[2]);
 
         Parallel.For(0, output0.Dimensions[2], i =>
         {
@@ -44,10 +48,10 @@ internal readonly struct SegmentationOutputParser
                 var w = output0[0, 2, i];
                 var h = output0[0, 3, i];
 
-                var xMin = (int)((x - w / 2) * xRatio);
-                var yMin = (int)((y - h / 2) * yRatio);
-                var xMax = (int)((x + w / 2) * xRatio);
-                var yMax = (int)((y + h / 2) * yRatio);
+                var xMin = (int)((x - w / 2 - xPadding) * magnificationRatio);
+                var yMin = (int)((y - h / 2 - yPadding) * magnificationRatio);
+                var xMax = (int)((x + w / 2 - xPadding) * magnificationRatio);
+                var yMax = (int)((y + h / 2 - yPadding) * magnificationRatio);
 
                 xMin = Math.Clamp(xMin, 0, origin.Width);
                 yMin = Math.Clamp(yMin, 0, origin.Height);
@@ -67,7 +71,7 @@ internal readonly struct SegmentationOutputParser
                     maskWeights[k] = output0[0, offset, i];
                 }
 
-                var mask = ProcessMask(output1, maskWeights, rectangle, origin);
+                var mask = ProcessMask(output1, maskWeights, rectangle, origin, metadata.ImageSize, xPadding, yPadding);
 
                 var box = new SegmentationBoundingBox(name, rectangle, confidence, mask);
                 boxes.Add(box);
@@ -81,7 +85,7 @@ internal readonly struct SegmentationOutputParser
         return selected;
     }
 
-    private static IMask ProcessMask(Tensor<float> prototypes, float[] weights, Rectangle rectangle, Size origin)
+    private static IMask ProcessMask(Tensor<float> prototypes, float[] weights, Rectangle rectangle, Size origin, Size model, int xPadding, int yPadding)
     {
         var maskChannels = prototypes.Dimensions[1];
         var maskHeight = prototypes.Dimensions[2];
@@ -113,6 +117,15 @@ internal readonly struct SegmentationOutputParser
         bitmap.Mutate(x =>
         {
             x.RotateFlip(RotateMode.Rotate90, FlipMode.Horizontal);
+
+            var xPad = xPadding * maskWidth / model.Width;
+            var yPad = yPadding * maskHeight / model.Height;
+
+            var crop = new Rectangle(xPad,
+                                     yPad,
+                                     maskWidth - xPad * 2,
+                                     maskHeight - yPad * 2);
+            x.Crop(crop);
 
             x.Resize(origin);
             x.Crop(rectangle);
