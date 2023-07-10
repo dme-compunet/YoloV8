@@ -2,5 +2,5 @@
 
 public interface ISegmentationBoundingBox : IBoundingBox
 {
-    float[,] Mask { get; }
+    IMask Mask { get; }
 }
