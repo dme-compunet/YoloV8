@@ -283,10 +283,13 @@ public static class PlottingExtensions
 
         foreach (var points in contours)
         {
-            var pathb = new PathBuilder();
-            pathb.AddLines(points.Select(x => (PointF)x));
+            if (points.Count < 2)
+                continue;
 
-            var path = pathb.Build();
+            var pathBuilder = new PathBuilder();
+            pathBuilder.AddLines(points.Select(x => (PointF)x));
+
+            var path = pathBuilder.Build();
 
             result.Mutate(x =>
             {
