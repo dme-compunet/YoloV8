@@ -1,6 +1,6 @@
 # YOLOv8
 
-Use [YOLOv8](https://github.com/ultralytics/ultralytics) in your C# project, for object detection, pose estimation and more, via [ONNX Runtime](https://github.com/microsoft/onnxruntime)
+Use [YOLOv8](https://github.com/ultralytics/ultralytics) in real-time, for object detection, instance segmentation, pose estimation and image classification, via [ONNX Runtime](https://github.com/microsoft/onnxruntime)
 
 # Use
 
