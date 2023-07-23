@@ -10,13 +10,13 @@
 	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Title>YoloV8</Title>
-		<Description>Use YOLOv8 in your C# project, for object detection, pose estimation and more, via ONNX Runtime</Description>
-		<RepositoryUrl>https://github.com/dme-compunet/YoloV8</RepositoryUrl>
+		<Description>Use YOLOv8 in real-time, for object detection, instance segmentation, pose estimation and image classification, via ONNX Runtime</Description>
+		<RepositoryUrl>https://github.com/dme-compunet/YOLOv8</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageTags>image-classification;object-detection;pose-estimation;instance-segmentation;onnx;imagesharp;onnx-runtime;ultralytics;yolov8</PackageTags>
+		<PackageIcon>Icon.png</PackageIcon>
 		<Authors>Compunet</Authors>
 		<Version>1.0.0</Version>
-		<FileVersion>1.0.0</FileVersion>
-		<AssemblyVersion>1.0.0</AssemblyVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -31,6 +31,14 @@
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.0.1" />
 		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta15" />
 		<PackageReference Include="Microsoft.ML.OnnxRuntime.Managed" Version="1.14.1" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <None Update="Icon.png">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	</ItemGroup>
 
 </Project>
