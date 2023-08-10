@@ -36,12 +36,12 @@ internal readonly struct SegmentationOutputParser
 
         Parallel.For(0, output0.Dimensions[2], i =>
         {
-            Parallel.For(0, metadata.Classes.Count, j =>
+            for (int j = 0; j < metadata.Classes.Count; j++)
             {
                 var confidence = output0[0, j + 4, i];
 
                 if (confidence <= parameters.Confidence)
-                    return;
+                    continue;
 
                 var x = output0[0, 0, i];
                 var y = output0[0, 1, i];
@@ -75,7 +75,7 @@ internal readonly struct SegmentationOutputParser
 
                 var box = new SegmentationBoundingBox(name, rectangle, confidence, mask);
                 boxes.Add(box);
-            });
+            }
         });
 
         var selected = boxes.NonMaxSuppression(x => x.Rectangle,

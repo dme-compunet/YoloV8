@@ -33,12 +33,12 @@ internal readonly struct DetectionOutputParser
 
         Parallel.For(0, output.Dimensions[2], i =>
         {
-            Parallel.For(0, metadata.Classes.Count, j =>
+            for (int j = 0; j < metadata.Classes.Count; j++)
             {
                 var confidence = output[0, j + 4, i];
 
                 if (confidence <= parameters.Confidence)
-                    return;
+                    continue;
 
                 var x = output[0, 0, i];
                 var y = output[0, 1, i];
@@ -60,7 +60,7 @@ internal readonly struct DetectionOutputParser
 
                 var box = new BoundingBox(name, rectangle, confidence);
                 boxes.Add(box);
-            });
+            }
         });
 
         var selected = boxes.NonMaxSuppression(x => x.Rectangle,
