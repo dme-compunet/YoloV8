@@ -35,12 +35,12 @@ internal readonly struct PoseOutputParser
 
         Parallel.For(0, output.Dimensions[2], i =>
         {
-            Parallel.For(0, metadata.Classes.Count, j =>
+            for (int j = 0; j < metadata.Classes.Count; j++)
             {
                 var confidence = output[0, j + 4, i];
 
                 if (confidence < parameters.Confidence)
-                    return;
+                    continue;
 
                 var x = output[0, 0, i];
                 var y = output[0, 1, i];
@@ -62,7 +62,7 @@ internal readonly struct PoseOutputParser
 
                 var keypoints = new List<Keypoint>();
 
-                Parallel.For(0, shape.Count, k =>
+                for(int k = 0; k < shape.Count; k++)
                 {
                     var offset = k * shape.Channels + 4 + metadata.Classes.Count;
 
@@ -78,11 +78,11 @@ internal readonly struct PoseOutputParser
 
                     var keypoint = new Keypoint(k, pointX, pointY, pointConfidence);
                     keypoints.Add(keypoint);
-                });
+                }
 
                 var box = new PoseBoundingBox(name, rectangle, confidence, keypoints);
                 boxes.Add(box);
-            });
+            }
         });
 
         var selected = boxes.NonMaxSuppression(x => x.Rectangle,
