@@ -7,12 +7,12 @@ public static class ImageSharpExtensions
     {
         var width = image.Width;
         var height = image.Height;
-        var totalPixels = width * height;
 
         var flag = image.DangerousTryGetSinglePixelMemory(out Memory<TPixel> memory);
 
         if (flag)
         {
+            var totalPixels = width * height;
             Parallel.For(0, totalPixels, index =>
             {
                 int x = index % width;
@@ -22,6 +22,19 @@ public static class ImageSharpExtensions
                 var pixel = memory.Span[index];
 
                 action(point, pixel);
+            });
+        }
+        else
+        {
+            Parallel.For(0, width, x =>
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    var point = new Point(x, y);
+                    var pixel = image[x, y];
+
+                    action(point, pixel);
+                }
             });
         }
     }

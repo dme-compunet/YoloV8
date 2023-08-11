@@ -62,7 +62,7 @@ internal readonly struct PoseOutputParser
 
                 var keypoints = new List<Keypoint>();
 
-                Parallel.For(0, shape.Count, k =>
+                for(int k = 0; k < shape.Count; k++)
                 {
                     var offset = k * shape.Channels + 4 + metadata.Classes.Count;
 
@@ -78,7 +78,7 @@ internal readonly struct PoseOutputParser
 
                     var keypoint = new Keypoint(k, pointX, pointY, pointConfidence);
                     keypoints.Add(keypoint);
-                });
+                }
 
                 var box = new PoseBoundingBox(name, rectangle, confidence, keypoints);
                 boxes.Add(box);
