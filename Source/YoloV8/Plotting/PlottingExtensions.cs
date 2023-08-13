@@ -12,11 +12,11 @@ public static class PlottingExtensions
 {
     #region Pose
 
-    public static Image PlotImage(this IPoseResult result, Image origin) => PlotImage(result, origin, PosePlottingOptions.Default);
+    public static Image PlotImage(this IPoseResult result, Image originImage) => PlotImage(result, originImage, PosePlottingOptions.Default);
 
-    public static Image PlotImage(this IPoseResult result, Image origin, PosePlottingOptions options)
+    public static Image PlotImage(this IPoseResult result, Image originImage, PosePlottingOptions options)
     {
-        var process = origin.CloneAs<Rgba32>();
+        var process = originImage.CloneAs<Rgba32>();
         process.Mutate(x => x.AutoOrient());
 
         CheckSize(process.Size, result.Image);
@@ -32,7 +32,7 @@ public static class PlottingExtensions
         var thickness = options.BoxBorderThickness * ratio;
 
         var radius = options.KeypointRadius * ratio;
-        var lineWidth = options.KeypointLineWidth * ratio;
+        var lineThickness = options.KeypointLineThickness * ratio;
 
         foreach (var box in result.Boxes)
         {
@@ -62,7 +62,7 @@ public static class PlottingExtensions
 
                     var lineColor = options.Skeleton.GetLineColor(i);
 
-                    context.DrawLines(lineColor, lineWidth, points);
+                    context.DrawLines(lineColor, lineThickness, points);
                 }
 
                 // drawing keypoints
@@ -89,11 +89,11 @@ public static class PlottingExtensions
 
     #region Detection
 
-    public static Image PlotImage(this IDetectionResult result, Image origin) => result.PlotImage(origin, PlottingOptions.Default);
+    public static Image PlotImage(this IDetectionResult result, Image originImage) => result.PlotImage(originImage, PlottingOptions.Default);
 
-    public static Image PlotImage(this IDetectionResult result, Image origin, PlottingOptions options)
+    public static Image PlotImage(this IDetectionResult result, Image originImage, PlottingOptions options)
     {
-        var process = origin.CloneAs<Rgba32>();
+        var process = originImage.CloneAs<Rgba32>();
         process.Mutate(x => x.AutoOrient());
 
         CheckSize(process.Size, result.Image);
@@ -126,11 +126,11 @@ public static class PlottingExtensions
 
     #region Segmentation
 
-    public static Image PlotImage(this ISegmentationResult result, Image origin) => result.PlotImage(origin, SegmentationPlottingOptions.Default);
+    public static Image PlotImage(this ISegmentationResult result, Image originImage) => result.PlotImage(originImage, SegmentationPlottingOptions.Default);
 
-    public static Image PlotImage(this ISegmentationResult result, Image origin, SegmentationPlottingOptions options)
+    public static Image PlotImage(this ISegmentationResult result, Image originImage, SegmentationPlottingOptions options)
     {
-        var process = origin.CloneAs<Rgba32>();
+        var process = originImage.CloneAs<Rgba32>();
         process.Mutate(x => x.AutoOrient());
 
         CheckSize(process.Size, result.Image);
@@ -211,9 +211,9 @@ public static class PlottingExtensions
 
     #region Classification
 
-    public static Image PlotImage(this IClassificationResult result, Image origin, ClassificationPlottingOptions options)
+    public static Image PlotImage(this IClassificationResult result, Image originImage, ClassificationPlottingOptions options)
     {
-        var process = origin.CloneAs<Rgba32>();
+        var process = originImage.CloneAs<Rgba32>();
         process.Mutate(x => x.AutoOrient());
 
         CheckSize(process.Size, result.Image);
@@ -244,20 +244,20 @@ public static class PlottingExtensions
     private static void DrawBoundingBox(IImageProcessingContext context,
                                         Rectangle rectangle,
                                         Color color,
-                                        float thickness,
+                                        float borderThickness,
                                         float fillOpacity,
-                                        string label,
+                                        string labelText,
                                         TextOptions textOptions,
                                         float textPadding)
     {
         var polygon = new RectangularPolygon(rectangle);
 
-        context.Draw(color, thickness, polygon);
+        context.Draw(color, borderThickness, polygon);
 
         if (fillOpacity > 0F)
             context.Fill(color.WithAlpha(fillOpacity), polygon);
 
-        var rendered = TextMeasurer.Measure(label, textOptions);
+        var rendered = TextMeasurer.Measure(labelText, textOptions);
         var renderedSize = new Size((int)(rendered.Width + textPadding), (int)rendered.Height);
 
         var location = rectangle.Location;
@@ -270,9 +270,9 @@ public static class PlottingExtensions
         var textBoxPolygon = new RectangularPolygon(location, renderedSize);
 
         context.Fill(color, textBoxPolygon);
-        context.Draw(color, thickness, textBoxPolygon);
+        context.Draw(color, borderThickness, textBoxPolygon);
 
-        context.DrawText(label, textOptions.Font, Color.White, textLocation);
+        context.DrawText(labelText, textOptions.Font, Color.White, textLocation);
     }
 
     private static Image CreateContours(this Image source, Color color, float thickness)

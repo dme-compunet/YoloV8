@@ -17,17 +17,17 @@ internal readonly struct DetectionOutputParser
         _parameters = parameters;
     }
 
-    public IReadOnlyList<IBoundingBox> Parse(Tensor<float> output, Size origin)
+    public IReadOnlyList<IBoundingBox> Parse(Tensor<float> output, Size originSize)
     {
         var metadata = _metadata;
         var parameters = _parameters;
 
-        var reductionRatio = Math.Min(metadata.ImageSize.Width / (float)origin.Width, metadata.ImageSize.Height / (float)origin.Height);
+        var reductionRatio = Math.Min(metadata.ImageSize.Width / (float)originSize.Width, metadata.ImageSize.Height / (float)originSize.Height);
 
-        var xPadding = (metadata.ImageSize.Width - origin.Width * reductionRatio) / 2;
-        var yPadding = (metadata.ImageSize.Height - origin.Height * reductionRatio) / 2;
+        var xPadding = (metadata.ImageSize.Width - originSize.Width * reductionRatio) / 2;
+        var yPadding = (metadata.ImageSize.Height - originSize.Height * reductionRatio) / 2;
 
-        var magnificationRatio = Math.Max((float)origin.Width / metadata.ImageSize.Width, (float)origin.Height / metadata.ImageSize.Height);
+        var magnificationRatio = Math.Max((float)originSize.Width / metadata.ImageSize.Width, (float)originSize.Height / metadata.ImageSize.Height);
 
         var boxes = new List<BoundingBox>(output.Dimensions[2]);
 
@@ -50,10 +50,10 @@ internal readonly struct DetectionOutputParser
                 var xMax = (int)((x + w / 2 - xPadding) * magnificationRatio);
                 var yMax = (int)((y + h / 2 - yPadding) * magnificationRatio);
 
-                xMin = Math.Clamp(xMin, 0, origin.Width);
-                yMin = Math.Clamp(yMin, 0, origin.Height);
-                xMax = Math.Clamp(xMax, 0, origin.Width);
-                yMax = Math.Clamp(yMax, 0, origin.Height);
+                xMin = Math.Clamp(xMin, 0, originSize.Width);
+                yMin = Math.Clamp(yMin, 0, originSize.Height);
+                xMax = Math.Clamp(xMax, 0, originSize.Width);
+                yMax = Math.Clamp(yMax, 0, originSize.Height);
 
                 var rectangle = Rectangle.FromLTRB(xMin, yMin, xMax, yMax);
                 var name = metadata.Classes[j];

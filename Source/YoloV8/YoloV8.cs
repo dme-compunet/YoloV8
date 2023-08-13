@@ -66,7 +66,7 @@ public class YoloV8 : IDisposable
 
         image.Mutate(x => x.AutoOrient());
 
-        var origin = image.Size;
+        var originSize = image.Size;
 
         var timer = new SpeedTimer();
 
@@ -84,7 +84,7 @@ public class YoloV8 : IDisposable
 
         timer.StartPostprocess();
 
-        return postprocess(list, origin, timer);
+        return postprocess(list, originSize, timer);
     }
 
     #endregion
@@ -93,28 +93,28 @@ public class YoloV8 : IDisposable
 
     private Tensor<float> Preprocess(Image<Rgb24> image)
     {
-        var size = _metadata.ImageSize;
+        var modelSize = _metadata.ImageSize;
 
-        var ratio = Math.Min((float)size.Width / image.Width, (float)size.Height / image.Height);
+        var ratio = Math.Min((float)modelSize.Width / image.Width, (float)modelSize.Height / image.Height);
 
         var processSize = new Size((int)(image.Width * ratio), (int)(image.Height * ratio));
 
-        var xPadding = (size.Width - processSize.Width) / 2;
-        var yPadding = (size.Height - processSize.Height) / 2;
+        var xPadding = (modelSize.Width - processSize.Width) / 2;
+        var yPadding = (modelSize.Height - processSize.Height) / 2;
 
         image.Mutate(x => x.Resize(processSize));
 
-        var dimensions = new int[] { 1, 3, size.Height, size.Width };
+        var dimensions = new int[] { 1, 3, modelSize.Height, modelSize.Width };
         var input = new DenseTensor<float>(dimensions);
 
         image.ForEachPixel((point, pixel) =>
         {
-            int x = point.X + xPadding;
-            int y = point.Y + yPadding;
+            var x = point.X + xPadding;
+            var y = point.Y + yPadding;
 
-            float r = pixel.R / 255f;
-            float g = pixel.G / 255f;
-            float b = pixel.B / 255f;
+            var r = pixel.R / 255f;
+            var g = pixel.G / 255f;
+            var b = pixel.B / 255f;
 
             input[0, 0, y, x] = r;
             input[0, 1, y, x] = g;
@@ -130,7 +130,8 @@ public class YoloV8 : IDisposable
         {
             var name = _inputNames[index];
             return NamedOnnxValue.CreateFromTensor(name, value);
-        }).ToArray();
+        }
+        ).ToArray();
     }
 
     #endregion
