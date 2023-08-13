@@ -17,17 +17,17 @@ internal readonly struct SegmentationOutputParser
         _parameters = parameters;
     }
 
-    public IReadOnlyList<ISegmentationBoundingBox> Parse(IReadOnlyList<Tensor<float>> outputs, Size origin)
+    public IReadOnlyList<ISegmentationBoundingBox> Parse(IReadOnlyList<Tensor<float>> outputs, Size originSize)
     {
         var metadata = _metadata;
         var parameters = _parameters;
 
-        var reductionRatio = Math.Min(metadata.ImageSize.Width / (float)origin.Width, metadata.ImageSize.Height / (float)origin.Height);
+        var reductionRatio = Math.Min(metadata.ImageSize.Width / (float)originSize.Width, metadata.ImageSize.Height / (float)originSize.Height);
 
-        var xPadding = (int)((metadata.ImageSize.Width - origin.Width * reductionRatio) / 2);
-        var yPadding = (int)((metadata.ImageSize.Height - origin.Height * reductionRatio) / 2);
+        var xPadding = (int)((metadata.ImageSize.Width - originSize.Width * reductionRatio) / 2);
+        var yPadding = (int)((metadata.ImageSize.Height - originSize.Height * reductionRatio) / 2);
 
-        var magnificationRatio = Math.Max((float)origin.Width / metadata.ImageSize.Width, (float)origin.Height / metadata.ImageSize.Height);
+        var magnificationRatio = Math.Max((float)originSize.Width / metadata.ImageSize.Width, (float)originSize.Height / metadata.ImageSize.Height);
 
         var output0 = outputs[0];
         var output1 = outputs[1];
@@ -53,10 +53,10 @@ internal readonly struct SegmentationOutputParser
                 var xMax = (int)((x + w / 2 - xPadding) * magnificationRatio);
                 var yMax = (int)((y + h / 2 - yPadding) * magnificationRatio);
 
-                xMin = Math.Clamp(xMin, 0, origin.Width);
-                yMin = Math.Clamp(yMin, 0, origin.Height);
-                xMax = Math.Clamp(xMax, 0, origin.Width);
-                yMax = Math.Clamp(yMax, 0, origin.Height);
+                xMin = Math.Clamp(xMin, 0, originSize.Width);
+                yMin = Math.Clamp(yMin, 0, originSize.Height);
+                xMax = Math.Clamp(xMax, 0, originSize.Width);
+                yMax = Math.Clamp(yMax, 0, originSize.Height);
 
                 var rectangle = Rectangle.FromLTRB(xMin, yMin, xMax, yMax);
                 var name = metadata.Classes[j];
@@ -71,7 +71,7 @@ internal readonly struct SegmentationOutputParser
                     maskWeights[k] = output0[0, offset, i];
                 }
 
-                var mask = ProcessMask(output1, maskWeights, rectangle, origin, metadata.ImageSize, xPadding, yPadding);
+                var mask = ProcessMask(output1, maskWeights, rectangle, originSize, metadata.ImageSize, xPadding, yPadding);
 
                 var box = new SegmentationBoundingBox(name, rectangle, confidence, mask);
                 boxes.Add(box);
@@ -85,7 +85,7 @@ internal readonly struct SegmentationOutputParser
         return selected;
     }
 
-    private static IMask ProcessMask(Tensor<float> prototypes, float[] weights, Rectangle rectangle, Size origin, Size model, int xPadding, int yPadding)
+    private static IMask ProcessMask(Tensor<float> prototypes, float[] weights, Rectangle rectangle, Size originSize, Size modelSize, int xPadding, int yPadding)
     {
         var maskChannels = prototypes.Dimensions[1];
         var maskHeight = prototypes.Dimensions[2];
@@ -118,8 +118,8 @@ internal readonly struct SegmentationOutputParser
         {
             x.RotateFlip(RotateMode.Rotate90, FlipMode.Horizontal);
 
-            var xPad = xPadding * maskWidth / model.Width;
-            var yPad = yPadding * maskHeight / model.Height;
+            var xPad = xPadding * maskWidth / modelSize.Width;
+            var yPad = yPadding * maskHeight / modelSize.Height;
 
             var crop = new Rectangle(xPad,
                                      yPad,
@@ -127,7 +127,7 @@ internal readonly struct SegmentationOutputParser
                                      maskHeight - yPad * 2);
             x.Crop(crop);
 
-            x.Resize(origin);
+            x.Resize(originSize);
             x.Crop(rectangle);
         });
 
