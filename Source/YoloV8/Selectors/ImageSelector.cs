@@ -1,6 +1,4 @@
-﻿using static System.Runtime.InteropServices.JavaScript.JSType;
-
-namespace Compunet.YoloV8;
+﻿namespace Compunet.YoloV8;
 
 public class ImageSelector
 {
