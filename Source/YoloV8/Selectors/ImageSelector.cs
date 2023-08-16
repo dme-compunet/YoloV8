@@ -22,7 +22,6 @@ public class ImageSelector
     public ImageSelector(Stream stream)
     {
         _factory = () => Image.Load<Rgb24>(stream);
-
     }
 
     internal Image<Rgb24> Load() => _factory();
