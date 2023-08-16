@@ -13,6 +13,7 @@ public class ModelSelector
     {
         _factory = () => data;
     }
+
     public ModelSelector(Stream stream)
     {
         _factory = () =>
@@ -23,10 +24,10 @@ public class ModelSelector
             return memory.ToArray();
         };
     }
+
     internal byte[] Load() => _factory();
 
     public static implicit operator ModelSelector(string path) => new(path);
     public static implicit operator ModelSelector(byte[] data) => new(data);
     public static implicit operator ModelSelector(Stream stream) => new(stream);
-
 }
