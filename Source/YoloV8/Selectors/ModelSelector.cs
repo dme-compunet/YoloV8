@@ -13,9 +13,18 @@ public class ModelSelector
     {
         _factory = () => data;
     }
-
+    public ModelSelector(Stream stream)
+    {
+        using (MemoryStream memoryStream = new MemoryStream())
+        {
+            stream.CopyTo(memoryStream);
+            _factory = memoryStream.ToArray;
+        }
+    }
     internal byte[] Load() => _factory();
 
     public static implicit operator ModelSelector(string path) => new(path);
     public static implicit operator ModelSelector(byte[] data) => new(data);
+    public static implicit operator ModelSelector(Stream stream) => new(stream);
+
 }
