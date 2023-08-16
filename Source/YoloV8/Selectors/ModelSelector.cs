@@ -15,11 +15,13 @@ public class ModelSelector
     }
     public ModelSelector(Stream stream)
     {
-        using (MemoryStream memoryStream = new MemoryStream())
+        _factory = () =>
         {
-            stream.CopyTo(memoryStream);
-            _factory = memoryStream.ToArray;
-        }
+            using var memory = new MemoryStream();
+            stream.CopyTo(memory);
+
+            return memory.ToArray();
+        };
     }
     internal byte[] Load() => _factory();
 
