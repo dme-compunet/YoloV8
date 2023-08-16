@@ -62,7 +62,7 @@ public static class PlottingExtensions
 
                     var lineColor = options.Skeleton.GetLineColor(i);
 
-                    context.DrawLines(lineColor, lineThickness, points);
+                    context.DrawLine(lineColor, lineThickness, points);
                 }
 
                 // drawing keypoints
