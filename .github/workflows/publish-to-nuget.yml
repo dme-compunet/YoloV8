@@ -1,0 +1,36 @@
+name: Build Pack & Publish to Nuget
+
+on:
+  push:
+    branches:
+      - 'main'
+      - 'releases/**'
+
+jobs:
+  publish:
+    name: Build, Pack & Publish
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    # Install the .NET Core workload
+    - name: Install .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 7.0.x
+
+    - name: Restore project dependencies
+      run: dotnet restore Source/YoloV8/YoloV8.csproj
+
+    - name: Run Demo App
+      run: dotnet run -c Release Source/YoloV8.Demo/YoloV8.Demo.csproj
+
+    - name: Pack
+      run: dotnet pack -c Release -o . Source/YoloV8/YoloV8.csproj
+
+    - name: Publish Nuget Package
+      run: dotnet nuget push *.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
