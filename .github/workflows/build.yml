@@ -20,8 +20,11 @@ jobs:
       with:
         dotnet-version: 7.0.x
 
-    - name: Restore dependencies
+    - name: Restore dependencies for YoloV8
       run: dotnet restore Source/YoloV8/YoloV8.csproj
+
+    - name: Restore dependencies for YoloV8.Demo
+      run: dotnet restore Source/YoloV8.Demo/YoloV8.Demo.csproj
 
     - name: Build YoloV8
       run: dotnet build --no-restore Source/YoloV8/YoloV8.csproj
