@@ -30,5 +30,4 @@ public class ImageSelector
     public static implicit operator ImageSelector(string path) => new(path);
     public static implicit operator ImageSelector(byte[] data) => new(data);
     public static implicit operator ImageSelector(Stream stream) => new(stream);
-
 }
