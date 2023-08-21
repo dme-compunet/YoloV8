@@ -2,7 +2,7 @@
 
 public class PosePlottingOptions : PlottingOptions
 {
-    internal static new PosePlottingOptions Default { get; } = new PosePlottingOptions();
+    public static new PosePlottingOptions Default { get; } = new PosePlottingOptions();
 
     public ISkeleton Skeleton { get; set; }
 
