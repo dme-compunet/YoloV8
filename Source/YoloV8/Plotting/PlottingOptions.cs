@@ -2,7 +2,7 @@
 
 public class PlottingOptions
 {
-    internal static PlottingOptions Default { get; } = new PlottingOptions();
+    public static PlottingOptions Default { get; } = new PlottingOptions();
 
     public string FontName { get; set; }
 
