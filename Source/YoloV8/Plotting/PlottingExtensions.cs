@@ -24,7 +24,7 @@ public static class PlottingExtensions
 
         var ratio = Math.Max(size.Width, size.Height) / 640F;
 
-        var textOptions = new TextOptions(SystemFonts.CreateFont(options.FontName, options.FontSize * ratio));
+        var textOptions = new TextOptions(options.FontFamily.CreateFont(options.FontSize * ratio));
 
         var textPadding = options.TextHorizontalPadding * ratio;
 
@@ -88,9 +88,9 @@ public static class PlottingExtensions
 
     #region Detection
 
-    public static Image PlotImage(this IDetectionResult result, Image originImage) => result.PlotImage(originImage, PlottingOptions.Default);
+    public static Image PlotImage(this IDetectionResult result, Image originImage) => result.PlotImage(originImage, DetectionPlottingOptions.Default);
 
-    public static Image PlotImage(this IDetectionResult result, Image originImage, PlottingOptions options)
+    public static Image PlotImage(this IDetectionResult result, Image originImage, DetectionPlottingOptions options)
     {
         var process = originImage.CloneAs<Rgba32>();
         process.Mutate(x => x.AutoOrient());
@@ -101,7 +101,7 @@ public static class PlottingExtensions
 
         var ratio = Math.Max(size.Width, size.Height) / 640F;
 
-        var textOptions = new TextOptions(SystemFonts.CreateFont(options.FontName, options.FontSize * ratio));
+        var textOptions = new TextOptions(options.FontFamily.CreateFont(options.FontSize * ratio));
 
         var textPadding = options.TextHorizontalPadding * ratio;
 
@@ -138,7 +138,7 @@ public static class PlottingExtensions
 
         var ratio = Math.Max(size.Width, size.Height) / 640F;
 
-        var textOptions = new TextOptions(SystemFonts.CreateFont(options.FontName, options.FontSize * ratio));
+        var textOptions = new TextOptions(options.FontFamily.CreateFont(options.FontSize * ratio));
 
         var textPadding = options.TextHorizontalPadding * ratio;
 
@@ -221,7 +221,7 @@ public static class PlottingExtensions
 
         var ratio = Math.Max(size.Width, size.Height) / 640F;
 
-        var textOptions = new TextOptions(SystemFonts.CreateFont(options.FontName, options.FontSize * ratio));
+        var textOptions = new TextOptions(options.FontFamily.CreateFont(options.FontSize * ratio));
 
         var label = $"{result.Class.Name} {result.Confidence:N}";
         var fill = options.FillColorPalette.GetColor(result.Class.Id);

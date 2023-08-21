@@ -1,25 +1,27 @@
-﻿namespace Compunet.YoloV8.Plotting;
+﻿using SixLabors.Fonts;
 
-public class PlottingOptions
+namespace Compunet.YoloV8.Plotting;
+
+public abstract class PlottingOptions
 {
-    public static PlottingOptions Default { get; } = new PlottingOptions();
-
-    public string FontName { get; set; }
+    public FontFamily FontFamily { get; set; }
 
     public float FontSize { get; set; }
 
-    public float TextHorizontalPadding { get; set; }
-
-    public float BoxBorderThickness { get; set; }
-
-    public ColorPalette ColorPalette { get; set; }
-
     public PlottingOptions()
     {
-        FontName = "Arial";
+        FontFamily = GetDefaultFontFamily();
         FontSize = 12F;
-        TextHorizontalPadding = 5F;
-        BoxBorderThickness = 1F;
-        ColorPalette = ColorPalette.Default;
+    }
+
+    private static FontFamily GetDefaultFontFamily()
+    {
+        if (OperatingSystem.IsWindows())
+            return SystemFonts.Get("Arial");
+
+        if (OperatingSystem.IsAndroid())
+            return SystemFonts.Get("Robot");
+
+        return SystemFonts.Families.First();
     }
 }
