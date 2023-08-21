@@ -7,9 +7,9 @@ internal class SegmentationBoundingBox : BoundingBox, ISegmentationBoundingBox
     public IMask Mask { get; }
 
     public SegmentationBoundingBox(YoloV8Class name,
-                                   Rectangle rectangle,
+                                   Rectangle bounds,
                                    float confidence,
-                                   IMask mask) : base(name, rectangle, confidence)
+                                   IMask mask) : base(name, bounds, confidence)
     {
         Mask = mask;
     }

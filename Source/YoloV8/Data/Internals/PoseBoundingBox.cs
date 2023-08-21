@@ -7,9 +7,9 @@ internal class PoseBoundingBox : BoundingBox, IPoseBoundingBox
     public IReadOnlyList<IKeypoint> Keypoints { get; }
 
     public PoseBoundingBox(YoloV8Class name,
-                           Rectangle rectangle,
+                           Rectangle bounds,
                            float confidence,
-                           IReadOnlyList<Keypoint> keypoints) : base(name, rectangle, confidence)
+                           IReadOnlyList<Keypoint> keypoints) : base(name, bounds, confidence)
     {
         Keypoints = keypoints;
     }

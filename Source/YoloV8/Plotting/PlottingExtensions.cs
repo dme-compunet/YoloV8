@@ -40,7 +40,7 @@ public static class PlottingExtensions
 
             process.Mutate(context =>
             {
-                DrawBoundingBox(context, box.Rectangle, color, thickness, .1F, label, textOptions, textPadding);
+                DrawBoundingBox(context, box.Bounds, color, thickness, .1F, label, textOptions, textPadding);
 
                 // drawing lines
                 for (int i = 0; i < options.Skeleton.Connections.Count; i++)
@@ -114,7 +114,7 @@ public static class PlottingExtensions
 
             process.Mutate(context =>
             {
-                DrawBoundingBox(context, box.Rectangle, color, thickness, .1F, label, textOptions, textPadding);
+                DrawBoundingBox(context, box.Bounds, color, thickness, .1F, label, textOptions, textPadding);
             });
         }
 
@@ -154,7 +154,7 @@ public static class PlottingExtensions
             var box = result.Boxes[i];
             var color = options.ColorPalette.GetColor(box.Class.Id);
 
-            using var mask = new Image<Rgba32>(box.Rectangle.Width, box.Rectangle.Height);
+            using var mask = new Image<Rgba32>(box.Bounds.Width, box.Bounds.Height);
 
             for (int x = 0; x < box.Mask.Width; x++)
             {
@@ -167,12 +167,12 @@ public static class PlottingExtensions
                 }
             }
 
-            masks.Mutate(x => x.DrawImage(mask, box.Rectangle.Location, 1F));
+            masks.Mutate(x => x.DrawImage(mask, box.Bounds.Location, 1F));
 
             if (options.ContoursThickness > 0F)
             {
                 using var contour = CreateContours(mask, color, options.ContoursThickness * ratio);
-                contours.Mutate(x => x.DrawImage(contour, box.Rectangle.Location, 1F));
+                contours.Mutate(x => x.DrawImage(contour, box.Bounds.Location, 1F));
             }
         }
 
@@ -191,7 +191,7 @@ public static class PlottingExtensions
             process.Mutate(context =>
             {
                 DrawBoundingBox(context,
-                                box.Rectangle,
+                                box.Bounds,
                                 color,
                                 thickness,
                                 0F,
@@ -241,7 +241,7 @@ public static class PlottingExtensions
     #region Private Methods
 
     private static void DrawBoundingBox(IImageProcessingContext context,
-                                        Rectangle rectangle,
+                                        Rectangle bounds,
                                         Color color,
                                         float borderThickness,
                                         float fillOpacity,
@@ -249,7 +249,7 @@ public static class PlottingExtensions
                                         TextOptions textOptions,
                                         float textPadding)
     {
-        var polygon = new RectangularPolygon(rectangle);
+        var polygon = new RectangularPolygon(bounds);
 
         context.Draw(color, borderThickness, polygon);
 
@@ -259,7 +259,7 @@ public static class PlottingExtensions
         var rendered = TextMeasurer.MeasureSize(labelText, textOptions);
         var renderedSize = new Size((int)(rendered.Width + textPadding), (int)rendered.Height);
 
-        var location = rectangle.Location;
+        var location = bounds.Location;
 
         location.Offset(0, -renderedSize.Height);
 
