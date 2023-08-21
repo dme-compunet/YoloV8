@@ -1,9 +1,8 @@
-﻿using SixLabors.Fonts;
+﻿using Compunet.YoloV8.Data;
+using Compunet.YoloV8.Extensions;
+using SixLabors.Fonts;
 using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.Drawing.Processing;
-
-using Compunet.YoloV8.Data;
-using Compunet.YoloV8.Extensions;
 using System.Data;
 
 namespace Compunet.YoloV8.Plotting;

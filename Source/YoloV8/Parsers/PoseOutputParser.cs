@@ -1,8 +1,7 @@
-﻿using Microsoft.ML.OnnxRuntime.Tensors;
-
-using Compunet.YoloV8.Data;
-using Compunet.YoloV8.Metadata;
+﻿using Compunet.YoloV8.Data;
 using Compunet.YoloV8.Extensions;
+using Compunet.YoloV8.Metadata;
+using Microsoft.ML.OnnxRuntime.Tensors;
 
 namespace Compunet.YoloV8.Parsers;
 
@@ -62,7 +61,7 @@ internal readonly struct PoseOutputParser
 
                 var keypoints = new List<Keypoint>();
 
-                for(int k = 0; k < shape.Count; k++)
+                for (int k = 0; k < shape.Count; k++)
                 {
                     var offset = k * shape.Channels + 4 + metadata.Classes.Count;
 
