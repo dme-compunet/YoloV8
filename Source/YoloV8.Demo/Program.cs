@@ -1,7 +1,6 @@
-﻿using SixLabors.ImageSharp;
-
-using Compunet.YoloV8;
+﻿using Compunet.YoloV8;
 using Compunet.YoloV8.Plotting;
+using SixLabors.ImageSharp;
 
 var output = "./assets/output";
 
@@ -92,7 +91,7 @@ void SegmentDemo(string image, string model)
     Console.WriteLine("Plotting and saving...");
     using var origin = Image.Load(image);
 
-    using var ploted = result.PlotImage(origin, new SegmentationPlottingOptions { MaskConfidence = .65F});
+    using var ploted = result.PlotImage(origin, new SegmentationPlottingOptions { MaskConfidence = .65F });
 
     var filename = $"{Path.GetFileNameWithoutExtension(image)}_seg";
     var extension = Path.GetExtension(image);

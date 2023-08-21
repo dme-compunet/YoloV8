@@ -1,6 +1,5 @@
-﻿using Microsoft.ML.OnnxRuntime;
-
-using Compunet.YoloV8.Timing;
+﻿using Compunet.YoloV8.Timing;
+using Microsoft.ML.OnnxRuntime;
 
 namespace Compunet.YoloV8;
 

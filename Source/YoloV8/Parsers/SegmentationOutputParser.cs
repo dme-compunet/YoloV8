@@ -1,8 +1,7 @@
-﻿using Microsoft.ML.OnnxRuntime.Tensors;
-
-using Compunet.YoloV8.Data;
-using Compunet.YoloV8.Metadata;
+﻿using Compunet.YoloV8.Data;
 using Compunet.YoloV8.Extensions;
+using Compunet.YoloV8.Metadata;
+using Microsoft.ML.OnnxRuntime.Tensors;
 
 namespace Compunet.YoloV8.Parsers;
 
