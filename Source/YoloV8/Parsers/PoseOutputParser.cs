@@ -56,7 +56,7 @@ internal readonly struct PoseOutputParser
                 xMax = Math.Clamp(xMax, 0, originSize.Width);
                 yMax = Math.Clamp(yMax, 0, originSize.Height);
 
-                var rectangle = Rectangle.FromLTRB(xMin, yMin, xMax, yMax);
+                var bounds = Rectangle.FromLTRB(xMin, yMin, xMax, yMax);
                 var name = metadata.Classes[j];
 
                 var keypoints = new List<Keypoint>();
@@ -79,12 +79,12 @@ internal readonly struct PoseOutputParser
                     keypoints.Add(keypoint);
                 }
 
-                var box = new PoseBoundingBox(name, rectangle, confidence, keypoints);
+                var box = new PoseBoundingBox(name, bounds, confidence, keypoints);
                 boxes.Add(box);
             }
         });
 
-        var selected = boxes.NonMaxSuppression(x => x.Rectangle,
+        var selected = boxes.NonMaxSuppression(x => x.Bounds,
                                                x => x.Confidence,
                                                parameters.IoU);
 

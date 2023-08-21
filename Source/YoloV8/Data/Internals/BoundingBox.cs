@@ -6,14 +6,14 @@ internal class BoundingBox : IBoundingBox
 {
     public YoloV8Class Class { get; }
 
-    public Rectangle Rectangle { get; }
+    public Rectangle Bounds { get; }
 
     public float Confidence { get; }
 
-    public BoundingBox(YoloV8Class name, Rectangle rectangle, float confidence)
+    public BoundingBox(YoloV8Class name, Rectangle bounds, float confidence)
     {
         Class = name;
-        Rectangle = rectangle;
+        Bounds = bounds;
         Confidence = confidence;
     }
 

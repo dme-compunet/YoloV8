@@ -3,7 +3,7 @@
 public static class NonMaxSuppressionExtensions
 {
     public static IReadOnlyList<T> NonMaxSuppression<T>(this IReadOnlyList<T> boxes,
-                                                        Func<T, Rectangle> rectangleSelector,
+                                                        Func<T, Rectangle> boundsSelector,
                                                         Func<T, float> confidenceSelector,
                                                         float threshold)
     {
@@ -29,7 +29,7 @@ public static class NonMaxSuppressionExtensions
                     {
                         var boxB = sorted[j];
 
-                        if (CalculateIoU(rectangleSelector(boxA), rectangleSelector(boxB)) > threshold)
+                        if (CalculateIoU(boundsSelector(boxA), boundsSelector(boxB)) > threshold)
                         {
                             isActiveBoxes[j] = false;
                             activeCount--;
