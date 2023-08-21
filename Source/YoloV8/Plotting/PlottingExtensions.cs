@@ -303,7 +303,7 @@ public static class PlottingExtensions
     private static void CheckSize(Size origin, Size result)
     {
         if (origin != result)
-            throw new InvalidOperationException("The size of the original image is different from the size of the image in the result");
+            throw new InvalidOperationException("Original image size must to be equals to prediction result image size");
     }
 
     #endregion
