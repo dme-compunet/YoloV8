@@ -2,7 +2,7 @@
 
 public class SegmentationPlottingOptions : PlottingOptions
 {
-    internal static new SegmentationPlottingOptions Default { get; } = new SegmentationPlottingOptions();
+    public static new SegmentationPlottingOptions Default { get; } = new SegmentationPlottingOptions();
 
     public float MaskConfidence { get; set; }
 

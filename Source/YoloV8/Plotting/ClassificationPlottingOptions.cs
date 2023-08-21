@@ -2,7 +2,7 @@
 
 public class ClassificationPlottingOptions
 {
-    internal static ClassificationPlottingOptions Default { get; } = new ClassificationPlottingOptions();
+    public static ClassificationPlottingOptions Default { get; } = new ClassificationPlottingOptions();
 
     public string FontName { get; set; }
 
