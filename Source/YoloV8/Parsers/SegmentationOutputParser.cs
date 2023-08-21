@@ -10,7 +10,7 @@ internal readonly struct SegmentationOutputParser
     private readonly YoloV8Metadata _metadata;
     private readonly YoloV8Parameters _parameters;
 
-    private record struct IndexedBoundingBox(int Index, YoloV8Class Name, Rectangle Rectangle, float Confidence);
+    private record struct IndexedBoundingBox(int Index, YoloV8Class Name, Rectangle Bounds, float Confidence);
 
     public SegmentationOutputParser(YoloV8Metadata metadata, YoloV8Parameters parameters)
     {
@@ -61,15 +61,15 @@ internal readonly struct SegmentationOutputParser
                 xMax = Math.Clamp(xMax, 0, originSize.Width);
                 yMax = Math.Clamp(yMax, 0, originSize.Height);
 
-                var rectangle = Rectangle.FromLTRB(xMin, yMin, xMax, yMax);
+                var bounds = Rectangle.FromLTRB(xMin, yMin, xMax, yMax);
                 var name = metadata.Classes[j];
 
-                var box = new IndexedBoundingBox(i, name, rectangle, confidence);
+                var box = new IndexedBoundingBox(i, name, bounds, confidence);
                 boxes.Add(box);
             }
         });
 
-        var selected = boxes.NonMaxSuppression(x => x.Rectangle,
+        var selected = boxes.NonMaxSuppression(x => x.Bounds,
                                                x => x.Confidence,
                                                _parameters.IoU);
 
@@ -81,9 +81,9 @@ internal readonly struct SegmentationOutputParser
 
             var maskWeights = GetMaskWeights(output0, box.Index, maskChannelCount, metadata.Classes.Count + 4);
 
-            var mask = ProcessMask(output1, maskWeights, box.Rectangle, originSize, metadata.ImageSize, xPadding, yPadding);
+            var mask = ProcessMask(output1, maskWeights, box.Bounds, originSize, metadata.ImageSize, xPadding, yPadding);
 
-            var value = new SegmentationBoundingBox(box.Name, box.Rectangle, box.Confidence, mask);
+            var value = new SegmentationBoundingBox(box.Name, box.Bounds, box.Confidence, mask);
 
             result[index] = value;
         });
@@ -91,7 +91,7 @@ internal readonly struct SegmentationOutputParser
         return result;
     }
 
-    private static IMask ProcessMask(Tensor<float> maskPrototypes, ReadOnlySpan<float> maskWeights, Rectangle rectangle, Size originSize, Size modelSize, int xPadding, int yPadding)
+    private static IMask ProcessMask(Tensor<float> maskPrototypes, ReadOnlySpan<float> maskWeights, Rectangle bounds, Size originSize, Size modelSize, int xPadding, int yPadding)
     {
         var maskChannels = maskPrototypes.Dimensions[1];
         var maskHeight = maskPrototypes.Dimensions[2];
@@ -137,10 +137,10 @@ internal readonly struct SegmentationOutputParser
             x.Resize(originSize);
 
             // crop for getting the object segmentation only
-            x.Crop(rectangle);
+            x.Crop(bounds);
         });
 
-        var final = new float[rectangle.Width, rectangle.Height];
+        var final = new float[bounds.Width, bounds.Height];
 
         bitmap.ForEachPixel((point, pixel) =>
         {
