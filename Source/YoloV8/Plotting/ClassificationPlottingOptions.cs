@@ -1,12 +1,8 @@
 ﻿namespace Compunet.YoloV8.Plotting;
 
-public class ClassificationPlottingOptions
+public class ClassificationPlottingOptions : PlottingOptions
 {
     public static ClassificationPlottingOptions Default { get; } = new ClassificationPlottingOptions();
-
-    public string FontName { get; set; }
-
-    public float FontSize { get; set; }
 
     public ColorPalette FillColorPalette { get; set; }
 
@@ -20,7 +16,6 @@ public class ClassificationPlottingOptions
 
     public ClassificationPlottingOptions()
     {
-        FontName = "Arial";
         FontSize = 40F;
         FillColorPalette = new ColorPalette("CCCCCC");
         BorderColorPalette = new ColorPalette("333333");
