@@ -1,9 +1,8 @@
-﻿using Microsoft.ML.OnnxRuntime;
-using Microsoft.ML.OnnxRuntime.Tensors;
-
-using Compunet.YoloV8.Timing;
+﻿using Compunet.YoloV8.Extensions;
 using Compunet.YoloV8.Metadata;
-using Compunet.YoloV8.Extensions;
+using Compunet.YoloV8.Timing;
+using Microsoft.ML.OnnxRuntime;
+using Microsoft.ML.OnnxRuntime.Tensors;
 
 namespace Compunet.YoloV8;
 

@@ -1,5 +1,5 @@
-﻿using Compunet.YoloV8.Timing;
-using Compunet.YoloV8.Metadata;
+﻿using Compunet.YoloV8.Metadata;
+using Compunet.YoloV8.Timing;
 
 namespace Compunet.YoloV8.Data;
 
