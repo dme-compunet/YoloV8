@@ -1,6 +1,6 @@
 ﻿namespace Compunet.YoloV8.Plotting;
 
-public class PosePlottingOptions : PlottingOptions
+public class PosePlottingOptions : DetectionPlottingOptions
 {
     public static new PosePlottingOptions Default { get; } = new PosePlottingOptions();
 

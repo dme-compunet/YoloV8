@@ -1,6 +1,6 @@
 ﻿namespace Compunet.YoloV8.Plotting;
 
-public class SegmentationPlottingOptions : PlottingOptions
+public class SegmentationPlottingOptions : DetectionPlottingOptions
 {
     public static new SegmentationPlottingOptions Default { get; } = new SegmentationPlottingOptions();
 
