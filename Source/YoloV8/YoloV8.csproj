@@ -30,7 +30,7 @@
 	<ItemGroup>
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.0.1" />
 		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0" />
-		<PackageReference Include="Microsoft.ML.OnnxRuntime.Managed" Version="1.14.1" />
+		<PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.15.1" />
 	</ItemGroup>
 
 
