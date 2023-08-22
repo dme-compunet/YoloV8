@@ -10,8 +10,6 @@ internal readonly struct SegmentationOutputParser
     private readonly YoloV8Metadata _metadata;
     private readonly YoloV8Parameters _parameters;
 
-    private record struct IndexedBoundingBox(int Index, YoloV8Class Name, Rectangle Bounds, float Confidence);
-
     public SegmentationOutputParser(YoloV8Metadata metadata, YoloV8Parameters parameters)
     {
         _metadata = metadata;
@@ -21,74 +19,29 @@ internal readonly struct SegmentationOutputParser
     public IReadOnlyList<ISegmentationBoundingBox> Parse(IReadOnlyList<Tensor<float>> outputs, Size originSize)
     {
         var metadata = _metadata;
-        var parameters = _parameters;
 
         var reductionRatio = Math.Min(metadata.ImageSize.Width / (float)originSize.Width, metadata.ImageSize.Height / (float)originSize.Height);
 
         var xPadding = (int)((metadata.ImageSize.Width - originSize.Width * reductionRatio) / 2);
         var yPadding = (int)((metadata.ImageSize.Height - originSize.Height * reductionRatio) / 2);
 
-        var magnificationRatio = Math.Max((float)originSize.Width / metadata.ImageSize.Width, (float)originSize.Height / metadata.ImageSize.Height);
-
         var output0 = outputs[0];
         var output1 = outputs[1];
 
         var maskChannelCount = output0.Dimensions[1] - 4 - metadata.Classes.Count;
 
-        var boxes = new List<IndexedBoundingBox>(output0.Dimensions[2]);
+        var boxes = new IndexedBoundingBoxParser(_metadata, _parameters).Parse(output0, originSize, xPadding, yPadding);
 
-        Parallel.For(0, output0.Dimensions[2], i =>
+        return boxes.SelectParallely(box =>
         {
-            for (int j = 0; j < metadata.Classes.Count; j++)
-            {
-                var confidence = output0[0, j + 4, i];
-
-                if (confidence <= parameters.Confidence)
-                    continue;
-
-                var x = output0[0, 0, i];
-                var y = output0[0, 1, i];
-                var w = output0[0, 2, i];
-                var h = output0[0, 3, i];
-
-                var xMin = (int)((x - w / 2 - xPadding) * magnificationRatio);
-                var yMin = (int)((y - h / 2 - yPadding) * magnificationRatio);
-                var xMax = (int)((x + w / 2 - xPadding) * magnificationRatio);
-                var yMax = (int)((y + h / 2 - yPadding) * magnificationRatio);
-
-                xMin = Math.Clamp(xMin, 0, originSize.Width);
-                yMin = Math.Clamp(yMin, 0, originSize.Height);
-                xMax = Math.Clamp(xMax, 0, originSize.Width);
-                yMax = Math.Clamp(yMax, 0, originSize.Height);
-
-                var bounds = Rectangle.FromLTRB(xMin, yMin, xMax, yMax);
-                var name = metadata.Classes[j];
-
-                var box = new IndexedBoundingBox(i, name, bounds, confidence);
-                boxes.Add(box);
-            }
-        });
-
-        var selected = boxes.NonMaxSuppression(x => x.Bounds,
-                                               x => x.Confidence,
-                                               _parameters.IoU);
-
-        var result = new SegmentationBoundingBox[selected.Count];
-
-        Parallel.For(0, selected.Count, index =>
-        {
-            var box = selected[index];
-
             var maskWeights = GetMaskWeights(output0, box.Index, maskChannelCount, metadata.Classes.Count + 4);
 
             var mask = ProcessMask(output1, maskWeights, box.Bounds, originSize, metadata.ImageSize, xPadding, yPadding);
 
-            var value = new SegmentationBoundingBox(box.Name, box.Bounds, box.Confidence, mask);
+            var value = new SegmentationBoundingBox(box.Class, box.Bounds, box.Confidence, mask);
 
-            result[index] = value;
+            return value;
         });
-
-        return result;
     }
 
     private static IMask ProcessMask(Tensor<float> maskPrototypes, ReadOnlySpan<float> maskWeights, Rectangle bounds, Size originSize, Size modelSize, int xPadding, int yPadding)
@@ -151,7 +104,7 @@ internal readonly struct SegmentationOutputParser
         return new Mask(final);
     }
 
-    private static ReadOnlySpan<float> GetMaskWeights(Tensor<float> output, int boxIndex, int maskChannelCount, int maskWeightsOffset) 
+    private static ReadOnlySpan<float> GetMaskWeights(Tensor<float> output, int boxIndex, int maskChannelCount, int maskWeightsOffset)
     {
         var maskWeights = new float[maskChannelCount];
 
