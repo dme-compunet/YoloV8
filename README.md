@@ -15,10 +15,8 @@ from ultralytics import YOLO
 model = YOLO('path/to/model')
 
 # export the model to ONNX format
-model.export(format='onnx', opset=15)
+model.export(format='onnx')
 ```
-
-#### Note: Pay attention to specify `opset=15` because the ONNX Runtime currently only supports up to Opset 15.
 
 ## Use in C# with ONNX Runtime
 
