@@ -19,6 +19,6 @@ public readonly struct SpeedResult
 
     public override string ToString()
     {
-        return $"Preprocess: {Preprocess.TotalSeconds}, Inference: {Inference.TotalSeconds}, Postprocess: {Postprocess.TotalSeconds}";
+        return $"Preprocess: {Preprocess.TotalSeconds},\tInference: {Inference.TotalSeconds},\tPostprocess: {Postprocess.TotalSeconds}";
     }
 }
