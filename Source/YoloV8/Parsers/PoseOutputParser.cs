@@ -23,71 +23,38 @@ internal readonly struct PoseOutputParser
 
         var reductionRatio = Math.Min(metadata.ImageSize.Width / (float)originSize.Width, metadata.ImageSize.Height / (float)originSize.Height);
 
-        var xPadding = (metadata.ImageSize.Width - originSize.Width * reductionRatio) / 2;
-        var yPadding = (metadata.ImageSize.Height - originSize.Height * reductionRatio) / 2;
+        var xPadding = (int)((metadata.ImageSize.Width - originSize.Width * reductionRatio) / 2);
+        var yPadding = (int)((metadata.ImageSize.Height - originSize.Height * reductionRatio) / 2);
 
-        var magnificationRatio = Math.Max((float)originSize.Width / metadata.ImageSize.Width, (float)originSize.Height / metadata.ImageSize.Height);
+        var magnificationRatio = Math.Max((float)originSize.Width / metadata.ImageSize.Width,
+                                          (float)originSize.Height / metadata.ImageSize.Height);
 
-        var boxes = new List<PoseBoundingBox>(output.Dimensions[2]);
+        var boxes = new IndexedBoundingBoxParser(_metadata, _parameters).Parse(output, originSize, xPadding, yPadding);
 
         var shape = metadata.KeypointShape;
 
-        Parallel.For(0, output.Dimensions[2], i =>
+        return boxes.SelectParallely(box =>
         {
-            for (int j = 0; j < metadata.Classes.Count; j++)
+            var keypoints = new Keypoint[shape.Count];
+
+            for (int i = 0; i < shape.Count; i++)
             {
-                var confidence = output[0, j + 4, i];
+                var offset = i * shape.Channels + 4 + metadata.Classes.Count;
 
-                if (confidence < parameters.Confidence)
-                    continue;
+                var pointX = (int)((output[0, offset + 0, box.Index] - xPadding) * magnificationRatio);
+                var pointY = (int)((output[0, offset + 1, box.Index] - yPadding) * magnificationRatio);
 
-                var x = output[0, 0, i];
-                var y = output[0, 1, i];
-                var w = output[0, 2, i];
-                var h = output[0, 3, i];
-
-                var xMin = (int)((x - w / 2 - xPadding) * magnificationRatio);
-                var yMin = (int)((y - h / 2 - yPadding) * magnificationRatio);
-                var xMax = (int)((x + w / 2 - xPadding) * magnificationRatio);
-                var yMax = (int)((y + h / 2 - yPadding) * magnificationRatio);
-
-                xMin = Math.Clamp(xMin, 0, originSize.Width);
-                yMin = Math.Clamp(yMin, 0, originSize.Height);
-                xMax = Math.Clamp(xMax, 0, originSize.Width);
-                yMax = Math.Clamp(yMax, 0, originSize.Height);
-
-                var bounds = Rectangle.FromLTRB(xMin, yMin, xMax, yMax);
-                var name = metadata.Classes[j];
-
-                var keypoints = new List<Keypoint>();
-
-                for (int k = 0; k < shape.Count; k++)
+                var pointConfidence = metadata.KeypointShape.Channels switch
                 {
-                    var offset = k * shape.Channels + 4 + metadata.Classes.Count;
+                    2 => 1F,
+                    3 => output[0, offset + 2, box.Index],
+                    _ => throw new NotSupportedException("Unexpected keypoint shape")
+                };
 
-                    var pointX = (int)((output[0, offset + 0, i] - xPadding) * magnificationRatio);
-                    var pointY = (int)((output[0, offset + 1, i] - yPadding) * magnificationRatio);
-
-                    var pointConfidence = metadata.KeypointShape.Channels switch
-                    {
-                        2 => 1F,
-                        3 => output[0, offset + 2, i],
-                        _ => throw new NotSupportedException("Unexpected keypoint shape")
-                    };
-
-                    var keypoint = new Keypoint(k, pointX, pointY, pointConfidence);
-                    keypoints.Add(keypoint);
-                }
-
-                var box = new PoseBoundingBox(name, bounds, confidence, keypoints);
-                boxes.Add(box);
+                keypoints[i] = new Keypoint(i, pointX, pointY, pointConfidence);
             }
+
+            return new PoseBoundingBox(box.Class, box.Bounds, box.Confidence, keypoints);
         });
-
-        var selected = boxes.NonMaxSuppression(x => x.Bounds,
-                                               x => x.Confidence,
-                                               parameters.IoU);
-
-        return selected;
     }
 }
