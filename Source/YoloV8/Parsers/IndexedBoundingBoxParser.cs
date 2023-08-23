@@ -33,7 +33,7 @@ internal readonly struct IndexedBoundingBoxParser
         var magnificationRatio = Math.Max((float)originSize.Width / metadata.ImageSize.Width,
                                           (float)originSize.Height / metadata.ImageSize.Height);
 
-        var boxes = new List<IndexedBoundingBox>(output.Dimensions[2]);
+        var boxes = new IndexedBoundingBox[output.Dimensions[2]];
 
         Parallel.For(0, output.Dimensions[2], i =>
         {
@@ -62,12 +62,12 @@ internal readonly struct IndexedBoundingBoxParser
                 var bounds = Rectangle.FromLTRB(xMin, yMin, xMax, yMax);
                 var name = metadata.Classes[j];
 
-                var box = new IndexedBoundingBox(i, name, bounds, confidence);
-                boxes.Add(box);
+                boxes[i] = new IndexedBoundingBox(i, name, bounds, confidence);
             }
         });
 
-        var selected = boxes.NonMaxSuppression(x => x.Bounds,
+        var selected = boxes.Where(x => x.IsEmpty == false)
+                            .NonMaxSuppression(x => x.Bounds,
                                                x => x.Confidence,
                                                _parameters.IoU);
 

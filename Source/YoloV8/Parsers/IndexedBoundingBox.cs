@@ -4,6 +4,8 @@ namespace Compunet.YoloV8.Parsers;
 
 internal readonly struct IndexedBoundingBox
 {
+    internal bool IsEmpty => Bounds.IsEmpty;
+
     public int Index { get; }
 
     public YoloV8Class Class { get; }
