@@ -17,4 +17,8 @@ internal class Mask : IMask
 
         _xy = xy;
     }
+    public float GetConfidence(int x, int y)
+    {
+        return _xy[x, y];
+    }
 }
