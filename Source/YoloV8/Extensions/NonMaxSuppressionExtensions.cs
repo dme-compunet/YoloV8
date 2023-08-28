@@ -11,7 +11,9 @@ public static class NonMaxSuppressionExtensions
         var count = sorted.Length;
 
         var activeCount = count;
-        var isActiveBoxes = Enumerable.Repeat(true, count).ToArray();
+        var isActiveBoxes = new bool[count];
+
+        Array.Fill(isActiveBoxes, true);
 
         var selected = new List<T>();
 
