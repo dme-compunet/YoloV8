@@ -114,6 +114,5 @@ public static class ImageSharpContoursExtensions
                || pixel.Y > image.Height - 1
                || pixel.Y < 0
                || image[pixel.X, pixel.Y].PackedValue == 0;
-
     }
 }
