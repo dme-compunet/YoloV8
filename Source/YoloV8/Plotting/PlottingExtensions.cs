@@ -210,6 +210,8 @@ public static class PlottingExtensions
 
     #region Classification
 
+    public static Image PlotImage(this IClassificationResult result, Image originImage) => PlotImage(result, originImage, ClassificationPlottingOptions.Default);
+
     public static Image PlotImage(this IClassificationResult result, Image originImage, ClassificationPlottingOptions options)
     {
         var process = originImage.CloneAs<Rgba32>();
