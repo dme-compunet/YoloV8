@@ -7,4 +7,6 @@ public interface IMask
     public int Width { get; }
 
     public int Height { get; }
+
+    public float GetConfidence(int x, int y);
 }
