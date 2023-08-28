@@ -11,7 +11,9 @@ public static class NonMaxSuppressionExtensions
         var count = sorted.Length;
 
         var activeCount = count;
-        var isActiveBoxes = CreateArray(count, true);
+        var isActiveBoxes = new bool[count];
+
+        Array.Fill(isActiveBoxes, true);
 
         var selected = new List<T>();
 
@@ -69,15 +71,5 @@ public static class NonMaxSuppressionExtensions
     private static int Area(Rectangle rectangle)
     {
         return rectangle.Width * rectangle.Height;
-    }
-
-    private static T[] CreateArray<T>(int length, T value)
-    {
-        var array = new T[length];
-
-        for (int i = 0; i < length; i++)
-            array[i] = value;
-
-        return array;
     }
 }
