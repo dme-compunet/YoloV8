@@ -10,6 +10,12 @@ if (Directory.Exists(output) == false)
 PoseDemo("./assets/input/demo.jpg", "./assets/models/yolov8s-pose.onnx");
 DetectDemo("./assets/input/bus.jpg", "./assets/models/yolov8s.onnx");
 SegmentDemo("./assets/input/demo.jpg", "./assets/models/yolov8s-seg.onnx");
+ClassifyDemo(new string[]
+{
+    "./assets/input/pizza.jpg",
+    "./assets/input/teddy.jpg",
+    "./assets/input/toaster.jpg",
+}, "./assets/models/yolov8s-cls.onnx");
 
 void PoseDemo(string image, string model)
 {
@@ -99,4 +105,38 @@ void SegmentDemo(string image, string model)
     var pathToSave = Path.Combine(output, filename + extension);
 
     ploted.Save(pathToSave);
+}
+
+void ClassifyDemo(string[] images, string model)
+{
+    Console.WriteLine();
+    Console.WriteLine("================ POSE DEMO ================");
+    Console.WriteLine();
+
+    Console.WriteLine("Loading model...");
+    using var predictor = new YoloV8(model);
+
+    foreach (var image in images)
+    {
+        Console.WriteLine("Working... ({0})", image);
+        var result = predictor.Classify(image);
+
+        Console.WriteLine();
+
+        Console.WriteLine($"Result: {result}");
+        Console.WriteLine($"Speed: {result.Speed}");
+
+        Console.WriteLine();
+
+        Console.WriteLine("Plotting and saving...");
+        using var origin = Image.Load(image);
+
+        using var ploted = result.PlotImage(origin);
+
+        var pathToSave = Path.Combine(output, Path.GetFileName(image));
+
+        ploted.Save(pathToSave);
+
+        Console.WriteLine();
+    }
 }
