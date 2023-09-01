@@ -3,13 +3,27 @@ namespace YoloV8.Tests;
 public class YoloV8Tests
 {
     [Theory]
+    [InlineData("bus.jpg", 4)]
+    [InlineData("demo.jpg", 3)]
+    public void PoseTest(string image, int count)
+    {
+        var predictor = Predictors.GetPredictor(YoloV8Task.Pose);
+
+        image = GetImagePath(image);
+
+        var result = predictor.Pose(image);
+
+        Assert.Equal(count, result.Boxes.Count);
+    }
+
+    [Theory]
     [InlineData("bus.jpg", "person:4;bus:1")]
     [InlineData("demo.jpg", "person:2;sports ball:1;baseball bat:1;baseball glove:1")]
     public void DetectionTest(string image, string objects)
     {
         var predictor = Predictors.GetPredictor(YoloV8Task.Detect);
 
-        image = Path.Combine("./assets/input", image);
+        image = GetImagePath(image);
 
         var result = predictor.Detect(image);
 
@@ -25,11 +39,11 @@ public class YoloV8Tests
             list.Add((name, count));
         }
 
-        Assert.Equal(result.Boxes.Count, list.Sum(x => x.count));
+        Assert.Equal(list.Sum(x => x.count), result.Boxes.Count);
 
         foreach (var (name, count) in list)
         {
-            Assert.Equal(result.Boxes.Where(x => x.Class.Name == name).Count(), count);
+            Assert.Equal(count, result.Boxes.Where(x => x.Class.Name == name).Count());
         }
     }
 
@@ -41,7 +55,7 @@ public class YoloV8Tests
     {
         var predictor = Predictors.GetPredictor(YoloV8Task.Classify);
 
-        image = Path.Combine("./assets/input", image);
+        image = GetImagePath(image);
 
         var result = predictor.Classify(image);
 
@@ -49,14 +63,28 @@ public class YoloV8Tests
     }
 
     [Theory]
-    [InlineData(YoloV8Task.Pose)]
-    [InlineData(YoloV8Task.Detect)]
-    [InlineData(YoloV8Task.Segment)]
-    [InlineData(YoloV8Task.Classify)]
-    public void PredictorTaskTest(YoloV8Task task)
+    [InlineData(YoloV8Task.Pose, 1, 640)]
+    [InlineData(YoloV8Task.Detect, 80, 640)]
+    [InlineData(YoloV8Task.Segment, 80, 640)]
+    [InlineData(YoloV8Task.Classify, 1000, 224)]
+    public void MetadataTest(YoloV8Task task, int classesCount, int imageSize)
     {
-        var predictor = Predictors.GetPredictor(task);
+        var metadata = Predictors.GetPredictor(task).Metadata;
 
-        Assert.Equal(predictor.Metadata.Task, task);
+        Assert.Equal("Ultralytics", metadata.Author);
+        Assert.Contains("Ultralytics YOLOv8", metadata.Description);
+        Assert.StartsWith("8.0", metadata.Version);
+
+        Assert.Equal(task, metadata.Task);
+
+        Assert.Equal(imageSize, metadata.ImageSize.Width);
+        Assert.Equal(imageSize, metadata.ImageSize.Height);
+
+        Assert.Equal(classesCount, metadata.Classes.Count);
+    }
+
+    private static string GetImagePath(string image)
+    {
+        return Path.Combine("./assets/input", image);
     }
 }
