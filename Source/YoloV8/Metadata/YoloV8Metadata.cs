@@ -10,9 +10,9 @@ public class YoloV8Metadata
 
         var task = metadata["task"] switch
         {
+            "pose" => YoloV8Task.Pose,
             "detect" => YoloV8Task.Detect,
             "segment" => YoloV8Task.Segment,
-            "pose" => YoloV8Task.Pose,
             "classify" => YoloV8Task.Classify,
             _ => throw new ArgumentException("Unknow YoloV8 'task' value")
         };
