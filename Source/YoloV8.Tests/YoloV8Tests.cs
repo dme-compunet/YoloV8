@@ -47,4 +47,16 @@ public class YoloV8Tests
 
         Assert.Equal(result.Class.Name, label);
     }
+
+    [Theory]
+    [InlineData(YoloV8Task.Pose)]
+    [InlineData(YoloV8Task.Detect)]
+    [InlineData(YoloV8Task.Segment)]
+    [InlineData(YoloV8Task.Classify)]
+    public void PredictorTaskTest(YoloV8Task task)
+    {
+        var predictor = Predictors.GetPredictor(task);
+
+        Assert.Equal(predictor.Metadata.Task, task);
+    }
 }
