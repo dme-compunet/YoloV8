@@ -1,6 +1,4 @@
-﻿using Compunet.YoloV8.Metadata;
-
-namespace Compunet.YoloV8.Parsers;
+﻿namespace Compunet.YoloV8.Parsers;
 
 internal readonly struct IndexedBoundingBox
 {

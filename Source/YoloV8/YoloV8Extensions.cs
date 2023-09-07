@@ -1,8 +1,4 @@
-﻿using Compunet.YoloV8.Data;
-using Compunet.YoloV8.Metadata;
-using Compunet.YoloV8.Parsers;
-
-namespace Compunet.YoloV8;
+﻿namespace Compunet.YoloV8;
 
 public static class YoloV8Extensions
 {

@@ -1,8 +1,4 @@
-﻿using Compunet.YoloV8.Extensions;
-using Compunet.YoloV8.Metadata;
-using Microsoft.ML.OnnxRuntime.Tensors;
-
-namespace Compunet.YoloV8.Parsers;
+﻿namespace Compunet.YoloV8.Parsers;
 
 internal readonly struct IndexedBoundingBoxParser
 {

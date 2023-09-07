@@ -1,6 +1,4 @@
-﻿using Compunet.YoloV8.Timing;
-
-namespace Compunet.YoloV8.Data;
+﻿namespace Compunet.YoloV8.Data;
 
 public interface IYoloV8Result
 {
