@@ -1,6 +1,4 @@
-﻿using Compunet.YoloV8.Data;
-
-namespace Compunet.YoloV8.Extensions;
+﻿namespace Compunet.YoloV8.Extensions;
 
 public static class BoundingBoxesExtensions
 {

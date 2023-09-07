@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace Compunet.YoloV8.Timing;
+﻿namespace Compunet.YoloV8.Timing;
 
 public class SpeedTimer
 {
