@@ -1,6 +1,4 @@
-﻿using Compunet.YoloV8.Metadata;
-
-namespace Compunet.YoloV8.Data;
+﻿namespace Compunet.YoloV8.Data;
 
 internal class SegmentationBoundingBox : BoundingBox, ISegmentationBoundingBox
 {

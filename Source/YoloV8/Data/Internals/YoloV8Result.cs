@@ -1,6 +1,4 @@
-﻿using Compunet.YoloV8.Timing;
-
-namespace Compunet.YoloV8.Data;
+﻿namespace Compunet.YoloV8.Data;
 
 internal abstract class YoloV8Result : IYoloV8Result
 {
