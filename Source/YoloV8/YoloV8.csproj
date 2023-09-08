@@ -7,16 +7,17 @@
 		<RootNamespace>Compunet.YoloV8</RootNamespace>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+	<PropertyGroup Condition="'$(Configuration)' == 'Release' OR '$(Configuration)' == 'ReleaseGPU'">
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<Title>YoloV8</Title>
+		<PackageId Condition="'$(Configuration)' == 'Release'">YoloV8</PackageId>
+		<PackageId Condition="'$(Configuration)' == 'ReleaseGPU'">YoloV8.Gpu</PackageId>
 		<Description>Use YOLOv8 in real-time, for object detection, instance segmentation, pose estimation and image classification, via ONNX Runtime</Description>
 		<RepositoryUrl>https://github.com/dme-compunet/YOLOv8</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageTags>image-classification;object-detection;pose-estimation;instance-segmentation;onnx;imagesharp;onnx-runtime;ultralytics;yolov8</PackageTags>
 		<PackageIcon>Icon.png</PackageIcon>
 		<Authors>Compunet</Authors>
-		<Version>1.3.0</Version>
+		<Version>1.4.0</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -27,7 +28,8 @@
 	<ItemGroup>
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.0.2" />
 		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0" />
-		<PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.15.1" />
+		<PackageReference Condition="'$(Configuration)' == 'Release'" Include="Microsoft.ML.OnnxRuntime" Version="1.15.1" />
+		<PackageReference Condition="'$(Configuration)' == 'ReleaseGPU'" Include="Microsoft.ML.OnnxRuntime.Gpu" Version="1.15.1" />
 	</ItemGroup>
 
 </Project>
