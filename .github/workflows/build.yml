@@ -26,4 +26,4 @@ jobs:
         run: dotnet build -c Release Source/YoloV8.Demo/YoloV8.Demo.csproj
 
       - name: Run Tests
-        run: dotnet test Source/YoloV8.Tests/YoloV8.Tests.csproj
+        run: dotnet test -c Release Source/YoloV8.Tests/YoloV8.Tests.csproj
