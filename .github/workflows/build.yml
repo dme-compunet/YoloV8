@@ -20,10 +20,10 @@ jobs:
           dotnet-version: 7.0.x
 
       - name: Build YoloV8
-        run: dotnet build Source/YoloV8/YoloV8.csproj
+        run: dotnet build -C Release Source/YoloV8/YoloV8.csproj
 
       - name: Build YoloV8.Demo
-        run: dotnet build Source/YoloV8.Demo/YoloV8.Demo.csproj
+        run: dotnet build -C Release Source/YoloV8.Demo/YoloV8.Demo.csproj
 
       - name: Run Tests
         run: dotnet test Source/YoloV8.Tests/YoloV8.Tests.csproj
