@@ -9,7 +9,7 @@
 
 	<PropertyGroup Condition="'$(Configuration)' == 'Release' OR '$(Configuration)' == 'ReleaseGPU'">
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<PackageId Condition="'$(Configuration)' == 'Release'">YoloV8</PackageId>
+		<PackageId Condition="'$(Configuration)' != 'ReleaseGPU'">YoloV8</PackageId>
 		<PackageId Condition="'$(Configuration)' == 'ReleaseGPU'">YoloV8.Gpu</PackageId>
 		<Description>Use YOLOv8 in real-time, for object detection, instance segmentation, pose estimation and image classification, via ONNX Runtime</Description>
 		<RepositoryUrl>https://github.com/dme-compunet/YOLOv8</RepositoryUrl>
@@ -28,7 +28,7 @@
 	<ItemGroup>
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.0.2" />
 		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0" />
-		<PackageReference Condition="'$(Configuration)' == 'Release'" Include="Microsoft.ML.OnnxRuntime" Version="1.15.1" />
+		<PackageReference Condition="'$(Configuration)' != 'ReleaseGPU'" Include="Microsoft.ML.OnnxRuntime" Version="1.15.1" />
 		<PackageReference Condition="'$(Configuration)' == 'ReleaseGPU'" Include="Microsoft.ML.OnnxRuntime.Gpu" Version="1.15.1" />
 	</ItemGroup>
 
