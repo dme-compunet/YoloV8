@@ -13,10 +13,22 @@ internal readonly struct IndexedBoundingBoxParser
 
     public IReadOnlyList<IndexedBoundingBox> Parse(Tensor<float> output, Size originSize)
     {
-        var reductionRatio = Math.Min(_metadata.ImageSize.Width / (float)originSize.Width, _metadata.ImageSize.Height / (float)originSize.Height);
+        int xPadding;
+        int yPadding;
 
-        var xPadding = (int)((_metadata.ImageSize.Width - originSize.Width * reductionRatio) / 2);
-        var yPadding = (int)((_metadata.ImageSize.Height - originSize.Height * reductionRatio) / 2);
+        if (_parameters.ProcessWithOriginalAspectRatio)
+        {
+            var reductionRatio = Math.Min(_metadata.ImageSize.Width / (float)originSize.Width,
+                                          _metadata.ImageSize.Height / (float)originSize.Height);
+
+            xPadding = (int)((_metadata.ImageSize.Width - originSize.Width * reductionRatio) / 2);
+            yPadding = (int)((_metadata.ImageSize.Height - originSize.Height * reductionRatio) / 2);
+        }
+        else
+        {
+            xPadding = 0;
+            yPadding = 0;
+        }
 
         return Parse(output, originSize, xPadding, yPadding);
     }
@@ -24,10 +36,25 @@ internal readonly struct IndexedBoundingBoxParser
     public IReadOnlyList<IndexedBoundingBox> Parse(Tensor<float> output, Size originSize, int xPadding, int yPadding)
     {
         var metadata = _metadata;
-        var parameters = _parameters;
 
-        var magnificationRatio = Math.Max((float)originSize.Width / metadata.ImageSize.Width,
-                                          (float)originSize.Height / metadata.ImageSize.Height);
+        var xRatio = (float)originSize.Width / metadata.ImageSize.Width;
+        var yRatio = (float)originSize.Height / metadata.ImageSize.Height;
+
+        if (_parameters.ProcessWithOriginalAspectRatio)
+        {
+            var maxRatio = Math.Max(xRatio, yRatio);
+
+            xRatio = maxRatio;
+            yRatio = maxRatio;
+        }
+
+        return Parse(output, originSize, xPadding, yPadding, xRatio, yRatio);
+    }
+
+    public IReadOnlyList<IndexedBoundingBox> Parse(Tensor<float> output, Size originSize, int xPadding, int yPadding, float xRatio, float yRatio)
+    {
+        var metadata = _metadata;
+        var parameters = _parameters;
 
         var boxes = new IndexedBoundingBox[output.Dimensions[2]];
 
@@ -45,10 +72,10 @@ internal readonly struct IndexedBoundingBoxParser
                 var w = output[0, 2, i];
                 var h = output[0, 3, i];
 
-                var xMin = (int)((x - w / 2 - xPadding) * magnificationRatio);
-                var yMin = (int)((y - h / 2 - yPadding) * magnificationRatio);
-                var xMax = (int)((x + w / 2 - xPadding) * magnificationRatio);
-                var yMax = (int)((y + h / 2 - yPadding) * magnificationRatio);
+                var xMin = (int)((x - w / 2 - xPadding) * xRatio);
+                var yMin = (int)((y - h / 2 - yPadding) * yRatio);
+                var xMax = (int)((x + w / 2 - xPadding) * xRatio);
+                var yMax = (int)((y + h / 2 - yPadding) * yRatio);
 
                 xMin = Math.Clamp(xMin, 0, originSize.Width);
                 yMin = Math.Clamp(yMin, 0, originSize.Height);
