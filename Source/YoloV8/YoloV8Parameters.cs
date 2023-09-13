@@ -2,16 +2,15 @@
 
 public class YoloV8Parameters
 {
-    public static readonly YoloV8Parameters Default = new(confidence: .3f,
-                                                          iou: .45f);
+    public static readonly YoloV8Parameters Default = new();
 
     public float Confidence { get; set; }
 
     public float IoU { get; set; }
 
-    public YoloV8Parameters(float confidence, float iou)
+    public YoloV8Parameters()
     {
-        Confidence = confidence;
-        IoU = iou;
+        Confidence = .3f;
+        IoU = .45f;
     }
 }
