@@ -100,6 +100,8 @@ public class YoloV8 : IDisposable
         var dimensions = new int[] { 1, 3, modelSize.Height, modelSize.Width };
         var input = new DenseTensor<float>(dimensions);
 
+        input.Fill(1f);
+
         image.ForEachPixel((point, pixel) =>
         {
             var x = point.X + xPadding;
