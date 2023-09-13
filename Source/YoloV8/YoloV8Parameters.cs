@@ -8,9 +8,12 @@ public class YoloV8Parameters
 
     public float IoU { get; set; }
 
+    public bool ProcessWithOriginalAspectRatio { get; set; }
+
     public YoloV8Parameters()
     {
         Confidence = .3f;
         IoU = .45f;
+        ProcessWithOriginalAspectRatio = false;
     }
 }
