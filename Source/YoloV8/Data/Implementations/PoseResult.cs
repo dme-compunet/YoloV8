@@ -1,6 +1,6 @@
 ﻿namespace Compunet.YoloV8.Data;
 
-internal class PoseResult : YoloV8Result, IPoseResult
+public class PoseResult : YoloV8Result, IPoseResult
 {
     public IReadOnlyList<IPoseBoundingBox> Boxes { get; }
 

@@ -1,6 +1,6 @@
 ﻿namespace Compunet.YoloV8.Data;
 
-internal class PoseBoundingBox : BoundingBox, IPoseBoundingBox
+public class PoseBoundingBox : BoundingBox, IPoseBoundingBox
 {
     public IReadOnlyList<IKeypoint> Keypoints { get; }
 

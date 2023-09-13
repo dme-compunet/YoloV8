@@ -1,6 +1,6 @@
 ﻿namespace Compunet.YoloV8.Data;
 
-internal abstract class YoloV8Result : IYoloV8Result
+public abstract class YoloV8Result : IYoloV8Result
 {
     public Size Image { get; }
 

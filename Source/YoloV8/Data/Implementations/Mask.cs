@@ -1,6 +1,6 @@
 ﻿namespace Compunet.YoloV8.Data;
 
-internal class Mask : IMask
+public class Mask : IMask
 {
     private readonly float[,] _xy;
 

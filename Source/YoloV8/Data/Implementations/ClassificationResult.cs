@@ -1,6 +1,6 @@
 ﻿namespace Compunet.YoloV8.Data;
 
-internal class ClassificationResult : YoloV8Result, IClassificationResult
+public class ClassificationResult : YoloV8Result, IClassificationResult
 {
     public YoloV8Class Class { get; }
 

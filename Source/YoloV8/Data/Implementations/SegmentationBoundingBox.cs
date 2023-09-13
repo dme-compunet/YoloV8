@@ -1,6 +1,6 @@
 ﻿namespace Compunet.YoloV8.Data;
 
-internal class SegmentationBoundingBox : BoundingBox, ISegmentationBoundingBox
+public class SegmentationBoundingBox : BoundingBox, ISegmentationBoundingBox
 {
     public IMask Mask { get; }
 

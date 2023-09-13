@@ -1,6 +1,6 @@
 ﻿namespace Compunet.YoloV8.Data;
 
-internal class DetectionResult : YoloV8Result, IDetectionResult
+public class DetectionResult : YoloV8Result, IDetectionResult
 {
     public IReadOnlyList<IBoundingBox> Boxes { get; }
 

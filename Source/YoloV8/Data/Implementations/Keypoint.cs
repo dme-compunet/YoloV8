@@ -1,6 +1,6 @@
 ﻿namespace Compunet.YoloV8.Data;
 
-internal class Keypoint : IKeypoint
+public class Keypoint : IKeypoint
 {
     public int Index { get; }
 

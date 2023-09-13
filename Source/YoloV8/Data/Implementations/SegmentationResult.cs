@@ -1,6 +1,6 @@
 ﻿namespace Compunet.YoloV8.Data;
 
-internal class SegmentationResult : YoloV8Result, ISegmentationResult
+public class SegmentationResult : YoloV8Result, ISegmentationResult
 {
     public IReadOnlyList<ISegmentationBoundingBox> Boxes { get; }
 
