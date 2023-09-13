@@ -45,7 +45,13 @@ internal readonly struct SegmentationOutputParser
         });
     }
 
-    private static IMask ProcessMask(Tensor<float> maskPrototypes, ReadOnlySpan<float> maskWeights, Rectangle bounds, Size originSize, Size modelSize, int xPadding, int yPadding)
+    private static IMask ProcessMask(Tensor<float> maskPrototypes,
+                                     ReadOnlySpan<float> maskWeights,
+                                     Rectangle bounds,
+                                     Size originSize,
+                                     Size modelSize,
+                                     int xPadding,
+                                     int yPadding)
     {
         var maskChannels = maskPrototypes.Dimensions[1];
         var maskHeight = maskPrototypes.Dimensions[2];
