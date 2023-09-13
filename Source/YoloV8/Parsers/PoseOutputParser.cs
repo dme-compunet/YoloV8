@@ -14,17 +14,27 @@ internal readonly struct PoseOutputParser
     public IReadOnlyList<IPoseBoundingBox> Parse(Tensor<float> output, Size originSize)
     {
         var metadata = (YoloV8PoseMetadata)_metadata;
-        var parameters = _parameters;
 
-        var reductionRatio = Math.Min(metadata.ImageSize.Width / (float)originSize.Width, metadata.ImageSize.Height / (float)originSize.Height);
+        var xPadding = 0;
+        var yPadding = 0;
 
-        var xPadding = (int)((metadata.ImageSize.Width - originSize.Width * reductionRatio) / 2);
-        var yPadding = (int)((metadata.ImageSize.Height - originSize.Height * reductionRatio) / 2);
+        var xRatio = (float)originSize.Width / metadata.ImageSize.Width;
+        var yRatio = (float)originSize.Height / metadata.ImageSize.Height;
 
-        var magnificationRatio = Math.Max((float)originSize.Width / metadata.ImageSize.Width,
-                                          (float)originSize.Height / metadata.ImageSize.Height);
+        if (_parameters.ProcessWithOriginalAspectRatio)
+        {
+            var reductionRatio = Math.Min(metadata.ImageSize.Width / (float)originSize.Width, metadata.ImageSize.Height / (float)originSize.Height);
 
-        var boxes = new IndexedBoundingBoxParser(_metadata, _parameters).Parse(output, originSize, xPadding, yPadding);
+            xPadding = (int)((metadata.ImageSize.Width - originSize.Width * reductionRatio) / 2);
+            yPadding = (int)((metadata.ImageSize.Height - originSize.Height * reductionRatio) / 2);
+
+            var maxRatio = Math.Max(xRatio, yRatio);
+
+            xRatio = maxRatio;
+            yRatio = maxRatio;
+        }
+
+        var boxes = new IndexedBoundingBoxParser(_metadata, _parameters).Parse(output, originSize, xPadding, yPadding, xRatio, yRatio);
 
         var shape = metadata.KeypointShape;
 
@@ -36,8 +46,8 @@ internal readonly struct PoseOutputParser
             {
                 var offset = i * shape.Channels + 4 + metadata.Classes.Count;
 
-                var pointX = (int)((output[0, offset + 0, box.Index] - xPadding) * magnificationRatio);
-                var pointY = (int)((output[0, offset + 1, box.Index] - yPadding) * magnificationRatio);
+                var pointX = (int)((output[0, offset + 0, box.Index] - xPadding) * xRatio);
+                var pointY = (int)((output[0, offset + 1, box.Index] - yPadding) * yRatio);
 
                 var pointConfidence = metadata.KeypointShape.Channels switch
                 {

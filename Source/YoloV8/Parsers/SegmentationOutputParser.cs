@@ -15,10 +15,16 @@ internal readonly struct SegmentationOutputParser
     {
         var metadata = _metadata;
 
-        var reductionRatio = Math.Min(metadata.ImageSize.Width / (float)originSize.Width, metadata.ImageSize.Height / (float)originSize.Height);
+        var xPadding = 0;
+        var yPadding = 0;
 
-        var xPadding = (int)((metadata.ImageSize.Width - originSize.Width * reductionRatio) / 2);
-        var yPadding = (int)((metadata.ImageSize.Height - originSize.Height * reductionRatio) / 2);
+        if (_parameters.ProcessWithOriginalAspectRatio)
+        {
+            var reductionRatio = Math.Min(metadata.ImageSize.Width / (float)originSize.Width, metadata.ImageSize.Height / (float)originSize.Height);
+
+            xPadding = (int)((metadata.ImageSize.Width - originSize.Width * reductionRatio) / 2);
+            yPadding = (int)((metadata.ImageSize.Height - originSize.Height * reductionRatio) / 2);
+        }
 
         var output0 = outputs[0];
         var output1 = outputs[1];
