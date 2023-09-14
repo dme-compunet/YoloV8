@@ -4,7 +4,7 @@ public class YoloV8Tests
 {
     [Theory]
     [InlineData("bus.jpg", 4)]
-    [InlineData("demo.jpg", 3)]
+    [InlineData("sports.jpg", 3)]
     public void PoseTest(string image, int count)
     {
         var predictor = Predictors.GetPredictor(YoloV8Task.Pose);
@@ -18,7 +18,7 @@ public class YoloV8Tests
 
     [Theory]
     [InlineData("bus.jpg", "person:4;bus:1")]
-    [InlineData("demo.jpg", "person:2;sports ball:1;baseball bat:1;baseball glove:1")]
+    [InlineData("sports.jpg", "person:2;sports ball:1;baseball bat:1;baseball glove:1")]
     public void DetectionTest(string image, string objects)
     {
         var predictor = Predictors.GetPredictor(YoloV8Task.Detect);
