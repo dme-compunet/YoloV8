@@ -7,9 +7,9 @@ var output = "./assets/output";
 if (Directory.Exists(output) == false)
     Directory.CreateDirectory(output);
 
-PoseDemo("./assets/input/demo.jpg", "./assets/models/yolov8s-pose.onnx");
+PoseDemo("./assets/input/sports.jpg", "./assets/models/yolov8s-pose.onnx");
 DetectDemo("./assets/input/bus.jpg", "./assets/models/yolov8s.onnx");
-SegmentDemo("./assets/input/demo.jpg", "./assets/models/yolov8s-seg.onnx");
+SegmentDemo("./assets/input/sports.jpg", "./assets/models/yolov8s-seg.onnx");
 ClassifyDemo(new string[]
 {
     "./assets/input/pizza.jpg",
