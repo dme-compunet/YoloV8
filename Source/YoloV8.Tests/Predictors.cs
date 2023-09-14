@@ -2,6 +2,11 @@
 
 public static class Predictors
 {
+    static Predictors()
+    {
+        YoloV8Parameters.Default.ProcessWithOriginalAspectRatio = true;
+    }
+
     public static readonly YoloV8Predictor Pose = new("./assets/models/yolov8s-pose.onnx");
     public static readonly YoloV8Predictor Detection = new("./assets/models/yolov8s.onnx");
     public static readonly YoloV8Predictor Segmentation = new("./assets/models/yolov8s-seg.onnx");
