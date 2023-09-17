@@ -4,49 +4,57 @@ Use [YOLOv8](https://github.com/ultralytics/ultralytics) in real-time, for objec
 
 # Use
 
-## Export from PyTorch
+### Export the model from PyTorch to ONNX format:
 
-Run the following Python code to export the model to ONNX format:
+Run the following python code to export the model to ONNX format:
 
 ```python
 from ultralytics import YOLO
 
 # Load a model
-model = YOLO('path/to/model')
+model = YOLO('path/to/best')
 
 # export the model to ONNX format
 model.export(format='onnx')
 ```
 
-## Use in C# with ONNX Runtime
+### Use in exported model with C#:
 
 ```csharp
+using Compunet.YoloV8;
+using SixLabors.ImageSharp;
+
 using var predictor = new YoloV8(model);
 
 var result = predictor.Detect("path/to/image");
+// or
+var result = await predictor.DetectAsync("path/to/image");
 
 Console.WriteLine(result);
 ```
 
 # Plotting
 
-You can use the following code to predict and plot a image, and save to file:
+You can plot the model prediction results for preview, use in following code to predict and plot a image and save to file:
 
 ```csharp
-var image = "path/to/image";
+using Compunet.YoloV8;
+using Compunet.YoloV8.Plotting;
+using SixLabors.ImageSharp;
+
+var imagePath = "path/to/image";
 
 using var predictor = new YoloV8("path/to/model");
 
-var result = predictor.Pose(image);
+var result = predictor.Pose(imagePath);
 
-using var origin = Image.Load<Rgb24>(image);
-using var ploted = result.PlotImage(origin);
-
+using var image = Image.Load(imagePath);
+using var ploted = result.PlotImage(image);
 
 ploted.Save("./pose_demo.jpg")
 ```
 
-## Examples:
+## Demo Images:
 
 #### Detection:
 
