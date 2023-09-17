@@ -83,6 +83,30 @@ public static class YoloV8Extensions
 
     }
 
+    #region Async Operations
+
+    public static async Task<IPoseResult> PoseAsync(this YoloV8 predictor, ImageSelector selector)
+    {
+        return await Task.Run(() => predictor.Pose(selector));
+    }
+
+    public static async Task<IDetectionResult> DetectAsync(this YoloV8 predictor, ImageSelector selector)
+    {
+        return await Task.Run(() => predictor.Detect(selector));
+    }
+
+    public static async Task<ISegmentationResult> SegmentAsync(this YoloV8 predictor, ImageSelector selector)
+    {
+        return await Task.Run(() => predictor.Segment(selector));
+    }
+
+    public static async Task<IClassificationResult> ClassifyAsync(this YoloV8 predictor, ImageSelector selector)
+    {
+        return await Task.Run(() => predictor.Classify(selector));
+    }
+
+    #endregion
+
     private static void EnsureTask(this YoloV8 predictor, YoloV8Task task)
     {
         if (predictor.Metadata.Task != task)
