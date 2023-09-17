@@ -16,9 +16,7 @@ public static class YoloV8Extensions
 
             var speed = timer.Stop();
 
-            return new PoseResult(image,
-                                  speed,
-                                  poses);
+            return new PoseResult(image, speed, poses);
         });
     }
 
@@ -36,9 +34,7 @@ public static class YoloV8Extensions
 
             var speed = timer.Stop();
 
-            return new DetectionResult(image,
-                                       speed,
-                                       boxes);
+            return new DetectionResult(image, speed, boxes);
         });
     }
 
@@ -56,9 +52,7 @@ public static class YoloV8Extensions
 
             var speed = timer.Stop();
 
-            return new SegmentationResult(image,
-                                          speed,
-                                          boxes);
+            return new SegmentationResult(image, speed, boxes);
         });
     }
 

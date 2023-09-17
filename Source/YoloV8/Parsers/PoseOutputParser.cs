@@ -15,8 +15,8 @@ internal readonly struct PoseOutputParser
     {
         var metadata = (YoloV8PoseMetadata)_metadata;
 
-        var xPadding = 0;
-        var yPadding = 0;
+        int xPadding;
+        int yPadding;
 
         var xRatio = (float)originSize.Width / metadata.ImageSize.Width;
         var yRatio = (float)originSize.Height / metadata.ImageSize.Height;
@@ -32,6 +32,11 @@ internal readonly struct PoseOutputParser
 
             xRatio = maxRatio;
             yRatio = maxRatio;
+        }
+        else
+        {
+            xPadding = 0;
+            yPadding = 0;
         }
 
         var boxes = new IndexedBoundingBoxParser(_metadata, _parameters).Parse(output, originSize, xPadding, yPadding, xRatio, yRatio);

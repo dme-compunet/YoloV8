@@ -15,8 +15,8 @@ internal readonly struct SegmentationOutputParser
     {
         var metadata = _metadata;
 
-        var xPadding = 0;
-        var yPadding = 0;
+        int xPadding;
+        int yPadding;
 
         if (_parameters.ProcessWithOriginalAspectRatio)
         {
@@ -24,6 +24,11 @@ internal readonly struct SegmentationOutputParser
 
             xPadding = (int)((metadata.ImageSize.Width - originSize.Width * reductionRatio) / 2);
             yPadding = (int)((metadata.ImageSize.Height - originSize.Height * reductionRatio) / 2);
+        }
+        else
+        {
+            xPadding = 0;
+            yPadding = 0;
         }
 
         var output0 = outputs[0];

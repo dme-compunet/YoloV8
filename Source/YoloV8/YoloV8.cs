@@ -91,7 +91,8 @@ public class YoloV8 : IDisposable
         var xPadding = 0;
         var yPadding = 0;
 
-        Size processSize;
+        int targetWidth;
+        int targetHeight;
 
         if (_parameters.ProcessWithOriginalAspectRatio)
         {
@@ -100,20 +101,19 @@ public class YoloV8 : IDisposable
 
             var ratio = Math.Min(xRatio, yRatio);
 
-            var width = (int)(image.Width * ratio);
-            var height = (int)(image.Height * ratio);
+            targetWidth = (int)(image.Width * ratio);
+            targetHeight = (int)(image.Height * ratio);
 
-            processSize = new Size(width, height);
-
-            xPadding = (modelSize.Width - processSize.Width) / 2;
-            yPadding = (modelSize.Height - processSize.Height) / 2;
+            xPadding = (modelSize.Width - targetWidth) / 2;
+            yPadding = (modelSize.Height - targetHeight) / 2;
         }
         else
         {
-            processSize = _metadata.ImageSize;
+            targetWidth = modelSize.Width;
+            targetHeight = modelSize.Height;
         }
 
-        image.Mutate(x => x.Resize(processSize));
+        image.Mutate(x => x.Resize(targetWidth, targetHeight));
 
         var dimensions = new int[] { 1, 3, modelSize.Height, modelSize.Width };
         var input = new DenseTensor<float>(dimensions);
