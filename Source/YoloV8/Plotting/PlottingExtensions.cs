@@ -139,8 +139,8 @@ public static class PlottingExtensions
 
         #region Draw Masks
 
-        using var masks = new Image<Rgba32>(size.Width, size.Height);
-        using var contours = new Image<Rgba32>(size.Width, size.Height);
+        using var masksLayer = new Image<Rgba32>(size.Width, size.Height);
+        using var contoursLayer = new Image<Rgba32>(size.Width, size.Height);
 
         for (int i = 0; i < result.Boxes.Count; i++)
         {
@@ -160,17 +160,17 @@ public static class PlottingExtensions
                 }
             }
 
-            masks.Mutate(x => x.DrawImage(mask, box.Bounds.Location, 1F));
+            masksLayer.Mutate(x => x.DrawImage(mask, box.Bounds.Location, 1F));
 
             if (options.ContoursThickness > 0F)
             {
-                using var contour = CreateContours(mask, color, options.ContoursThickness * ratio);
-                contours.Mutate(x => x.DrawImage(contour, box.Bounds.Location, 1F));
+                using var contours = CreateContours(mask, color, options.ContoursThickness * ratio);
+                contoursLayer.Mutate(x => x.DrawImage(contours, box.Bounds.Location, 1F));
             }
         }
 
-        process.Mutate(x => x.DrawImage(masks, .4F));
-        process.Mutate(x => x.DrawImage(contours, 1F));
+        process.Mutate(x => x.DrawImage(masksLayer, .4F));
+        process.Mutate(x => x.DrawImage(contoursLayer, 1F));
 
         #endregion
 
