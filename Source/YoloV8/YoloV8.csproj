@@ -11,18 +11,19 @@
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<PackageId Condition="'$(Configuration)' != 'ReleaseGPU'">YoloV8</PackageId>
 		<PackageId Condition="'$(Configuration)' == 'ReleaseGPU'">YoloV8.Gpu</PackageId>
-		<Description>Use YOLOv8 in real-time, for object detection, instance segmentation, pose estimation and image classification, via ONNX Runtime</Description>
+		<Description>Use YOLOv8 in real-time for object detection, instance segmentation, pose estimation and image classification, via ONNX Runtime</Description>
 		<RepositoryUrl>https://github.com/dme-compunet/YOLOv8</RepositoryUrl>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageTags>image-classification;object-detection;pose-estimation;instance-segmentation;onnx;imagesharp;onnx-runtime;ultralytics;yolov8</PackageTags>
+		<PackageTags>image-classification object-detection pose-estimation instance-segmentation onnx imagesharp onnx-runtime ultralytics yolov8</PackageTags>
 		<PackageIcon>Icon.png</PackageIcon>
 		<Authors>Compunet</Authors>
 		<Version>1.5.0</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Include="..\..\README.md" Pack="True" PackagePath="" />
-		<None Include="Icon.png" Pack="True" PackagePath="" />
+		<None Include="..\..\Icon.png" Pack="True" PackagePath="" Visible="False" />
+		<None Include="..\..\README.md" Pack="True" PackagePath="" Visible="False"/>
 	</ItemGroup>
 
 	<ItemGroup>
