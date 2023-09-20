@@ -23,6 +23,9 @@ jobs:
       - name: Build YoloV8.Gpu
         run: dotnet build -c ReleaseGPU Source/YoloV8/YoloV8.csproj
 
+      - name: Run Tests
+        run: dotnet test Source/YoloV8.Tests/YoloV8.Tests.csproj
+
       - name: Pack YoloV8
         run: dotnet pack -c Release -o . Source/YoloV8/YoloV8.csproj
 
