@@ -1,6 +1,20 @@
 # YOLOv8
 
-Use [YOLOv8](https://github.com/ultralytics/ultralytics) in real-time, for object detection, instance segmentation, pose estimation and image classification, via [ONNX Runtime](https://github.com/microsoft/onnxruntime)
+Use [YOLOv8](https://github.com/ultralytics/ultralytics) in real-time for object detection, instance segmentation, pose estimation and image classification, via [ONNX Runtime](https://github.com/microsoft/onnxruntime)
+
+# Install
+
+The `YoloV8` project is available in two versions of nuget packages: [YoloV8](https://www.nuget.org/packages/YoloV8) and [YoloV8.Gpu](https://www.nuget.org/packages/YoloV8.Gpu), if you use with CPU add the [YoloV8](https://www.nuget.org/packages/YoloV8) package reference to your project (contains reference to [Microsoft.ML.OnnxRuntime](https://www.nuget.org/packages/Microsoft.ML.OnnxRuntime) package)
+
+```shell
+dotnet add package YoloV8 --version 1.6.0
+```
+
+If you use with GPU you need to add the [YoloV8.Gpu](https://www.nuget.org/packages/YoloV8.Gpu) package reference (contains reference to [Microsoft.ML.OnnxRuntime.Gpu](https://www.nuget.org/packages/Microsoft.ML.OnnxRuntime.Gpu) package)
+
+```shell
+dotnet add package YoloV8.Gpu --version 1.6.0
+```
 
 # Use
 
@@ -35,7 +49,7 @@ Console.WriteLine(result);
 
 # Plotting
 
-You can plot the model prediction results for preview, use in following code to predict and plot a image and save to file:
+You can to plot the input image for preview the model prediction results, this code demonstrates how to perform a prediction with the model and then plot the prediction results on the input image and save to file:
 
 ```csharp
 using Compunet.YoloV8;
