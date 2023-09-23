@@ -7,8 +7,6 @@ var output = "./assets/output";
 if (Directory.Exists(output) == false)
     Directory.CreateDirectory(output);
 
-YoloV8Parameters.Default.ProcessWithOriginalAspectRatio = true;
-
 PoseDemo("./assets/input/sports.jpg", "./assets/models/yolov8s-pose.onnx");
 DetectDemo("./assets/input/bus.jpg", "./assets/models/yolov8s.onnx");
 SegmentDemo("./assets/input/sports.jpg", "./assets/models/yolov8s-seg.onnx");
