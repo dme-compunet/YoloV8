@@ -14,6 +14,6 @@ public class YoloV8Parameters
     {
         Confidence = .3f;
         IoU = .45f;
-        ProcessWithOriginalAspectRatio = false;
+        ProcessWithOriginalAspectRatio = true;
     }
 }
