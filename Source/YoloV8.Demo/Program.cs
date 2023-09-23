@@ -7,17 +7,20 @@ var output = "./assets/output";
 if (Directory.Exists(output) == false)
     Directory.CreateDirectory(output);
 
-PoseDemo("./assets/input/sports.jpg", "./assets/models/yolov8s-pose.onnx");
-DetectDemo("./assets/input/bus.jpg", "./assets/models/yolov8s.onnx");
-SegmentDemo("./assets/input/sports.jpg", "./assets/models/yolov8s-seg.onnx");
-ClassifyDemo(new string[]
+await PoseDemo("./assets/input/sports.jpg", "./assets/models/yolov8s-pose.onnx");
+
+await DetectDemo("./assets/input/bus.jpg", "./assets/models/yolov8s.onnx");
+
+await SegmentDemo("./assets/input/sports.jpg", "./assets/models/yolov8s-seg.onnx");
+
+await ClassifyDemo(new string[]
 {
     "./assets/input/pizza.jpg",
     "./assets/input/teddy.jpg",
     "./assets/input/toaster.jpg",
 }, "./assets/models/yolov8s-cls.onnx");
 
-void PoseDemo(string image, string model)
+async Task PoseDemo(string image, string model)
 {
     Console.WriteLine();
     Console.WriteLine("================ POSE DEMO ================");
@@ -27,7 +30,7 @@ void PoseDemo(string image, string model)
     using var predictor = new YoloV8(model);
 
     Console.WriteLine("Working...");
-    var result = predictor.Pose(image);
+    var result = await predictor.PoseAsync(image);
 
     Console.WriteLine();
 
@@ -39,14 +42,14 @@ void PoseDemo(string image, string model)
     Console.WriteLine("Plotting and saving...");
     using var origin = Image.Load(image);
 
-    using var ploted = result.PlotImage(origin);
+    using var ploted = await result.PlotImageAsync(origin);
 
     var pathToSave = Path.Combine(output, Path.GetFileName(image));
 
     ploted.Save(pathToSave);
 }
 
-void DetectDemo(string image, string model)
+async Task DetectDemo(string image, string model)
 {
     Console.WriteLine();
     Console.WriteLine("================ DETECTION DEMO ================");
@@ -56,7 +59,7 @@ void DetectDemo(string image, string model)
     using var predictor = new YoloV8(model);
 
     Console.WriteLine("Working...");
-    var result = predictor.Detect(image);
+    var result = await predictor.DetectAsync(image);
 
     Console.WriteLine();
 
@@ -68,14 +71,14 @@ void DetectDemo(string image, string model)
     Console.WriteLine("Plotting and saving...");
     using var origin = Image.Load(image);
 
-    using var ploted = result.PlotImage(origin);
+    using var ploted = await result.PlotImageAsync(origin);
 
     var pathToSave = Path.Combine(output, Path.GetFileName(image));
 
     ploted.Save(pathToSave);
 }
 
-void SegmentDemo(string image, string model)
+async Task SegmentDemo(string image, string model)
 {
     Console.WriteLine();
     Console.WriteLine("================ SEGMENTATION DEMO ================");
@@ -85,7 +88,7 @@ void SegmentDemo(string image, string model)
     using var predictor = new YoloV8(model);
 
     Console.WriteLine("Working...");
-    var result = predictor.Segment(image);
+    var result = await predictor.SegmentAsync(image);
 
     Console.WriteLine();
 
@@ -97,7 +100,7 @@ void SegmentDemo(string image, string model)
     Console.WriteLine("Plotting and saving...");
     using var origin = Image.Load(image);
 
-    using var ploted = result.PlotImage(origin, new SegmentationPlottingOptions { MaskConfidence = .65F });
+    using var ploted = await result.PlotImageAsync(origin, new SegmentationPlottingOptions { MaskConfidence = .65F });
 
     var filename = $"{Path.GetFileNameWithoutExtension(image)}_seg";
     var extension = Path.GetExtension(image);
@@ -107,7 +110,7 @@ void SegmentDemo(string image, string model)
     ploted.Save(pathToSave);
 }
 
-void ClassifyDemo(string[] images, string model)
+async Task ClassifyDemo(string[] images, string model)
 {
     Console.WriteLine();
     Console.WriteLine("================ POSE DEMO ================");
@@ -119,7 +122,7 @@ void ClassifyDemo(string[] images, string model)
     foreach (var image in images)
     {
         Console.WriteLine("Working... ({0})", image);
-        var result = predictor.Classify(image);
+        var result = await predictor.ClassifyAsync(image);
 
         Console.WriteLine();
 
@@ -131,7 +134,7 @@ void ClassifyDemo(string[] images, string model)
         Console.WriteLine("Plotting and saving...");
         using var origin = Image.Load(image);
 
-        using var ploted = result.PlotImage(origin);
+        using var ploted = await result.PlotImageAsync(origin);
 
         var pathToSave = Path.Combine(output, Path.GetFileName(image));
 
