@@ -60,10 +60,10 @@ var imagePath = "path/to/image";
 
 using var predictor = new YoloV8("path/to/model");
 
-var result = predictor.Pose(imagePath);
+var result = await predictor.PoseAsync(imagePath);
 
 using var image = Image.Load(imagePath);
-using var ploted = result.PlotImage(image);
+using var ploted = await result.PlotImageAsync(image);
 
 ploted.Save("./pose_demo.jpg")
 ```
