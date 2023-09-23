@@ -23,7 +23,7 @@
 
 	<ItemGroup>
 		<None Include="..\..\Icon.png" Pack="True" PackagePath="" Visible="False" />
-		<None Include="..\..\README.md" Pack="True" PackagePath="" Visible="False"/>
+		<None Include="..\..\README.md" Pack="True" PackagePath="" Visible="False" />
 	</ItemGroup>
 
 	<ItemGroup>
