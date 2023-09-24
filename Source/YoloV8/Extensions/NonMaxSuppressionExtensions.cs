@@ -1,13 +1,10 @@
 ﻿namespace Compunet.YoloV8.Extensions;
 
-public static class NonMaxSuppressionExtensions
+internal static class NonMaxSuppressionExtensions
 {
-    public static IReadOnlyList<T> NonMaxSuppression<T>(this IReadOnlyList<T> boxes,
-                                                        Func<T, Rectangle> boundsSelector,
-                                                        Func<T, float> confidenceSelector,
-                                                        float threshold)
+    public static IReadOnlyList<IndexedBoundingBox> NonMaxSuppression(this IReadOnlyList<IndexedBoundingBox> boxes, float threshold)
     {
-        var sorted = boxes.OrderByDescending(confidenceSelector).ToArray();
+        var sorted = boxes.OrderByDescending(x => x.Confidence).ToArray();
         var count = sorted.Length;
 
         var activeCount = count;
@@ -15,7 +12,7 @@ public static class NonMaxSuppressionExtensions
 
         Array.Fill(isActiveBoxes, true);
 
-        var selected = new List<T>();
+        var selected = new List<IndexedBoundingBox>();
 
         for (int i = 0; i < count; i++)
         {
@@ -31,7 +28,7 @@ public static class NonMaxSuppressionExtensions
                     {
                         var boxB = sorted[j];
 
-                        if (CalculateIoU(boundsSelector(boxA), boundsSelector(boxB)) > threshold)
+                        if (CalculateIoU(boxA.Bounds, boxB.Bounds) > threshold)
                         {
                             isActiveBoxes[j] = false;
                             activeCount--;
