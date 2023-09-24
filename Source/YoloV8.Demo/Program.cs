@@ -1,6 +1,8 @@
 ﻿using Compunet.YoloV8;
 using Compunet.YoloV8.Plotting;
 using SixLabors.ImageSharp;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 var output = "./assets/output";
 
@@ -19,6 +21,15 @@ await ClassifyDemo(new string[]
     "./assets/input/teddy.jpg",
     "./assets/input/toaster.jpg",
 }, "./assets/models/yolov8s-cls.onnx");
+
+if (OperatingSystem.IsWindows())
+{
+    Process.Start(new ProcessStartInfo
+    {
+        FileName = Path.GetFullPath(output),
+        UseShellExecute = true,
+    });
+}
 
 async Task PoseDemo(string image, string model)
 {
