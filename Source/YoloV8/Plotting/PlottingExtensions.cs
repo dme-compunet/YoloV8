@@ -9,9 +9,10 @@ public static class PlottingExtensions
     public static Image PlotImage(this IPoseResult result, Image originImage, PosePlottingOptions options)
     {
         var process = originImage.CloneAs<Rgba32>();
+
         process.Mutate(x => x.AutoOrient());
 
-        CheckSize(process.Size, result.Image);
+        EnsureSize(process.Size, result.Image);
 
         var size = result.Image;
 
@@ -21,7 +22,7 @@ public static class PlottingExtensions
 
         var textPadding = options.TextHorizontalPadding * ratio;
 
-        var thickness = options.BoxBorderThickness * ratio;
+        var boxBorderThickness = options.BoxBorderThickness * ratio;
 
         var radius = options.KeypointRadius * ratio;
         var lineThickness = options.KeypointLineThickness * ratio;
@@ -33,9 +34,9 @@ public static class PlottingExtensions
 
             process.Mutate(context =>
             {
-                DrawBoundingBox(context, box.Bounds, color, thickness, .1F, label, textOptions, textPadding);
+                DrawBoundingBox(context, box.Bounds, color, boxBorderThickness, .1F, label, textOptions, textPadding);
 
-                // drawing lines
+                // Draw lines
                 for (int i = 0; i < options.Skeleton.Connections.Count; i++)
                 {
                     var connection = options.Skeleton.Connections[i];
@@ -57,7 +58,7 @@ public static class PlottingExtensions
                     context.DrawLine(lineColor, lineThickness, points);
                 }
 
-                // drawing keypoints
+                // Draw keypoints
                 for (int i = 0; i < box.Keypoints.Count; i++)
                 {
                     var keypoint = box.Keypoints[i];
@@ -86,9 +87,10 @@ public static class PlottingExtensions
     public static Image PlotImage(this IDetectionResult result, Image originImage, DetectionPlottingOptions options)
     {
         var process = originImage.CloneAs<Rgba32>();
+
         process.Mutate(x => x.AutoOrient());
 
-        CheckSize(process.Size, result.Image);
+        EnsureSize(process.Size, result.Image);
 
         var size = result.Image;
 
@@ -122,10 +124,9 @@ public static class PlottingExtensions
 
     public static Image PlotImage(this ISegmentationResult result, Image originImage, SegmentationPlottingOptions options)
     {
-        var process = originImage.CloneAs<Rgba32>();
-        process.Mutate(x => x.AutoOrient());
+        var process = originImage.Clone(x => x.AutoOrient());
 
-        CheckSize(process.Size, result.Image);
+        EnsureSize(process.Size, result.Image);
 
         var size = result.Image;
 
@@ -207,10 +208,9 @@ public static class PlottingExtensions
 
     public static Image PlotImage(this IClassificationResult result, Image originImage, ClassificationPlottingOptions options)
     {
-        var process = originImage.CloneAs<Rgba32>();
-        process.Mutate(x => x.AutoOrient());
+        var process = originImage.Clone(x => x.AutoOrient());
 
-        CheckSize(process.Size, result.Image);
+        EnsureSize(process.Size, result.Image);
 
         var size = result.Image;
 
@@ -295,7 +295,7 @@ public static class PlottingExtensions
     }
 
 
-    private static void CheckSize(Size origin, Size result)
+    private static void EnsureSize(Size origin, Size result)
     {
         if (origin != result)
             throw new InvalidOperationException("Original image size must to be equals to prediction result image size");
