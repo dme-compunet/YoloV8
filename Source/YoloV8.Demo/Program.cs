@@ -124,7 +124,7 @@ async Task SegmentDemo(string image, string model)
 async Task ClassifyDemo(string[] images, string model)
 {
     Console.WriteLine();
-    Console.WriteLine("================ POSE DEMO ================");
+    Console.WriteLine("================ CLASSIFICATION DEMO ================");
     Console.WriteLine();
 
     Console.WriteLine("Loading model...");
