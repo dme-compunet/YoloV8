@@ -1,38 +1,22 @@
 ﻿namespace Compunet.YoloV8;
 
-public class ImageSelector
+public class ImageSelector : ImageSelector<Rgb24>
 {
-    private readonly Func<Image<Rgb24>> _factory;
-
     public ImageSelector(Image image)
-    {
-        _factory = () => image.CloneAs<Rgb24>();
-    }
+        : base(image)
+    { }
 
     public ImageSelector(string path)
-    {
-        _factory = () => Image.Load<Rgb24>(path);
-    }
+        : base(path)
+    { }
 
     public ImageSelector(byte[] data)
-    {
-        _factory = () => Image.Load<Rgb24>(data);
-    }
+        : base(data)
+    { }
 
     public ImageSelector(Stream stream)
-    {
-        _factory = () => Image.Load<Rgb24>(stream);
-    }
-
-    internal Image<Rgb24> Load(bool autoOrient)
-    {
-        var image = _factory();
-
-        if (autoOrient)
-            image.Mutate(x => x.AutoOrient());
-
-        return image;
-    }
+    : base(stream)
+    { }
 
     public static implicit operator ImageSelector(Image image) => new(image);
     public static implicit operator ImageSelector(string path) => new(path);
