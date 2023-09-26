@@ -1,6 +1,6 @@
 ﻿namespace Compunet.YoloV8.Extensions;
 
-public static class ReadOnlyListExtensions
+internal static class ReadOnlyListExtensions
 {
     public static IReadOnlyList<TResult> Select<TSource, TResult>(this IReadOnlyList<TSource> source, Func<TSource, TResult> selector)
     {
