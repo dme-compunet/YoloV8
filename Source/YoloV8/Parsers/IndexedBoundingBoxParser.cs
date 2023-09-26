@@ -89,8 +89,7 @@ internal readonly struct IndexedBoundingBoxParser
             }
         });
 
-        var selected = boxes.Where(x => x.IsEmpty == false)
-                            .NonMaxSuppression(_parameters.IoU);
+        var selected = NonMaxSuppressionHelper.Suppress(boxes.Where(x => x.IsEmpty == false), _parameters.IoU);
 
         return selected;
     }
