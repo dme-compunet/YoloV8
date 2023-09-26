@@ -1,6 +1,6 @@
 ﻿namespace Compunet.YoloV8.Extensions;
 
-public static class BoundingBoxesExtensions
+internal static class BoundingBoxesExtensions
 {
     public static string Summary(this IEnumerable<IBoundingBox> boxes)
     {
