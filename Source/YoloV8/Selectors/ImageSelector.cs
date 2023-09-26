@@ -24,7 +24,15 @@ public class ImageSelector
         _factory = () => Image.Load<Rgb24>(stream);
     }
 
-    internal Image<Rgb24> Load() => _factory();
+    internal Image<Rgb24> Load(bool autoOrient)
+    {
+        var image = _factory();
+
+        if (autoOrient)
+            image.Mutate(x => x.AutoOrient());
+
+        return image;
+    }
 
     public static implicit operator ImageSelector(Image image) => new(image);
     public static implicit operator ImageSelector(string path) => new(path);
