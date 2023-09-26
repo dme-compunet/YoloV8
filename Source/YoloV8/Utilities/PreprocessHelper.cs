@@ -4,41 +4,16 @@ internal static class PreprocessHelper
 {
     public static void ProcessToTensor(Image<Rgb24> image, Size modelSize, bool originalAspectRatio, Tensor<float> target, int batch)
     {
-        int xPadding;
-        int yPadding;
-
-        #region Resize
-
-        int targetWidth;
-        int targetHeight;
-
-        if (originalAspectRatio)
+        var options = new ResizeOptions()
         {
-            var xRatio = (float)modelSize.Width / image.Width;
-            var yRatio = (float)modelSize.Height / image.Height;
+            Size = modelSize,
+            Mode = originalAspectRatio ? ResizeMode.Max : ResizeMode.Stretch,
+        };
 
-            var ratio = Math.Min(xRatio, yRatio);
+        image.Mutate(x => x.Resize(options));
 
-            targetWidth = (int)(image.Width * ratio);
-            targetHeight = (int)(image.Height * ratio);
-
-            xPadding = (modelSize.Width - targetWidth) / 2;
-            yPadding = (modelSize.Height - targetHeight) / 2;
-        }
-        else
-        {
-            targetWidth = modelSize.Width;
-            targetHeight = modelSize.Height;
-
-            xPadding = 0;
-            yPadding = 0;
-        }
-
-        image.Mutate(x => x.Resize(targetWidth, targetHeight));
-
-        #endregion
-
-        #region Copy To Tensor
+        var xPadding = (modelSize.Width - image.Width) / 2;
+        var yPadding = (modelSize.Height - image.Height) / 2;
 
         Parallel.For(0, image.Height, y =>
         {
@@ -53,7 +28,5 @@ internal static class PreprocessHelper
                 target[batch, 2, y + yPadding, x + xPadding] = pixel.B / 255f;
             }
         });
-
-        #endregion
     }
 }
