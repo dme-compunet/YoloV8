@@ -2,7 +2,6 @@
 using Compunet.YoloV8.Plotting;
 using SixLabors.ImageSharp;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 
 var output = "./assets/output";
 
