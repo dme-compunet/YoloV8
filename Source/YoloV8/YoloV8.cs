@@ -88,49 +88,10 @@ public class YoloV8 : IDisposable
     {
         var modelSize = _metadata.ImageSize;
 
-        var xPadding = 0;
-        var yPadding = 0;
-
-        int targetWidth;
-        int targetHeight;
-
-        if (_parameters.ProcessWithOriginalAspectRatio)
-        {
-            var xRatio = (float)modelSize.Width / image.Width;
-            var yRatio = (float)modelSize.Height / image.Height;
-
-            var ratio = Math.Min(xRatio, yRatio);
-
-            targetWidth = (int)(image.Width * ratio);
-            targetHeight = (int)(image.Height * ratio);
-
-            xPadding = (modelSize.Width - targetWidth) / 2;
-            yPadding = (modelSize.Height - targetHeight) / 2;
-        }
-        else
-        {
-            targetWidth = modelSize.Width;
-            targetHeight = modelSize.Height;
-        }
-
-        image.Mutate(x => x.Resize(targetWidth, targetHeight));
-
         var dimensions = new int[] { 1, 3, modelSize.Height, modelSize.Width };
         var input = new DenseTensor<float>(dimensions);
 
-        image.ForEachPixel((point, pixel) =>
-        {
-            var x = point.X + xPadding;
-            var y = point.Y + yPadding;
-
-            var r = pixel.R / 255f;
-            var g = pixel.G / 255f;
-            var b = pixel.B / 255f;
-
-            input[0, 0, y, x] = r;
-            input[0, 1, y, x] = g;
-            input[0, 2, y, x] = b;
-        });
+        PreprocessHelper.ProcessToTensor(image, modelSize, _parameters.ProcessWithOriginalAspectRatio, input, 0);
 
         return input;
     }
