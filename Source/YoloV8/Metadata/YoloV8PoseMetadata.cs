@@ -8,6 +8,7 @@ public class YoloV8PoseMetadata : YoloV8Metadata
                               string description,
                               string version,
                               YoloV8Task task,
+                              int batch,
                               Size imageSize,
                               IReadOnlyList<YoloV8Class> classes,
                               KeypointShape keypointShape)
@@ -15,6 +16,7 @@ public class YoloV8PoseMetadata : YoloV8Metadata
                description,
                version,
                task,
+               batch,
                imageSize,
                classes)
     {
