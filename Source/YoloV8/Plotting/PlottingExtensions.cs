@@ -4,13 +4,11 @@ public static class PlottingExtensions
 {
     #region Pose
 
-    public static Image PlotImage(this IPoseResult result, Image originImage) => PlotImage(result, originImage, PosePlottingOptions.Default);
+    public static Image PlotImage(this IPoseResult result, ImageSelector<Rgba32> originImage) => PlotImage(result, originImage, PosePlottingOptions.Default);
 
-    public static Image PlotImage(this IPoseResult result, Image originImage, PosePlottingOptions options)
+    public static Image PlotImage(this IPoseResult result, ImageSelector<Rgba32> originImage, PosePlottingOptions options)
     {
-        var process = originImage.CloneAs<Rgba32>();
-
-        process.Mutate(x => x.AutoOrient());
+        var process = originImage.Load(true);
 
         EnsureSize(process.Size, result.Image);
 
@@ -82,11 +80,11 @@ public static class PlottingExtensions
 
     #region Detection
 
-    public static Image PlotImage(this IDetectionResult result, Image originImage) => result.PlotImage(originImage, DetectionPlottingOptions.Default);
+    public static Image PlotImage(this IDetectionResult result, ImageSelector<Rgba32> originImage) => result.PlotImage(originImage, DetectionPlottingOptions.Default);
 
-    public static Image PlotImage(this IDetectionResult result, Image originImage, DetectionPlottingOptions options)
+    public static Image PlotImage(this IDetectionResult result, ImageSelector<Rgba32> originImage, DetectionPlottingOptions options)
     {
-        var process = originImage.CloneAs<Rgba32>();
+        var process = originImage.Load(true);
 
         process.Mutate(x => x.AutoOrient());
 
@@ -120,11 +118,11 @@ public static class PlottingExtensions
 
     #region Segmentation
 
-    public static Image PlotImage(this ISegmentationResult result, Image originImage) => result.PlotImage(originImage, SegmentationPlottingOptions.Default);
+    public static Image PlotImage(this ISegmentationResult result, ImageSelector<Rgba32> originImage) => result.PlotImage(originImage, SegmentationPlottingOptions.Default);
 
-    public static Image PlotImage(this ISegmentationResult result, Image originImage, SegmentationPlottingOptions options)
+    public static Image PlotImage(this ISegmentationResult result, ImageSelector<Rgba32> originImage, SegmentationPlottingOptions options)
     {
-        var process = originImage.Clone(x => x.AutoOrient());
+        var process = originImage.Load(true);
 
         EnsureSize(process.Size, result.Image);
 
@@ -204,11 +202,11 @@ public static class PlottingExtensions
 
     #region Classification
 
-    public static Image PlotImage(this IClassificationResult result, Image originImage) => PlotImage(result, originImage, ClassificationPlottingOptions.Default);
+    public static Image PlotImage(this IClassificationResult result, ImageSelector<Rgba32> originImage) => PlotImage(result, originImage, ClassificationPlottingOptions.Default);
 
-    public static Image PlotImage(this IClassificationResult result, Image originImage, ClassificationPlottingOptions options)
+    public static Image PlotImage(this IClassificationResult result, ImageSelector<Rgba32> originImage, ClassificationPlottingOptions options)
     {
-        var process = originImage.Clone(x => x.AutoOrient());
+        var process = originImage.Load(true);
 
         EnsureSize(process.Size, result.Image);
 
