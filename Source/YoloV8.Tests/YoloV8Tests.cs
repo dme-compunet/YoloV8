@@ -77,6 +77,8 @@ public class YoloV8Tests
 
         Assert.Equal(task, metadata.Task);
 
+        Assert.Equal(1, metadata.Batch);
+
         Assert.Equal(imageSize, metadata.ImageSize.Width);
         Assert.Equal(imageSize, metadata.ImageSize.Height);
 
