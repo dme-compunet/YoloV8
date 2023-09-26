@@ -55,9 +55,7 @@ public class YoloV8 : IDisposable
 
     public TResult Run<TResult>(ImageSelector selector, PostprocessContext<TResult> postprocess)
     {
-        using var image = selector.Load();
-
-        image.Mutate(x => x.AutoOrient());
+        using var image = selector.Load(true);
 
         var originSize = image.Size;
 
