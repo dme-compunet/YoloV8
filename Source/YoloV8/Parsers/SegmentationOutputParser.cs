@@ -107,7 +107,7 @@ internal readonly struct SegmentationOutputParser
 
         var final = new float[bounds.Width, bounds.Height];
 
-        bitmap.ForEachPixel((point, pixel) =>
+        bitmap.IteratePixels((point, pixel) =>
         {
             var confidence = GetConfidence(pixel.PackedValue);
             final[point.X, point.Y] = confidence;

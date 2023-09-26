@@ -2,7 +2,7 @@
 
 internal static class ImageSharpExtensions
 {
-    public static void ForEachPixel<TPixel>(this Image<TPixel> image, Action<Point, TPixel> onPixel)
+    public static void IteratePixels<TPixel>(this Image<TPixel> image, Action<Point, TPixel> onPixel)
         where TPixel : unmanaged, IPixel<TPixel>
     {
         var width = image.Width;
