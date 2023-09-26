@@ -17,6 +17,8 @@ public class YoloV8Metadata
             _ => throw new ArgumentException("Unknow YoloV8 'task' value")
         };
 
+        var batch = int.Parse(metadata["batch"]);
+
         var imageSize = ParseSize(metadata["imgsz"]);
         var classes = ParseClasses(metadata["names"]);
 
@@ -28,6 +30,7 @@ public class YoloV8Metadata
                                           description,
                                           version,
                                           task,
+                                          batch,
                                           imageSize,
                                           classes,
                                           keypointShape);
@@ -37,6 +40,7 @@ public class YoloV8Metadata
                                   description,
                                   version,
                                   task,
+                                  batch,
                                   imageSize,
                                   classes);
     }
@@ -49,6 +53,8 @@ public class YoloV8Metadata
 
     public YoloV8Task Task { get; }
 
+    public int Batch { get; }
+
     public Size ImageSize { get; }
 
     public IReadOnlyList<YoloV8Class> Classes { get; }
@@ -57,6 +63,7 @@ public class YoloV8Metadata
                           string description,
                           string version,
                           YoloV8Task task,
+                          int batch,
                           Size imageSize,
                           IReadOnlyList<YoloV8Class> classes)
     {
@@ -64,6 +71,7 @@ public class YoloV8Metadata
         Description = description;
         Version = version;
         Task = task;
+        Batch = batch;
         ImageSize = imageSize;
         Classes = classes;
     }
