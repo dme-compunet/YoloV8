@@ -1,8 +1,8 @@
-﻿namespace Compunet.YoloV8.Extensions;
+﻿namespace Compunet.YoloV8.Utilities;
 
-internal static class NonMaxSuppressionExtensions
+internal static class NonMaxSuppressionHelper
 {
-    public static IReadOnlyList<IndexedBoundingBox> NonMaxSuppression(this IReadOnlyList<IndexedBoundingBox> boxes, float threshold)
+    public static IReadOnlyList<IndexedBoundingBox> Suppress(IReadOnlyList<IndexedBoundingBox> boxes, float threshold)
     {
         var sorted = boxes.OrderByDescending(x => x.Confidence).ToArray();
         var count = sorted.Length;
