@@ -1,10 +1,10 @@
-﻿namespace Compunet.YoloV8.Extensions;
+﻿namespace Compunet.YoloV8.Utilities;
 
-public static class ImageSharpContoursExtensions
+internal static class ImageContoursHelper
 {
     private static readonly (Func<Point, Point> func, int neighborhood)[] _neighborhood;
 
-    static ImageSharpContoursExtensions()
+    static ImageContoursHelper()
     {
         _neighborhood = new (Func<Point, Point>, int)[]
         {
@@ -19,7 +19,7 @@ public static class ImageSharpContoursExtensions
         };
     }
 
-    public static IReadOnlyList<IReadOnlyList<Point>> GetContours(this Image image)
+    public static IReadOnlyList<IReadOnlyList<Point>> FindContours(this Image image)
     {
         var luminance = image.CloneAs<L8>();
 
