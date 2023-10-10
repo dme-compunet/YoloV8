@@ -2,7 +2,7 @@
 
 internal static class PreprocessHelper
 {
-    public static void ProcessToTensor(Image<Rgb24> image, Size modelSize, bool originalAspectRatio, Tensor<float> target, int batch)
+    public static void ProcessToTensor(Image<Rgb24> image, Size modelSize, bool originalAspectRatio, DenseTensor<float> target, int batch)
     {
         var options = new ResizeOptions()
         {
@@ -28,9 +28,7 @@ internal static class PreprocessHelper
 
                 var pixel = memory.Span[index];
 
-                target[batch, 0, y + yPadding, x + xPadding] = pixel.R / 255f;
-                target[batch, 1, y + yPadding, x + xPadding] = pixel.G / 255f;
-                target[batch, 2, y + yPadding, x + xPadding] = pixel.B / 255f;
+                WritePixel(batch, y + yPadding, x + xPadding, pixel, target);
             });
         }
         else
@@ -43,11 +41,31 @@ internal static class PreprocessHelper
                 {
                     var pixel = row[x];
 
-                    target[batch, 0, y + yPadding, x + xPadding] = pixel.R / 255f;
-                    target[batch, 1, y + yPadding, x + xPadding] = pixel.G / 255f;
-                    target[batch, 2, y + yPadding, x + xPadding] = pixel.B / 255f;
+                    WritePixel(batch, y + yPadding, x + xPadding, pixel, target);
                 }
             });
         }
+    }
+
+    private static void WritePixel(int batch, int y, int x, Rgb24 pixel, DenseTensor<float> target)
+    {
+        var offsetR = target.Strides[0] * batch
+                    + target.Strides[1] * 0
+                    + target.Strides[2] * y
+                    + target.Strides[3] * x;
+
+        var offsetG = target.Strides[0] * batch
+                    + target.Strides[1] * 1
+                    + target.Strides[2] * y
+                    + target.Strides[3] * x;
+
+        var offsetB = target.Strides[0] * batch
+                    + target.Strides[1] * 2
+                    + target.Strides[2] * y
+                    + target.Strides[3] * x;
+
+        target.Buffer.Span[offsetR] = pixel.R / 255f;
+        target.Buffer.Span[offsetG] = pixel.G / 255f;
+        target.Buffer.Span[offsetB] = pixel.B / 255f;
     }
 }
