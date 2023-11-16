@@ -21,7 +21,7 @@ jobs:
         run: dotnet build -c Release Source/YoloV8/YoloV8.csproj
 
       - name: Build YoloV8.Gpu
-        run: dotnet build -c ReleaseGPU Source/YoloV8/YoloV8.csproj
+        run: dotnet build -c GpuRelease Source/YoloV8/YoloV8.csproj
 
       - name: Run Tests
         run: dotnet test Source/YoloV8.Tests/YoloV8.Tests.csproj
@@ -30,7 +30,7 @@ jobs:
         run: dotnet pack -c Release -o . Source/YoloV8/YoloV8.csproj
 
       - name: Pack YoloV8.Gpu
-        run: dotnet pack -c ReleaseGPU -o . Source/YoloV8/YoloV8.csproj
+        run: dotnet pack -c GpuRelease -o . Source/YoloV8/YoloV8.csproj
 
       - name: Publish Nuget Packages
         run: dotnet nuget push *.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
