@@ -10,7 +10,7 @@ internal readonly struct IndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV
         int xPadding;
         int yPadding;
 
-        if (_parameters.ProcessWithOriginalAspectRatio)
+        if (_parameters.KeepOriginalAspectRatio)
         {
             var reductionRatio = Math.Min(_metadata.ImageSize.Width / (float)originSize.Width,
                                           _metadata.ImageSize.Height / (float)originSize.Height);
@@ -34,7 +34,7 @@ internal readonly struct IndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV
         var xRatio = (float)originSize.Width / metadata.ImageSize.Width;
         var yRatio = (float)originSize.Height / metadata.ImageSize.Height;
 
-        if (_parameters.ProcessWithOriginalAspectRatio)
+        if (_parameters.KeepOriginalAspectRatio)
         {
             var maxRatio = Math.Max(xRatio, yRatio);
 

@@ -18,7 +18,7 @@ internal readonly struct SegmentationOutputParser
         int xPadding;
         int yPadding;
 
-        if (_parameters.ProcessWithOriginalAspectRatio)
+        if (_parameters.KeepOriginalAspectRatio)
         {
             var reductionRatio = Math.Min(metadata.ImageSize.Width / (float)originSize.Width, metadata.ImageSize.Height / (float)originSize.Height);
 
