@@ -4,6 +4,10 @@ on:
   release:
     types: [created]
 
+env:
+  MAIN_PROJECT: Source/YoloV8/YoloV8.csproj
+  TEST_PROJECT: Source/YoloV8.Tests/YoloV8.Tests.csproj
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -15,22 +19,22 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 7.0.x
+          dotnet-version: 8.0.x
 
       - name: Build YoloV8
-        run: dotnet build -c Release Source/YoloV8/YoloV8.csproj
+        run: dotnet build -c Release ${{ env.MAIN_PROJECT }}
 
       - name: Build YoloV8.Gpu
-        run: dotnet build -c GpuRelease Source/YoloV8/YoloV8.csproj
+        run: dotnet build -c GpuRelease ${{ env.MAIN_PROJECT }}
 
       - name: Run Tests
-        run: dotnet test Source/YoloV8.Tests/YoloV8.Tests.csproj
+        run: dotnet test ${{ env.TEST_PROJECT }}
 
       - name: Pack YoloV8
-        run: dotnet pack -c Release -o . Source/YoloV8/YoloV8.csproj
+        run: dotnet pack -c Release -o . ${{ env.MAIN_PROJECT }}
 
       - name: Pack YoloV8.Gpu
-        run: dotnet pack -c GpuRelease -o . Source/YoloV8/YoloV8.csproj
+        run: dotnet pack -c GpuRelease -o . ${{ env.MAIN_PROJECT }}
 
       - name: Publish Nuget Packages
         run: dotnet nuget push *.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
