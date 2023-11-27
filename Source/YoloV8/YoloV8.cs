@@ -104,7 +104,7 @@ public class YoloV8 : IDisposable
         var dimensions = new int[] { 1, 3, modelSize.Height, modelSize.Width };
         var input = new DenseTensor<float>(dimensions);
 
-        PreprocessHelper.ProcessToTensor(image, modelSize, _parameters.ProcessWithOriginalAspectRatio, input, 0);
+        PreprocessHelper.ProcessToTensor(image, modelSize, _parameters.KeepOriginalAspectRatio, input, 0);
 
         return input;
     }
