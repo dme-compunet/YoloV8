@@ -1,16 +1,10 @@
 ﻿namespace Compunet.YoloV8.Data;
 
-internal class PoseResult : YoloV8Result, IPoseResult
+internal class PoseResult(Size image,
+                          SpeedResult speed,
+                          IReadOnlyList<IPoseBoundingBox> boxes) : YoloV8Result(image, speed), IPoseResult
 {
-    public IReadOnlyList<IPoseBoundingBox> Boxes { get; }
-
-    public PoseResult(Size image,
-                      SpeedResult speed,
-                      IReadOnlyList<IPoseBoundingBox> boxes)
-        : base(image, speed)
-    {
-        Boxes = boxes;
-    }
+    public IReadOnlyList<IPoseBoundingBox> Boxes { get; } = boxes;
 
     public override string ToString()
     {

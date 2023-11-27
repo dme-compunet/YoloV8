@@ -1,14 +1,8 @@
 ﻿namespace Compunet.YoloV8.Data;
 
-internal abstract class YoloV8Result : IYoloV8Result
+internal abstract class YoloV8Result(Size image, SpeedResult speed) : IYoloV8Result
 {
-    public Size Image { get; }
+    public Size Image { get; } = image;
 
-    public SpeedResult Speed { get; }
-
-    public YoloV8Result(Size image, SpeedResult speed)
-    {
-        Image = image;
-        Speed = speed;
-    }
+    public SpeedResult Speed { get; } = speed;
 }

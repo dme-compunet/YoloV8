@@ -1,14 +1,8 @@
 ﻿namespace Compunet.YoloV8.Plotting;
 
-public readonly struct SkeletonConnection
+public readonly struct SkeletonConnection(int first, int second)
 {
-    public int First { get; }
+    public int First { get; } = first;
 
-    public int Second { get; }
-
-    public SkeletonConnection(int first, int second)
-    {
-        First = first;
-        Second = second;
-    }
+    public int Second { get; } = second;
 }

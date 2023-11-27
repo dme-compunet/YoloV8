@@ -2,8 +2,8 @@
 
 internal class HumanSkeleton : ISkeleton
 {
-    private readonly string[] _colors = new[]
-    {
+    private readonly string[] _colors =
+    [
         "FF8000",
         "FF9933",
         "FFB266",
@@ -24,10 +24,10 @@ internal class HumanSkeleton : ISkeleton
         "0000FF",
         "FF0000",
         "FFFFFF",
-    };
+    ];
 
-    private readonly SkeletonConnection[] _connections = new SkeletonConnection[]
-    {
+    private readonly SkeletonConnection[] _connections =
+    [
         new(15, 13),
         new(13, 11),
         new(16, 14),
@@ -47,17 +47,17 @@ internal class HumanSkeleton : ISkeleton
         new(2, 4),
         new(3, 5),
         new(4, 6)
-    };
+    ];
 
-    private readonly int[] _keypointColorMap = new[]
-    {
+    private readonly int[] _keypointColorMap =
+    [
         16, 16, 16, 16, 16, 0, 0, 0, 0, 0, 0, 9, 9, 9, 9, 9, 9
-    };
+    ];
 
-    private readonly int[] _lineColorMap = new[]
-    {
+    private readonly int[] _lineColorMap =
+    [
         9, 9, 9, 9, 7, 7, 7, 0, 0, 0, 0, 0, 16, 16, 16, 16, 16, 16, 16
-    };
+    ];
 
     public IReadOnlyList<SkeletonConnection> Connections => _connections;
 
