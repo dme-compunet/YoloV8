@@ -67,7 +67,7 @@ public class YoloV8 : IDisposable
 
         var input = Preprocess(image);
 
-        var inputs = MapNamedOnnxValues(new Tensor<float>[] { input });
+        var inputs = MapNamedOnnxValues([input]);
 
         timer.StartInference();
 
@@ -109,9 +109,9 @@ public class YoloV8 : IDisposable
         return input;
     }
 
-    private IReadOnlyList<NamedOnnxValue> MapNamedOnnxValues(IReadOnlyList<Tensor<float>> inputs)
+    private NamedOnnxValue[] MapNamedOnnxValues(ReadOnlySpan<Tensor<float>> inputs)
     {
-        var length = inputs.Count;
+        var length = inputs.Length;
 
         var values = new NamedOnnxValue[length];
 
