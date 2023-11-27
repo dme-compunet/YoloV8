@@ -1,17 +1,10 @@
 ﻿namespace Compunet.YoloV8.Data;
 
-internal class Keypoint : IKeypoint
+internal class Keypoint(int index, int x, int y, float confidence) : IKeypoint
 {
-    public int Index { get; }
+    public int Index { get; } = index;
 
-    public Point Point { get; }
+    public Point Point { get; } = new Point(x, y);
 
-    public float Confidence { get; }
-
-    public Keypoint(int index, int x, int y, float confidence)
-    {
-        Index = index;
-        Point = new Point(x, y);
-        Confidence = confidence;
-    }
+    public float Confidence { get; } = confidence;
 }

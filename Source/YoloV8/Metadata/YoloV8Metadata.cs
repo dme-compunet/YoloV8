@@ -1,6 +1,12 @@
 ﻿namespace Compunet.YoloV8.Metadata;
 
-public class YoloV8Metadata
+public class YoloV8Metadata(string author,
+                            string description,
+                            string version,
+                            YoloV8Task task,
+                            int batch,
+                            Size imageSize,
+                            IReadOnlyList<YoloV8Class> classes)
 {
     public static YoloV8Metadata Parse(IDictionary<string, string> metadata)
     {
@@ -45,36 +51,19 @@ public class YoloV8Metadata
                                   classes);
     }
 
-    public string Author { get; }
+    public string Author { get; } = author;
 
-    public string Description { get; }
+    public string Description { get; } = description;
 
-    public string Version { get; }
+    public string Version { get; } = version;
 
-    public YoloV8Task Task { get; }
+    public YoloV8Task Task { get; } = task;
 
-    public int Batch { get; }
+    public int Batch { get; } = batch;
 
-    public Size ImageSize { get; }
+    public Size ImageSize { get; } = imageSize;
 
-    public IReadOnlyList<YoloV8Class> Classes { get; }
-
-    public YoloV8Metadata(string author,
-                          string description,
-                          string version,
-                          YoloV8Task task,
-                          int batch,
-                          Size imageSize,
-                          IReadOnlyList<YoloV8Class> classes)
-    {
-        Author = author;
-        Description = description;
-        Version = version;
-        Task = task;
-        Batch = batch;
-        ImageSize = imageSize;
-        Classes = classes;
-    }
+    public IReadOnlyList<YoloV8Class> Classes { get; } = classes;
 
     #region Static Parsers
 
@@ -102,7 +91,7 @@ public class YoloV8Metadata
         return new KeypointShape(count, channels);
     }
 
-    private static IReadOnlyList<YoloV8Class> ParseClasses(string text)
+    private static YoloV8Class[] ParseClasses(string text)
     {
         text = text[1..^1];
 

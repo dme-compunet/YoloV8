@@ -50,7 +50,7 @@ internal readonly struct SegmentationOutputParser
         });
     }
 
-    private static IMask ProcessMask(Tensor<float> maskPrototypes,
+    private static Mask ProcessMask(Tensor<float> maskPrototypes,
                                      ReadOnlySpan<float> maskWeights,
                                      Rectangle bounds,
                                      Size originSize,

@@ -1,15 +1,9 @@
 ﻿namespace Compunet.YoloV8.Parsers;
 
-internal readonly struct PoseOutputParser
+internal readonly struct PoseOutputParser(YoloV8Metadata metadata, YoloV8Parameters parameters)
 {
-    private readonly YoloV8Metadata _metadata;
-    private readonly YoloV8Parameters _parameters;
-
-    public PoseOutputParser(YoloV8Metadata metadata, YoloV8Parameters parameters)
-    {
-        _metadata = metadata;
-        _parameters = parameters;
-    }
+    private readonly YoloV8Metadata _metadata = metadata;
+    private readonly YoloV8Parameters _parameters = parameters;
 
     public IReadOnlyList<IPoseBoundingBox> Parse(Tensor<float> output, Size originSize)
     {

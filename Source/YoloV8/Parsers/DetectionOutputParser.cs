@@ -1,15 +1,9 @@
 ﻿namespace Compunet.YoloV8.Parsers;
 
-internal readonly struct DetectionOutputParser
+internal readonly struct DetectionOutputParser(YoloV8Metadata metadata, YoloV8Parameters parameters)
 {
-    private readonly YoloV8Metadata _metadata;
-    private readonly YoloV8Parameters _parameters;
-
-    public DetectionOutputParser(YoloV8Metadata metadata, YoloV8Parameters parameters)
-    {
-        _metadata = metadata;
-        _parameters = parameters;
-    }
+    private readonly YoloV8Metadata _metadata = metadata;
+    private readonly YoloV8Parameters _parameters = parameters;
 
     public IReadOnlyList<IBoundingBox> Parse(Tensor<float> output, Size originSize)
     {

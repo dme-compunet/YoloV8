@@ -1,14 +1,8 @@
 ﻿namespace Compunet.YoloV8.Metadata;
 
-public readonly struct KeypointShape
+public readonly struct KeypointShape(int count, int channels)
 {
-    public int Count { get; }
+    public int Count { get; } = count;
 
-    public int Channels { get; }
-
-    public KeypointShape(int count, int channels)
-    {
-        Count = count;
-        Channels = channels;
-    }
+    public int Channels { get; } = channels;
 }
