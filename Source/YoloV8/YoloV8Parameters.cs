@@ -10,10 +10,13 @@ public class YoloV8Parameters
 
     public bool ProcessWithOriginalAspectRatio { get; set; }
 
+    public bool SuppressParallelInference { get; set; }
+
     public YoloV8Parameters()
     {
         Confidence = .3f;
         IoU = .45f;
         ProcessWithOriginalAspectRatio = true;
+        SuppressParallelInference = false;
     }
 }

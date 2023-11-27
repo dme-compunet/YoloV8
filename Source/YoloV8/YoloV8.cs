@@ -10,6 +10,8 @@ public class YoloV8 : IDisposable
     private readonly InferenceSession _inference;
     private readonly string[] _inputNames;
 
+    private readonly object _sync = new();
+
     private bool _disposed;
 
     #endregion
@@ -69,7 +71,7 @@ public class YoloV8 : IDisposable
 
         timer.StartInference();
 
-        using var outputs = _inference.Run(inputs);
+        using var outputs = Infer(inputs);
 
         var list = new List<NamedOnnxValue>(outputs);
 
@@ -81,6 +83,19 @@ public class YoloV8 : IDisposable
     #endregion
 
     #region Private Methods
+
+    private IDisposableReadOnlyCollection<DisposableNamedOnnxValue> Infer(IReadOnlyCollection<NamedOnnxValue> inputs)
+    {
+        if (_parameters.SuppressParallelInference)
+        {
+            lock (_sync)
+            {
+                return _inference.Run(inputs);  
+            }
+        }
+
+        return _inference.Run(inputs);
+    }
 
     private Tensor<float> Preprocess(Image<Rgb24> image)
     {
