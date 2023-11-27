@@ -2,7 +2,7 @@
 
 public class SpeedTimer
 {
-    private readonly Stopwatch _stopwatch;
+    private readonly Stopwatch _stopwatch = new();
 
     private TimeSpan _preprocess;
     private TimeSpan _inference;
@@ -13,11 +13,6 @@ public class SpeedTimer
     public TimeSpan Inference => _inference;
 
     public TimeSpan Postprocess => _postprocess;
-
-    public SpeedTimer()
-    {
-        _stopwatch = new Stopwatch();
-    }
 
     public void StartPreprocess()
     {

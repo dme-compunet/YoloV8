@@ -1,21 +1,14 @@
 ﻿namespace Compunet.YoloV8.Timing;
 
-public readonly struct SpeedResult
+public readonly struct SpeedResult(TimeSpan preprocess,
+                                   TimeSpan inference,
+                                   TimeSpan postprocess)
 {
-    public TimeSpan Preprocess { get; }
+    public TimeSpan Preprocess { get; } = preprocess;
 
-    public TimeSpan Inference { get; }
+    public TimeSpan Inference { get; } = inference;
 
-    public TimeSpan Postprocess { get; }
-
-    public SpeedResult(TimeSpan preprocess,
-                       TimeSpan inference,
-                       TimeSpan postprocess)
-    {
-        Preprocess = preprocess;
-        Inference = inference;
-        Postprocess = postprocess;
-    }
+    public TimeSpan Postprocess { get; } = postprocess;
 
     public override string ToString()
     {
