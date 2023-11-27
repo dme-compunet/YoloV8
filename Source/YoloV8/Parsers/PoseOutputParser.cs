@@ -15,7 +15,7 @@ internal readonly struct PoseOutputParser(YoloV8Metadata metadata, YoloV8Paramet
         var xRatio = (float)originSize.Width / metadata.ImageSize.Width;
         var yRatio = (float)originSize.Height / metadata.ImageSize.Height;
 
-        if (_parameters.ProcessWithOriginalAspectRatio)
+        if (_parameters.KeepOriginalAspectRatio)
         {
             var reductionRatio = Math.Min(metadata.ImageSize.Width / (float)originSize.Width, metadata.ImageSize.Height / (float)originSize.Height);
 

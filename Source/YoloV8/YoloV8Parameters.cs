@@ -8,7 +8,7 @@ public class YoloV8Parameters
 
     public float IoU { get; set; }
 
-    public bool ProcessWithOriginalAspectRatio { get; set; }
+    public bool KeepOriginalAspectRatio { get; set; }
 
     public bool SuppressParallelInference { get; set; }
 
@@ -16,7 +16,7 @@ public class YoloV8Parameters
     {
         Confidence = .3f;
         IoU = .45f;
-        ProcessWithOriginalAspectRatio = true;
+        KeepOriginalAspectRatio = true;
         SuppressParallelInference = false;
     }
 }
