@@ -73,8 +73,8 @@ public class YoloV8Metadata(string author,
 
         var split = text.Split(", ");
 
-        var x = int.Parse(split[0]);
-        var y = int.Parse(split[1]);
+        var y = int.Parse(split[0]);
+        var x = int.Parse(split[1]);
 
         return new Size(x, y);
     }
