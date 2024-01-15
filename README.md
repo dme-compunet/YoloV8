@@ -7,13 +7,13 @@ Use [YOLOv8](https://github.com/ultralytics/ultralytics) in real-time for object
 The `YoloV8` project is available in two nuget packages: [YoloV8](https://www.nuget.org/packages/YoloV8) and [YoloV8.Gpu](https://www.nuget.org/packages/YoloV8.Gpu), if you use with CPU add the [YoloV8](https://www.nuget.org/packages/YoloV8) package reference to your project (contains reference to [Microsoft.ML.OnnxRuntime](https://www.nuget.org/packages/Microsoft.ML.OnnxRuntime) package)
 
 ```shell
-dotnet add package YoloV8 --version 1.6.0
+dotnet add package YoloV8
 ```
 
 If you use with GPU you need to add the [YoloV8.Gpu](https://www.nuget.org/packages/YoloV8.Gpu) package reference (contains reference to [Microsoft.ML.OnnxRuntime.Gpu](https://www.nuget.org/packages/Microsoft.ML.OnnxRuntime.Gpu) package)
 
 ```shell
-dotnet add package YoloV8.Gpu --version 1.6.0
+dotnet add package YoloV8.Gpu
 ```
 
 # Use
@@ -72,15 +72,15 @@ ploted.Save("./pose_demo.jpg")
 
 #### Detection:
 
-![detect_demo!](https://raw.githubusercontent.com/dme-compunet/YOLOv8/main/assets/detect_demo.jpg)
+![detect-demo!](https://raw.githubusercontent.com/dme-compunet/YOLOv8/main/Assets/detect-demo.jpg)
 
 #### Pose:
 
-![pose_demo!](https://raw.githubusercontent.com/dme-compunet/YOLOv8/main/assets/pose_demo.jpg)
+![pose-demo!](https://raw.githubusercontent.com/dme-compunet/YOLOv8/main/Assets/pose-demo.jpg)
 
 #### Segmentation:
 
-![seg_demo!](https://raw.githubusercontent.com/dme-compunet/YOLOv8/main/assets/seg_demo.jpg)
+![seg-demo!](https://raw.githubusercontent.com/dme-compunet/YOLOv8/main/Assets/seg-demo.jpg)
 
 # License
 
