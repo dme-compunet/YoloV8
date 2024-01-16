@@ -13,7 +13,7 @@ public class YoloV8Tests
 
         var result = predictor.Pose(image);
 
-        Assert.Equal(count, result.Boxes.Count);
+        Assert.Equal(count, result.Boxes.Count());
     }
 
     [Theory]
@@ -39,7 +39,7 @@ public class YoloV8Tests
             list.Add((name, count));
         }
 
-        Assert.Equal(list.Sum(x => x.count), result.Boxes.Count);
+        Assert.Equal(list.Sum(x => x.count), result.Boxes.Count());
 
         foreach (var (name, count) in list)
         {
@@ -59,7 +59,7 @@ public class YoloV8Tests
 
         var result = predictor.Classify(image);
 
-        Assert.Equal(result.Class.Name, label);
+        Assert.Equal(result.TopClass.Class.Name, label);
     }
 
     [Theory]
@@ -87,6 +87,6 @@ public class YoloV8Tests
 
     private static string GetImagePath(string image)
     {
-        return Path.Combine("./assets/input", image);
+        return Path.Combine("./images", image);
     }
 }

@@ -2,10 +2,10 @@
 
 public static class Predictors
 {
-    public static readonly YoloV8Predictor Pose = new("./assets/models/yolov8s-pose.onnx");
-    public static readonly YoloV8Predictor Detection = new("./assets/models/yolov8s.onnx");
-    public static readonly YoloV8Predictor Segmentation = new("./assets/models/yolov8s-seg.onnx");
-    public static readonly YoloV8Predictor Classification = new("./assets/models/yolov8s-cls.onnx");
+    public static readonly YoloV8Predictor Pose = new("./models/yolov8s-pose.onnx");
+    public static readonly YoloV8Predictor Detection = new("./models/yolov8s.onnx");
+    public static readonly YoloV8Predictor Segmentation = new("./models/yolov8s-seg.onnx");
+    public static readonly YoloV8Predictor Classification = new("./models/yolov8s-cls.onnx");
 
     public static YoloV8Predictor GetPredictor(YoloV8Task task)
     {
