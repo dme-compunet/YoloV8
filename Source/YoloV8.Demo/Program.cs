@@ -3,23 +3,23 @@ using Compunet.YoloV8.Plotting;
 using SixLabors.ImageSharp;
 using System.Diagnostics;
 
-var output = "./assets/output";
+var output = "./output";
 
 if (Directory.Exists(output) == false)
     Directory.CreateDirectory(output);
 
-await PoseDemo("./assets/input/sports.jpg", "./assets/models/yolov8s-pose.onnx");
+await PoseDemo("./images/sports.jpg", "./models/yolov8s-pose.onnx");
 
-await DetectDemo("./assets/input/bus.jpg", "./assets/models/yolov8s.onnx");
+await DetectDemo("./images/bus.jpg", "./models/yolov8s.onnx");
 
-await SegmentDemo("./assets/input/sports.jpg", "./assets/models/yolov8s-seg.onnx");
+await SegmentDemo("./images/sports.jpg", "./models/yolov8s-seg.onnx");
 
-await ClassifyDemo(new string[]
-{
-    "./assets/input/pizza.jpg",
-    "./assets/input/teddy.jpg",
-    "./assets/input/toaster.jpg",
-}, "./assets/models/yolov8s-cls.onnx");
+await ClassifyDemo(
+[
+    "./images/pizza.jpg",
+    "./images/teddy.jpg",
+    "./images/toaster.jpg",
+], "./models/yolov8s-cls.onnx");
 
 if (OperatingSystem.IsWindows())
 {
