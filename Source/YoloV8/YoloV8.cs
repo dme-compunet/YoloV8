@@ -90,7 +90,7 @@ public class YoloV8 : IDisposable
         {
             lock (_sync)
             {
-                return _inference.Run(inputs);  
+                return _inference.Run(inputs);
             }
         }
 

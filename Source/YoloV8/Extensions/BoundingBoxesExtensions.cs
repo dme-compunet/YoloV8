@@ -2,7 +2,7 @@
 
 internal static class BoundingBoxesExtensions
 {
-    public static string Summary(this IEnumerable<IBoundingBox> boxes)
+    public static string Summary(this IEnumerable<BoundingBox> boxes)
     {
         var sort = boxes.Select(x => x.Class)
                         .GroupBy(x => x.Id)
