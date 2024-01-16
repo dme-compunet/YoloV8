@@ -4,12 +4,12 @@ public static class PlottingAsyncOperationExtensions
 {
     #region Pose
 
-    public static async Task<Image> PlotImageAsync(this IPoseResult result, Image originImage)
+    public static async Task<Image> PlotImageAsync(this PoseResult result, Image originImage)
     {
         return await Task.Run(() => result.PlotImage(originImage));
     }
 
-    public static async Task<Image> PlotImageAsync(this IPoseResult result, Image originImage, PosePlottingOptions options)
+    public static async Task<Image> PlotImageAsync(this PoseResult result, Image originImage, PosePlottingOptions options)
     {
         return await Task.Run(() => result.PlotImage(originImage, options));
     }
@@ -18,12 +18,12 @@ public static class PlottingAsyncOperationExtensions
 
     #region Detection
 
-    public static async Task<Image> PlotImageAsync(this IDetectionResult result, Image originImage)
+    public static async Task<Image> PlotImageAsync(this DetectionResult result, Image originImage)
     {
         return await Task.Run(() => result.PlotImage(originImage));
     }
 
-    public static async Task<Image> PlotImageAsync(this IDetectionResult result, Image originImage, DetectionPlottingOptions options)
+    public static async Task<Image> PlotImageAsync(this DetectionResult result, Image originImage, DetectionPlottingOptions options)
     {
         return await Task.Run(() => result.PlotImage(originImage, options));
     }
@@ -32,12 +32,12 @@ public static class PlottingAsyncOperationExtensions
 
     #region Segmentation
 
-    public static async Task<Image> PlotImageAsync(this ISegmentationResult result, Image originImage)
+    public static async Task<Image> PlotImageAsync(this SegmentationResult result, Image originImage)
     {
         return await Task.Run(() => result.PlotImage(originImage));
     }
 
-    public static async Task<Image> PlotImageAsync(this ISegmentationResult result, Image originImage, SegmentationPlottingOptions options)
+    public static async Task<Image> PlotImageAsync(this SegmentationResult result, Image originImage, SegmentationPlottingOptions options)
     {
         return await Task.Run(() => result.PlotImage(originImage, options));
     }
@@ -46,12 +46,12 @@ public static class PlottingAsyncOperationExtensions
 
     #region Classification
 
-    public static async Task<Image> PlotImageAsync(this IClassificationResult result, Image originImage)
+    public static async Task<Image> PlotImageAsync(this ClassificationResult result, Image originImage)
     {
         return await Task.Run(() => result.PlotImage(originImage));
     }
 
-    public static async Task<Image> PlotImageAsync(this IClassificationResult result, Image originImage, ClassificationPlottingOptions options)
+    public static async Task<Image> PlotImageAsync(this ClassificationResult result, Image originImage, ClassificationPlottingOptions options)
     {
         return await Task.Run(() => result.PlotImage(originImage, options));
     }

@@ -2,9 +2,9 @@
 
 public static class YoloV8Extensions
 {
-    public static IPoseResult Pose(this YoloV8 predictor, ImageSelector selector)
+    public static PoseResult Pose(this YoloV8 predictor, ImageSelector selector)
     {
-        predictor.CheckPoseShape();
+        predictor.ValidatePoseShape();
 
         return predictor.Run(selector, (outputs, image, timer) =>
         {
@@ -12,17 +12,22 @@ public static class YoloV8Extensions
 
             var parser = new PoseOutputParser(predictor.Metadata, predictor.Parameters);
 
-            var poses = parser.Parse(output, image);
+            var boxes = parser.Parse(output, image);
 
             var speed = timer.Stop();
 
-            return new PoseResult(image, speed, poses);
+            return new PoseResult
+            {
+                Boxes = boxes,
+                Image = image,
+                Speed = speed,
+            };
         });
     }
 
-    public static IDetectionResult Detect(this YoloV8 predictor, ImageSelector selector)
+    public static DetectionResult Detect(this YoloV8 predictor, ImageSelector selector)
     {
-        predictor.EnsureTask(YoloV8Task.Detect);
+        predictor.ValidateTask(YoloV8Task.Detect);
 
         return predictor.Run(selector, (outputs, image, timer) =>
         {
@@ -34,13 +39,18 @@ public static class YoloV8Extensions
 
             var speed = timer.Stop();
 
-            return new DetectionResult(image, speed, boxes);
+            return new DetectionResult
+            {
+                Boxes = boxes,
+                Image = image,
+                Speed = speed,
+            };
         });
     }
 
-    public static ISegmentationResult Segment(this YoloV8 predictor, ImageSelector selector)
+    public static SegmentationResult Segment(this YoloV8 predictor, ImageSelector selector)
     {
-        predictor.EnsureTask(YoloV8Task.Segment);
+        predictor.ValidateTask(YoloV8Task.Segment);
 
         return predictor.Run(selector, (outputs, image, timer) =>
         {
@@ -52,70 +62,87 @@ public static class YoloV8Extensions
 
             var speed = timer.Stop();
 
-            return new SegmentationResult(image, speed, boxes);
+            return new SegmentationResult
+            {
+                Boxes = boxes,
+                Image = image,
+                Speed = speed,
+            };
         });
     }
 
-    public static IClassificationResult Classify(this YoloV8 predictor, ImageSelector selector)
+    public static ClassificationResult Classify(this YoloV8 predictor, ImageSelector selector)
     {
-        predictor.EnsureTask(YoloV8Task.Classify);
+        predictor.ValidateTask(YoloV8Task.Classify);
 
-        return predictor.Run<IClassificationResult>(selector, (outputs, image, timer) =>
+        return predictor.Run(selector, (outputs, image, timer) =>
         {
             var output = outputs[0].AsEnumerable<float>().ToList();
 
-            var probs = new List<(YoloV8Class Class, float Confidence)>(output.Count);
+            var probs = new HashSet<ClassProbability>(output.Count);
 
             for (int i = 0; i < output.Count; i++)
             {
                 var cls = predictor.Metadata.Classes[i];
                 var scr = output[i];
 
-                var prob = (Class: cls, Confidence: scr);
+                var prob = new ClassProbability
+                {
+                    Class = cls,
+                    Confidence = scr,
+                };
 
                 probs.Add(prob);
             }
 
+            var top = probs.MaxBy(x => x.Confidence) ?? throw new Exception("");
+
             var speed = timer.Stop();
 
-            return new ClassificationResult(image, speed, probs);
+            return new ClassificationResult
+            {
+                TopClass = top,
+                Probabilities = probs,
+                Image = image,
+                Speed = speed,
+            };
         });
 
     }
 
     #region Async Operations
 
-    public static async Task<IPoseResult> PoseAsync(this YoloV8 predictor, ImageSelector selector)
+    public static async Task<PoseResult> PoseAsync(this YoloV8 predictor, ImageSelector selector)
     {
         return await Task.Run(() => predictor.Pose(selector));
     }
 
-    public static async Task<IDetectionResult> DetectAsync(this YoloV8 predictor, ImageSelector selector)
+    public static async Task<DetectionResult> DetectAsync(this YoloV8 predictor, ImageSelector selector)
     {
         return await Task.Run(() => predictor.Detect(selector));
     }
 
-    public static async Task<ISegmentationResult> SegmentAsync(this YoloV8 predictor, ImageSelector selector)
+    public static async Task<SegmentationResult> SegmentAsync(this YoloV8 predictor, ImageSelector selector)
     {
         return await Task.Run(() => predictor.Segment(selector));
     }
 
-    public static async Task<IClassificationResult> ClassifyAsync(this YoloV8 predictor, ImageSelector selector)
+    public static async Task<ClassificationResult> ClassifyAsync(this YoloV8 predictor, ImageSelector selector)
     {
         return await Task.Run(() => predictor.Classify(selector));
     }
 
     #endregion
 
-    private static void EnsureTask(this YoloV8 predictor, YoloV8Task task)
+    private static void ValidateTask(this YoloV8 predictor, YoloV8Task task)
     {
         if (predictor.Metadata.Task != task)
             throw new InvalidOperationException("The loaded model does not support this task");
     }
 
-    private static void CheckPoseShape(this YoloV8 predictor)
+    private static void ValidatePoseShape(this YoloV8 predictor)
     {
-        predictor.EnsureTask(YoloV8Task.Pose);
+        predictor.ValidateTask(YoloV8Task.Pose);
 
         if (predictor.Metadata is YoloV8PoseMetadata metadata)
         {

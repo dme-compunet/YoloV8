@@ -47,6 +47,53 @@ internal static class NonMaxSuppressionHelper
         return selected;
     }
 
+    public static IReadOnlyList<IndexedBoundingBox> Suppress2(IEnumerable<IndexedBoundingBox> boxes, float threshold)
+    {
+        //var sorted = boxes.OrderByDescending(x => x.Confidence).ToArray();
+
+        var sorted = boxes.OrderByDescending(x => x.Confidence).ToArray();
+        var count = sorted.Length;
+
+        var activeCount = count;
+        var isActiveBoxes = new bool[count];
+
+        Array.Fill(isActiveBoxes, true);
+
+        var selected = new List<IndexedBoundingBox>();
+
+        for (int i = 0; i < count; i++)
+        {
+            if (isActiveBoxes[i])
+            {
+                var boxA = sorted[i];
+
+                selected.Add(boxA);
+
+                for (var j = i + 1; j < count; j++)
+                {
+                    if (isActiveBoxes[j])
+                    {
+                        var boxB = sorted[j];
+
+                        if (CalculateIoU(boxA.Bounds, boxB.Bounds) > threshold)
+                        {
+                            isActiveBoxes[j] = false;
+                            activeCount--;
+
+                            if (activeCount <= 0)
+                                break;
+                        }
+                    }
+                }
+
+                if (activeCount <= 0)
+                    break;
+            }
+        }
+
+        return selected;
+    }
+
     private static float CalculateIoU(Rectangle first, Rectangle second)
     {
         var areaA = Area(first);
