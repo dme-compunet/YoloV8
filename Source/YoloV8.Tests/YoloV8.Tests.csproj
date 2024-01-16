@@ -13,7 +13,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Update="assets/*/*" CopyToOutputDirectory="PreserveNewest" />
+		<None Include="..\Assets\**" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
 
 	<ItemGroup>
