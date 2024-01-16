@@ -4,9 +4,9 @@ public static class PlottingExtensions
 {
     #region Pose
 
-    public static Image PlotImage(this IPoseResult result, ImageSelector<Rgba32> originImage) => PlotImage(result, originImage, PosePlottingOptions.Default);
+    public static Image PlotImage(this PoseResult result, ImageSelector<Rgba32> originImage) => PlotImage(result, originImage, PosePlottingOptions.Default);
 
-    public static Image PlotImage(this IPoseResult result, ImageSelector<Rgba32> originImage, PosePlottingOptions options)
+    public static Image PlotImage(this PoseResult result, ImageSelector<Rgba32> originImage, PosePlottingOptions options)
     {
         var process = originImage.Load(true);
 
@@ -39,8 +39,8 @@ public static class PlottingExtensions
                 {
                     var connection = options.Skeleton.Connections[i];
 
-                    IKeypoint first = box.Keypoints[connection.First];
-                    IKeypoint second = box.Keypoints[connection.Second];
+                    var first = box.Keypoints.ElementAt(connection.First);
+                    var second = box.Keypoints.ElementAt(connection.Second);
 
                     if (first.Confidence < options.KeypointConfidence || second.Confidence < options.KeypointConfidence)
                         continue;
@@ -57,10 +57,8 @@ public static class PlottingExtensions
                 }
 
                 // Draw keypoints
-                for (int i = 0; i < box.Keypoints.Count; i++)
+                foreach (var keypoint in box.Keypoints)
                 {
-                    var keypoint = box.Keypoints[i];
-
                     if (keypoint.Confidence < options.KeypointConfidence)
                         continue;
 
@@ -80,9 +78,9 @@ public static class PlottingExtensions
 
     #region Detection
 
-    public static Image PlotImage(this IDetectionResult result, ImageSelector<Rgba32> originImage) => result.PlotImage(originImage, DetectionPlottingOptions.Default);
+    public static Image PlotImage(this DetectionResult result, ImageSelector<Rgba32> originImage) => result.PlotImage(originImage, DetectionPlottingOptions.Default);
 
-    public static Image PlotImage(this IDetectionResult result, ImageSelector<Rgba32> originImage, DetectionPlottingOptions options)
+    public static Image PlotImage(this DetectionResult result, ImageSelector<Rgba32> originImage, DetectionPlottingOptions options)
     {
         var process = originImage.Load(true);
 
@@ -118,9 +116,9 @@ public static class PlottingExtensions
 
     #region Segmentation
 
-    public static Image PlotImage(this ISegmentationResult result, ImageSelector<Rgba32> originImage) => result.PlotImage(originImage, SegmentationPlottingOptions.Default);
+    public static Image PlotImage(this SegmentationResult result, ImageSelector<Rgba32> originImage) => result.PlotImage(originImage, SegmentationPlottingOptions.Default);
 
-    public static Image PlotImage(this ISegmentationResult result, ImageSelector<Rgba32> originImage, SegmentationPlottingOptions options)
+    public static Image PlotImage(this SegmentationResult result, ImageSelector<Rgba32> originImage, SegmentationPlottingOptions options)
     {
         var process = originImage.Load(true);
 
@@ -141,9 +139,8 @@ public static class PlottingExtensions
         using var masksLayer = new Image<Rgba32>(size.Width, size.Height);
         using var contoursLayer = new Image<Rgba32>(size.Width, size.Height);
 
-        for (int i = 0; i < result.Boxes.Count; i++)
+        foreach (var box in result.Boxes)
         {
-            var box = result.Boxes[i];
             var color = options.ColorPalette.GetColor(box.Class.Id);
 
             using var mask = new Image<Rgba32>(box.Bounds.Width, box.Bounds.Height);
@@ -202,9 +199,9 @@ public static class PlottingExtensions
 
     #region Classification
 
-    public static Image PlotImage(this IClassificationResult result, ImageSelector<Rgba32> originImage) => PlotImage(result, originImage, ClassificationPlottingOptions.Default);
+    public static Image PlotImage(this ClassificationResult result, ImageSelector<Rgba32> originImage) => PlotImage(result, originImage, ClassificationPlottingOptions.Default);
 
-    public static Image PlotImage(this IClassificationResult result, ImageSelector<Rgba32> originImage, ClassificationPlottingOptions options)
+    public static Image PlotImage(this ClassificationResult result, ImageSelector<Rgba32> originImage, ClassificationPlottingOptions options)
     {
         var process = originImage.Load(true);
 
@@ -216,9 +213,12 @@ public static class PlottingExtensions
 
         var textOptions = new TextOptions(options.FontFamily.CreateFont(options.FontSize * ratio));
 
-        var label = $"{result.Class.Name} {result.Confidence:N}";
-        var fill = options.FillColorPalette.GetColor(result.Class.Id);
-        var border = options.BorderColorPalette.GetColor(result.Class.Id);
+        var label = result.ToString();
+
+        var classId = result.TopClass.Class.Id;
+
+        var fill = options.FillColorPalette.GetColor(classId);
+        var border = options.BorderColorPalette.GetColor(classId);
 
         var pen = new SolidPen(border, options.BorderThickness * ratio);
         var brush = new SolidBrush(fill);

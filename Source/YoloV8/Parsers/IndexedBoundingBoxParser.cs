@@ -5,7 +5,7 @@ internal readonly struct IndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV
     private readonly YoloV8Metadata _metadata = metadata;
     private readonly YoloV8Parameters _parameters = parameters;
 
-    public IReadOnlyList<IndexedBoundingBox> Parse(Tensor<float> output, Size originSize)
+    public IEnumerable<IndexedBoundingBox> Parse(Tensor<float> output, Size originSize)
     {
         int xPadding;
         int yPadding;
@@ -27,7 +27,7 @@ internal readonly struct IndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV
         return Parse(output, originSize, xPadding, yPadding);
     }
 
-    public IReadOnlyList<IndexedBoundingBox> Parse(Tensor<float> output, Size originSize, int xPadding, int yPadding)
+    public IEnumerable<IndexedBoundingBox> Parse(Tensor<float> output, Size originSize, int xPadding, int yPadding)
     {
         var metadata = _metadata;
 
@@ -45,7 +45,7 @@ internal readonly struct IndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV
         return Parse(output, originSize, xPadding, yPadding, xRatio, yRatio);
     }
 
-    public IReadOnlyList<IndexedBoundingBox> Parse(Tensor<float> output, Size originSize, int xPadding, int yPadding, float xRatio, float yRatio)
+    public IEnumerable<IndexedBoundingBox> Parse(Tensor<float> output, Size originSize, int xPadding, int yPadding, float xRatio, float yRatio)
     {
         var metadata = _metadata;
         var parameters = _parameters;
@@ -83,8 +83,6 @@ internal readonly struct IndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV
             }
         });
 
-        var selected = NonMaxSuppressionHelper.Suppress(boxes.Where(x => x.IsEmpty == false), _parameters.IoU);
-
-        return selected;
+        return NonMaxSuppressionHelper.Suppress2(boxes.Where(x => x.IsEmpty == false), _parameters.IoU);
     }
 }

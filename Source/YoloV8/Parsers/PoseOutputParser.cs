@@ -5,7 +5,7 @@ internal readonly struct PoseOutputParser(YoloV8Metadata metadata, YoloV8Paramet
     private readonly YoloV8Metadata _metadata = metadata;
     private readonly YoloV8Parameters _parameters = parameters;
 
-    public IReadOnlyList<IPoseBoundingBox> Parse(Tensor<float> output, Size originSize)
+    public IEnumerable<PoseBoundingBox> Parse(Tensor<float> output, Size originSize)
     {
         var metadata = (YoloV8PoseMetadata)_metadata;
 
@@ -37,13 +37,13 @@ internal readonly struct PoseOutputParser(YoloV8Metadata metadata, YoloV8Paramet
 
         var shape = metadata.KeypointShape;
 
-        return boxes.SelectParallely(box =>
+        return boxes.AsParallel().Select(box =>
         {
             var keypoints = new Keypoint[shape.Count];
 
-            for (int i = 0; i < shape.Count; i++)
+            for (int index = 0; index < shape.Count; index++)
             {
-                var offset = i * shape.Channels + 4 + metadata.Classes.Count;
+                var offset = index * shape.Channels + 4 + metadata.Classes.Count;
 
                 var pointX = (int)((output[0, offset + 0, box.Index] - xPadding) * xRatio);
                 var pointY = (int)((output[0, offset + 1, box.Index] - yPadding) * yRatio);
@@ -55,10 +55,21 @@ internal readonly struct PoseOutputParser(YoloV8Metadata metadata, YoloV8Paramet
                     _ => throw new NotSupportedException("Unexpected keypoint shape")
                 };
 
-                keypoints[i] = new Keypoint(i, pointX, pointY, pointConfidence);
+                keypoints[index] = new Keypoint
+                {
+                    Index = index,
+                    Point = new Point(pointX, pointY),
+                    Confidence = pointConfidence
+                };
             }
 
-            return new PoseBoundingBox(box.Class, box.Bounds, box.Confidence, keypoints);
+            return new PoseBoundingBox
+            {
+                Class = box.Class,
+                Bounds = box.Bounds,
+                Confidence = box.Confidence,
+                Keypoints = keypoints
+            };
         });
     }
 }

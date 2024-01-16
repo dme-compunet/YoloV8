@@ -2,7 +2,7 @@
 
 internal readonly struct IndexedBoundingBox(int index, YoloV8Class name, Rectangle bounds, float confidence)
 {
-    internal bool IsEmpty => Bounds.IsEmpty;
+    public bool IsEmpty => Bounds.IsEmpty;
 
     public int Index { get; } = index;
 
