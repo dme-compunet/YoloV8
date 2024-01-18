@@ -55,7 +55,7 @@ public class YoloV8 : IDisposable
 
     #region Run
 
-    public TResult Run<TResult>(ImageSelector selector, PostprocessContext<TResult> postprocess)
+    public TResult Run<TResult>(ImageSelector selector, PostprocessContext<TResult> postprocess) where TResult : YoloV8Result
     {
         using var image = selector.Load(true);
 
