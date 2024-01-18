@@ -2,6 +2,7 @@
 
 public enum YoloV8Task
 {
+    Obb,
     Detect,
     Segment,
     Pose,
