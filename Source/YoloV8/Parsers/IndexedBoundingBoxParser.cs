@@ -45,12 +45,14 @@ internal readonly struct IndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV
         return Parse(output, originSize, xPadding, yPadding, xRatio, yRatio);
     }
 
-    public IEnumerable<IndexedBoundingBox> Parse(Tensor<float> output, Size originSize, int xPadding, int yPadding, float xRatio, float yRatio)
+    public IndexedBoundingBox[] Parse(Tensor<float> output, Size originSize, int xPadding, int yPadding, float xRatio, float yRatio)
     {
         var metadata = _metadata;
         var parameters = _parameters;
 
         var boxes = new IndexedBoundingBox[output.Dimensions[2]];
+
+        var count = 0;
 
         Parallel.For(0, output.Dimensions[2], i =>
         {
@@ -76,13 +78,37 @@ internal readonly struct IndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV
                 xMax = Math.Clamp(xMax, 0, originSize.Width);
                 yMax = Math.Clamp(yMax, 0, originSize.Height);
 
-                var bounds = Rectangle.FromLTRB(xMin, yMin, xMax, yMax);
                 var name = metadata.Classes[j];
+                var bounds = Rectangle.FromLTRB(xMin, yMin, xMax, yMax);
 
-                boxes[i] = new IndexedBoundingBox(i, name, bounds, confidence);
+                boxes[i] = new IndexedBoundingBox
+                {
+                    Index = i,
+                    Class = name,
+                    Bounds = bounds,
+                    Confidence = confidence
+                };
+
+                count++;
             }
         });
 
-        return NonMaxSuppressionHelper.Suppress2(boxes.Where(x => x.IsEmpty == false), _parameters.IoU);
+        var topBoxes = new IndexedBoundingBox[count];
+
+        var topIndex = 0;
+
+        for (int i = 0; i < boxes.Length; i++)
+        {
+            var box = boxes[i];
+
+            if (box.IsEmpty)
+            {
+                continue;
+            }
+
+            topBoxes[topIndex++] = box;
+        }
+
+        return NonMaxSuppressionHelper.Suppress(topBoxes, _parameters.IoU);
     }
 }
