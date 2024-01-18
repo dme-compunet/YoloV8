@@ -16,6 +16,7 @@ public class YoloV8Metadata(string author,
 
         var task = metadata["task"] switch
         {
+            "obb" => YoloV8Task.Obb,
             "pose" => YoloV8Task.Pose,
             "detect" => YoloV8Task.Detect,
             "segment" => YoloV8Task.Segment,
