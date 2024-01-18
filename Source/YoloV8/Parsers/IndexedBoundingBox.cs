@@ -1,14 +1,16 @@
 ﻿namespace Compunet.YoloV8.Parsers;
 
-internal readonly struct IndexedBoundingBox(int index, YoloV8Class name, Rectangle bounds, float confidence)
+internal readonly struct IndexedBoundingBox : IComparable<IndexedBoundingBox>
 {
     public bool IsEmpty => Bounds.IsEmpty;
 
-    public int Index { get; } = index;
+    public required int Index { get; init; }
 
-    public YoloV8Class Class { get; } = name;
+    public required YoloV8Class Class { get; init; }
 
-    public Rectangle Bounds { get; } = bounds;
+    public required Rectangle Bounds { get; init; }
 
-    public float Confidence { get; } = confidence;
+    public required float Confidence { get; init; }
+
+    public int CompareTo(IndexedBoundingBox other) => Confidence.CompareTo(other.Confidence);
 }
