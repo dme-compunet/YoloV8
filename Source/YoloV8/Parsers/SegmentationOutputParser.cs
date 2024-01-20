@@ -2,17 +2,14 @@
 
 internal readonly struct SegmentationOutputParser(YoloV8Metadata metadata, YoloV8Parameters parameters)
 {
-    private readonly YoloV8Metadata _metadata = metadata;
-    private readonly YoloV8Parameters _parameters = parameters;
-
-    public IEnumerable<SegmentationBoundingBox> Parse(IEnumerable<Tensor<float>> outputs, Size originSize)
+    public SegmentationBoundingBox[] Parse(Tensor<float> boxesOutput, Tensor<float> maskPrototypes, Size originSize)
     {
-        var metadata = _metadata;
+        var _metadata = metadata;
 
         int xPadding;
         int yPadding;
 
-        if (_parameters.KeepOriginalAspectRatio)
+        if (parameters.KeepOriginalAspectRatio)
         {
             var reductionRatio = Math.Min(metadata.ImageSize.Width / (float)originSize.Width, metadata.ImageSize.Height / (float)originSize.Height);
 
@@ -25,33 +22,34 @@ internal readonly struct SegmentationOutputParser(YoloV8Metadata metadata, YoloV
             yPadding = 0;
         }
 
-        var output0 = outputs.ElementAt(0);
-        var output1 = outputs.ElementAt(1);
+        var maskChannelCount = boxesOutput.Dimensions[1] - 4 - metadata.Classes.Count;
 
-        var maskChannelCount = output0.Dimensions[1] - 4 - metadata.Classes.Count;
+        var boxes = new IndexedBoundingBoxParser(_metadata, parameters).Parse(boxesOutput, originSize, xPadding, yPadding);
 
-        var boxes = new IndexedBoundingBoxParser(_metadata, _parameters).Parse(output0, originSize, xPadding, yPadding);
+        var result = new SegmentationBoundingBox[boxes.Length];
 
-        return boxes.AsParallel().Select(box =>
+        for (int index = 0; index < boxes.Length; index++)
         {
-            var maskWeights = ExtractMaskWeights(output0, box.Index, maskChannelCount, metadata.Classes.Count + 4);
+            var box = boxes[index];
 
-            var mask = ProcessMask(output1, maskWeights, box.Bounds, originSize, metadata.ImageSize, xPadding, yPadding);
+            var maskWeights = ExtractMaskWeights(boxesOutput, box.Index, maskChannelCount, _metadata.Classes.Count + 4);
 
-            var value = new SegmentationBoundingBox
+            var mask = ProcessMask(maskPrototypes, maskWeights, box.Bounds, originSize, _metadata.ImageSize, xPadding, yPadding);
+
+            result[index] = new SegmentationBoundingBox
             {
                 Mask = mask,
                 Class = box.Class,
                 Bounds = box.Bounds,
                 Confidence = box.Confidence,
             };
+        }
 
-            return value;
-        });
+        return result;
     }
 
     private static SegmentationMask ProcessMask(Tensor<float> maskPrototypes,
-                                                ReadOnlySpan<float> maskWeights,
+                                                float[] maskWeights,
                                                 Rectangle bounds,
                                                 Size originSize,
                                                 Size modelSize,
@@ -107,7 +105,7 @@ internal readonly struct SegmentationOutputParser(YoloV8Metadata metadata, YoloV
 
         var final = new float[bounds.Width, bounds.Height];
 
-        bitmap.IteratePixels((point, pixel) =>
+        bitmap.EnumeratePixels((point, pixel) =>
         {
             var confidence = GetConfidence(pixel.PackedValue);
             final[point.X, point.Y] = confidence;
@@ -119,7 +117,7 @@ internal readonly struct SegmentationOutputParser(YoloV8Metadata metadata, YoloV
         };
     }
 
-    private static ReadOnlySpan<float> ExtractMaskWeights(Tensor<float> output, int boxIndex, int maskChannelCount, int maskWeightsOffset)
+    private static float[] ExtractMaskWeights(Tensor<float> output, int boxIndex, int maskChannelCount, int maskWeightsOffset)
     {
         var maskWeights = new float[maskChannelCount];
 

@@ -2,21 +2,18 @@
 
 internal readonly struct IndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV8Parameters parameters)
 {
-    private readonly YoloV8Metadata _metadata = metadata;
-    private readonly YoloV8Parameters _parameters = parameters;
-
-    public IEnumerable<IndexedBoundingBox> Parse(Tensor<float> output, Size originSize)
+    public IndexedBoundingBox[] Parse(Tensor<float> output, Size originSize)
     {
         int xPadding;
         int yPadding;
 
-        if (_parameters.KeepOriginalAspectRatio)
+        if (parameters.KeepOriginalAspectRatio)
         {
-            var reductionRatio = Math.Min(_metadata.ImageSize.Width / (float)originSize.Width,
-                                          _metadata.ImageSize.Height / (float)originSize.Height);
+            var reductionRatio = Math.Min(metadata.ImageSize.Width / (float)originSize.Width,
+                                          metadata.ImageSize.Height / (float)originSize.Height);
 
-            xPadding = (int)((_metadata.ImageSize.Width - originSize.Width * reductionRatio) / 2);
-            yPadding = (int)((_metadata.ImageSize.Height - originSize.Height * reductionRatio) / 2);
+            xPadding = (int)((metadata.ImageSize.Width - originSize.Width * reductionRatio) / 2);
+            yPadding = (int)((metadata.ImageSize.Height - originSize.Height * reductionRatio) / 2);
         }
         else
         {
@@ -27,14 +24,12 @@ internal readonly struct IndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV
         return Parse(output, originSize, xPadding, yPadding);
     }
 
-    public IEnumerable<IndexedBoundingBox> Parse(Tensor<float> output, Size originSize, int xPadding, int yPadding)
+    public IndexedBoundingBox[] Parse(Tensor<float> output, Size originSize, int xPadding, int yPadding)
     {
-        var metadata = _metadata;
-
         var xRatio = (float)originSize.Width / metadata.ImageSize.Width;
         var yRatio = (float)originSize.Height / metadata.ImageSize.Height;
 
-        if (_parameters.KeepOriginalAspectRatio)
+        if (parameters.KeepOriginalAspectRatio)
         {
             var maxRatio = Math.Max(xRatio, yRatio);
 
@@ -47,8 +42,8 @@ internal readonly struct IndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV
 
     public IndexedBoundingBox[] Parse(Tensor<float> output, Size originSize, int xPadding, int yPadding, float xRatio, float yRatio)
     {
-        var metadata = _metadata;
-        var parameters = _parameters;
+        var _metadata = metadata;
+        var _parameters = parameters;
 
         var boxes = new IndexedBoundingBox[output.Dimensions[2]];
 
@@ -56,11 +51,11 @@ internal readonly struct IndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV
 
         Parallel.For(0, output.Dimensions[2], i =>
         {
-            for (int j = 0; j < metadata.Classes.Count; j++)
+            for (int j = 0; j < _metadata.Classes.Count; j++)
             {
                 var confidence = output[0, j + 4, i];
 
-                if (confidence <= parameters.Confidence)
+                if (confidence <= _parameters.Confidence)
                     continue;
 
                 var x = output[0, 0, i];
@@ -78,7 +73,7 @@ internal readonly struct IndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV
                 xMax = Math.Clamp(xMax, 0, originSize.Width);
                 yMax = Math.Clamp(yMax, 0, originSize.Height);
 
-                var name = metadata.Classes[j];
+                var name = _metadata.Classes[j];
                 var bounds = Rectangle.FromLTRB(xMin, yMin, xMax, yMax);
 
                 boxes[i] = new IndexedBoundingBox
@@ -109,6 +104,6 @@ internal readonly struct IndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV
             topBoxes[topIndex++] = box;
         }
 
-        return NonMaxSuppressionHelper.Suppress(topBoxes, _parameters.IoU);
+        return NonMaxSuppressionHelper.Suppress(topBoxes, parameters.IoU);
     }
 }

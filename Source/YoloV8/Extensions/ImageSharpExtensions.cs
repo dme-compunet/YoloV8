@@ -2,8 +2,7 @@
 
 internal static class ImageSharpExtensions
 {
-    public static void IteratePixels<TPixel>(this Image<TPixel> image, Action<Point, TPixel> onPixel)
-        where TPixel : unmanaged, IPixel<TPixel>
+    public static void EnumeratePixels<TPixel>(this Image<TPixel> image, Action<Point, TPixel> iterator) where TPixel : unmanaged, IPixel<TPixel>
     {
         var width = image.Width;
         var height = image.Height;
@@ -18,7 +17,7 @@ internal static class ImageSharpExtensions
                 var point = new Point(x, y);
                 var pixel = memory.Span[index];
 
-                onPixel(point, pixel);
+                iterator(point, pixel);
             });
         }
         else
@@ -32,7 +31,7 @@ internal static class ImageSharpExtensions
                     var point = new Point(x, y);
                     var pixel = row[x];
 
-                    onPixel(point, pixel);
+                    iterator(point, pixel);
                 }
             });
         }

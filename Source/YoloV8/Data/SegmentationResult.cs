@@ -2,5 +2,5 @@
 
 public class SegmentationResult : YoloV8Result
 {
-    public required IEnumerable<SegmentationBoundingBox> Boxes { get; init; }
+    public required SegmentationBoundingBox[] Boxes { get; init; }
 }

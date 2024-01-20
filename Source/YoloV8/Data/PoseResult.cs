@@ -2,5 +2,5 @@
 
 public class PoseResult : YoloV8Result
 {
-    public required IEnumerable<PoseBoundingBox> Boxes { get; init; }
+    public required PoseBoundingBox[] Boxes { get; init; }
 }
