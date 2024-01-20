@@ -54,11 +54,12 @@ public static class YoloV8Extensions
 
         return predictor.Run(selector, (outputs, image, timer) =>
         {
-            var list = outputs.Select(x => x.AsTensor<float>()).ToList();
-
             var parser = new SegmentationOutputParser(predictor.Metadata, predictor.Parameters);
 
-            var boxes = parser.Parse(list, image);
+            var boxesOutput = outputs[0].AsTensor<float>();
+            var maskPrototypes = outputs[1].AsTensor<float>();
+
+            var boxes = parser.Parse(boxesOutput, maskPrototypes, image);
 
             var speed = timer.Stop();
 
@@ -79,23 +80,21 @@ public static class YoloV8Extensions
         {
             var output = outputs[0].AsEnumerable<float>().ToList();
 
-            var probs = new HashSet<ClassProbability>(output.Count);
+            var probs = new ClassProbability[output.Count];
 
             for (int i = 0; i < output.Count; i++)
             {
                 var cls = predictor.Metadata.Classes[i];
                 var scr = output[i];
 
-                var prob = new ClassProbability
+                probs[i] = new ClassProbability
                 {
                     Class = cls,
                     Confidence = scr,
                 };
-
-                probs.Add(prob);
             }
 
-            var top = probs.MaxBy(x => x.Confidence) ?? throw new Exception("");
+            var top = probs.MaxBy(x => x.Confidence) ?? throw new Exception();
 
             var speed = timer.Stop();
 
