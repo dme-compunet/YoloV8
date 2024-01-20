@@ -2,7 +2,7 @@
 
 public class PoseBoundingBox : BoundingBox
 {
-    public required IEnumerable<Keypoint> Keypoints { get; init; }
+    public required Keypoint[] Keypoints { get; init; }
 
     public Keypoint? GetKeypoint(int index)
     {

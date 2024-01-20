@@ -1,10 +1,10 @@
 ﻿namespace Compunet.YoloV8.Utilities;
 
-internal static class ImageContoursHelper
+internal static class ImageContoursDetector
 {
     private static readonly (Func<Point, Point> func, int neighborhood)[] _neighborhood;
 
-    static ImageContoursHelper()
+    static ImageContoursDetector()
     {
         _neighborhood = new (Func<Point, Point>, int)[]
         {

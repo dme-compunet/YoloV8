@@ -269,7 +269,7 @@ public static class PlottingExtensions
 
     private static Image CreateContours(this Image source, Color color, float thickness)
     {
-        var contours = ImageContoursHelper.FindContours(source);
+        var contours = ImageContoursDetector.FindContours(source);
 
         var result = new Image<Rgba32>(source.Width, source.Height);
 

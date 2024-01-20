@@ -2,7 +2,7 @@
 
 public class DetectionResult : YoloV8Result
 {
-    public required IEnumerable<BoundingBox> Boxes { get; init; }
+    public required BoundingBox[] Boxes { get; init; }
 
     public override string ToString()
     {
