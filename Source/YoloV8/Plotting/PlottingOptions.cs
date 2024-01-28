@@ -14,11 +14,11 @@ public abstract class PlottingOptions
 
     private static FontFamily GetDefaultFontFamily()
     {
-        if (OperatingSystem.IsWindows())
-            return SystemFonts.Get("Arial");
+        if (OperatingSystem.IsWindows() && SystemFonts.TryGet("Microsoft YaHei", out FontFamily family))
+            return family;
 
-        if (OperatingSystem.IsAndroid())
-            return SystemFonts.Get("Robot");
+        if (OperatingSystem.IsAndroid() && SystemFonts.TryGet("Robot", out family))
+            return family;
 
         return SystemFonts.Families.First();
     }
