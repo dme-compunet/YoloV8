@@ -47,8 +47,6 @@ internal readonly struct IndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV
 
         var boxes = new IndexedBoundingBox[output.Dimensions[2]];
 
-        var count = 0;
-
         Parallel.For(0, output.Dimensions[2], i =>
         {
             for (int j = 0; j < _metadata.Classes.Count; j++)
@@ -83,10 +81,18 @@ internal readonly struct IndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV
                     Bounds = bounds,
                     Confidence = confidence
                 };
-
-                count++;
             }
         });
+
+        var count = 0;
+
+        for (int i = 0; i < boxes.Length; i++)
+        {
+            if (boxes[i].IsEmpty == false)
+            {
+                count++;
+            }
+        }
 
         var topBoxes = new IndexedBoundingBox[count];
 
