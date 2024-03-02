@@ -1,8 +1,8 @@
 ﻿namespace Compunet.YoloV8;
 
-public class YoloV8Parameters
+public class YoloV8Configuration
 {
-    public static readonly YoloV8Parameters Default = new();
+    public static readonly YoloV8Configuration Default = new();
 
     public float Confidence { get; set; }
 
@@ -12,7 +12,7 @@ public class YoloV8Parameters
 
     public bool SuppressParallelInference { get; set; }
 
-    public YoloV8Parameters()
+    public YoloV8Configuration()
     {
         Confidence = .3f;
         IoU = .45f;

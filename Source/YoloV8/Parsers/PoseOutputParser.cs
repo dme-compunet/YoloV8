@@ -1,6 +1,6 @@
 ﻿namespace Compunet.YoloV8.Parsers;
 
-internal readonly struct PoseOutputParser(YoloV8Metadata metadata, YoloV8Parameters parameters)
+internal readonly struct PoseOutputParser(YoloV8Metadata metadata, YoloV8Configuration configuration)
 {
     public PoseBoundingBox[] Parse(Tensor<float> output, Size originSize)
     {
@@ -12,7 +12,7 @@ internal readonly struct PoseOutputParser(YoloV8Metadata metadata, YoloV8Paramet
         var xRatio = (float)originSize.Width / metadata.ImageSize.Width;
         var yRatio = (float)originSize.Height / metadata.ImageSize.Height;
 
-        if (parameters.KeepOriginalAspectRatio)
+        if (configuration.KeepOriginalAspectRatio)
         {
             var reductionRatio = Math.Min(metadata.ImageSize.Width / (float)originSize.Width, metadata.ImageSize.Height / (float)originSize.Height);
 
@@ -30,7 +30,7 @@ internal readonly struct PoseOutputParser(YoloV8Metadata metadata, YoloV8Paramet
             yPadding = 0;
         }
 
-        var boxes = new IndexedBoundingBoxParser(metadata, parameters).Parse(output, originSize, xPadding, yPadding, xRatio, yRatio);
+        var boxes = new IndexedBoundingBoxParser(metadata, configuration).Parse(output, originSize, xPadding, yPadding, xRatio, yRatio);
 
         var shape = poseMetadata.KeypointShape;
 
