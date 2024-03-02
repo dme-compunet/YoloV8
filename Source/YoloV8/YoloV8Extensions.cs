@@ -10,7 +10,7 @@ public static class YoloV8Extensions
         {
             var output = outputs[0].AsTensor<float>();
 
-            var parser = new PoseOutputParser(predictor.Metadata, predictor.Parameters);
+            var parser = new PoseOutputParser(predictor.Metadata, predictor.Configuration);
 
             var boxes = parser.Parse(output, image);
 
@@ -33,7 +33,7 @@ public static class YoloV8Extensions
         {
             var output = outputs[0].AsTensor<float>();
 
-            var parser = new DetectionOutputParser(predictor.Metadata, predictor.Parameters);
+            var parser = new DetectionOutputParser(predictor.Metadata, predictor.Configuration);
 
             var boxes = parser.Parse(output, image);
 
@@ -54,7 +54,7 @@ public static class YoloV8Extensions
 
         return predictor.Run(selector, (outputs, image, timer) =>
         {
-            var parser = new SegmentationOutputParser(predictor.Metadata, predictor.Parameters);
+            var parser = new SegmentationOutputParser(predictor.Metadata, predictor.Configuration);
 
             var boxesOutput = outputs[0].AsTensor<float>();
             var maskPrototypes = outputs[1].AsTensor<float>();
