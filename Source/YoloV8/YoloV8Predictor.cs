@@ -1,6 +1,6 @@
 ﻿namespace Compunet.YoloV8;
 
-public class YoloV8 : IDisposable
+public class YoloV8Predictor : IDisposable
 {
     #region Private Memebers
 
@@ -26,23 +26,23 @@ public class YoloV8 : IDisposable
 
     #region Ctors
 
-    public YoloV8(ModelSelector selector)
+    public YoloV8Predictor(ModelSelector selector)
         : this(selector.Load(), null, null)
     { }
 
-    public YoloV8(ModelSelector selector, SessionOptions options)
+    public YoloV8Predictor(ModelSelector selector, SessionOptions options)
         : this(selector.Load(), null, options)
     { }
 
-    public YoloV8(ModelSelector selector, YoloV8Metadata metadata)
+    public YoloV8Predictor(ModelSelector selector, YoloV8Metadata metadata)
         : this(selector.Load(), metadata, null)
     { }
 
-    public YoloV8(ModelSelector selector, YoloV8Metadata metadata, SessionOptions options)
+    public YoloV8Predictor(ModelSelector selector, YoloV8Metadata metadata, SessionOptions options)
         : this(selector.Load(), metadata, options)
     { }
 
-    private YoloV8(byte[] model, YoloV8Metadata? metadata, SessionOptions? options)
+    private YoloV8Predictor(byte[] model, YoloV8Metadata? metadata, SessionOptions? options)
     {
         _inference = new(model, options ?? new SessionOptions());
         _inputNames = _inference.InputMetadata.Keys.ToArray();
