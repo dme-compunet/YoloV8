@@ -2,7 +2,7 @@
 
 public static class YoloV8Extensions
 {
-    public static PoseResult Pose(this YoloV8 predictor, ImageSelector selector)
+    public static PoseResult Pose(this YoloV8Predictor predictor, ImageSelector selector)
     {
         predictor.ValidatePoseShape();
 
@@ -25,7 +25,7 @@ public static class YoloV8Extensions
         });
     }
 
-    public static DetectionResult Detect(this YoloV8 predictor, ImageSelector selector)
+    public static DetectionResult Detect(this YoloV8Predictor predictor, ImageSelector selector)
     {
         predictor.ValidateTask(YoloV8Task.Detect);
 
@@ -48,7 +48,7 @@ public static class YoloV8Extensions
         });
     }
 
-    public static SegmentationResult Segment(this YoloV8 predictor, ImageSelector selector)
+    public static SegmentationResult Segment(this YoloV8Predictor predictor, ImageSelector selector)
     {
         predictor.ValidateTask(YoloV8Task.Segment);
 
@@ -72,7 +72,7 @@ public static class YoloV8Extensions
         });
     }
 
-    public static ClassificationResult Classify(this YoloV8 predictor, ImageSelector selector)
+    public static ClassificationResult Classify(this YoloV8Predictor predictor, ImageSelector selector)
     {
         predictor.ValidateTask(YoloV8Task.Classify);
 
@@ -111,35 +111,35 @@ public static class YoloV8Extensions
 
     #region Async Operations
 
-    public static async Task<PoseResult> PoseAsync(this YoloV8 predictor, ImageSelector selector)
+    public static async Task<PoseResult> PoseAsync(this YoloV8Predictor predictor, ImageSelector selector)
     {
         return await Task.Run(() => predictor.Pose(selector));
     }
 
-    public static async Task<DetectionResult> DetectAsync(this YoloV8 predictor, ImageSelector selector)
+    public static async Task<DetectionResult> DetectAsync(this YoloV8Predictor predictor, ImageSelector selector)
     {
         return await Task.Run(() => predictor.Detect(selector));
     }
 
-    public static async Task<SegmentationResult> SegmentAsync(this YoloV8 predictor, ImageSelector selector)
+    public static async Task<SegmentationResult> SegmentAsync(this YoloV8Predictor predictor, ImageSelector selector)
     {
         return await Task.Run(() => predictor.Segment(selector));
     }
 
-    public static async Task<ClassificationResult> ClassifyAsync(this YoloV8 predictor, ImageSelector selector)
+    public static async Task<ClassificationResult> ClassifyAsync(this YoloV8Predictor predictor, ImageSelector selector)
     {
         return await Task.Run(() => predictor.Classify(selector));
     }
 
     #endregion
 
-    private static void ValidateTask(this YoloV8 predictor, YoloV8Task task)
+    private static void ValidateTask(this YoloV8Predictor predictor, YoloV8Task task)
     {
         if (predictor.Metadata.Task != task)
             throw new InvalidOperationException("The loaded model does not support this task");
     }
 
-    private static void ValidatePoseShape(this YoloV8 predictor)
+    private static void ValidatePoseShape(this YoloV8Predictor predictor)
     {
         predictor.ValidateTask(YoloV8Task.Pose);
 
