@@ -1,6 +1,6 @@
 ﻿namespace Compunet.YoloV8.Parsers;
 
-internal readonly struct SegmentationOutputParser(YoloV8Metadata metadata, YoloV8Parameters parameters)
+internal readonly struct SegmentationOutputParser(YoloV8Metadata metadata, YoloV8Configuration configuration)
 {
     public SegmentationBoundingBox[] Parse(Tensor<float> boxesOutput, Tensor<float> maskPrototypes, Size originSize)
     {
@@ -9,7 +9,7 @@ internal readonly struct SegmentationOutputParser(YoloV8Metadata metadata, YoloV
         int xPadding;
         int yPadding;
 
-        if (parameters.KeepOriginalAspectRatio)
+        if (configuration.KeepOriginalAspectRatio)
         {
             var reductionRatio = Math.Min(metadata.ImageSize.Width / (float)originSize.Width, metadata.ImageSize.Height / (float)originSize.Height);
 
@@ -24,7 +24,7 @@ internal readonly struct SegmentationOutputParser(YoloV8Metadata metadata, YoloV
 
         var maskChannelCount = boxesOutput.Dimensions[1] - 4 - metadata.Classes.Count;
 
-        var boxes = new IndexedBoundingBoxParser(_metadata, parameters).Parse(boxesOutput, originSize, xPadding, yPadding);
+        var boxes = new IndexedBoundingBoxParser(_metadata, configuration).Parse(boxesOutput, originSize, xPadding, yPadding);
 
         var result = new SegmentationBoundingBox[boxes.Length];
 

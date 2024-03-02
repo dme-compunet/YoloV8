@@ -1,13 +1,13 @@
 ﻿namespace Compunet.YoloV8.Parsers;
 
-internal readonly struct IndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV8Parameters parameters)
+internal readonly struct IndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV8Configuration configuration)
 {
     public IndexedBoundingBox[] Parse(Tensor<float> output, Size originSize)
     {
         int xPadding;
         int yPadding;
 
-        if (parameters.KeepOriginalAspectRatio)
+        if (configuration.KeepOriginalAspectRatio)
         {
             var reductionRatio = Math.Min(metadata.ImageSize.Width / (float)originSize.Width,
                                           metadata.ImageSize.Height / (float)originSize.Height);
@@ -29,7 +29,7 @@ internal readonly struct IndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV
         var xRatio = (float)originSize.Width / metadata.ImageSize.Width;
         var yRatio = (float)originSize.Height / metadata.ImageSize.Height;
 
-        if (parameters.KeepOriginalAspectRatio)
+        if (configuration.KeepOriginalAspectRatio)
         {
             var maxRatio = Math.Max(xRatio, yRatio);
 
@@ -43,7 +43,7 @@ internal readonly struct IndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV
     public IndexedBoundingBox[] Parse(Tensor<float> output, Size originSize, int xPadding, int yPadding, float xRatio, float yRatio)
     {
         var _metadata = metadata;
-        var _parameters = parameters;
+        var _configuration = configuration;
 
         var boxes = new IndexedBoundingBox[output.Dimensions[2]];
 
@@ -53,7 +53,7 @@ internal readonly struct IndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV
             {
                 var confidence = output[0, j + 4, i];
 
-                if (confidence <= _parameters.Confidence)
+                if (confidence <= _configuration.Confidence)
                     continue;
 
                 var x = output[0, 0, i];
@@ -110,6 +110,6 @@ internal readonly struct IndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV
             topBoxes[topIndex++] = box;
         }
 
-        return NonMaxSuppressionHelper.Suppress(topBoxes, parameters.IoU);
+        return NonMaxSuppressionHelper.Suppress(topBoxes, configuration.IoU);
     }
 }

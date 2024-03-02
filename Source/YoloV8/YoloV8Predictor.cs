@@ -5,7 +5,7 @@ public class YoloV8Predictor : IDisposable
     #region Private Memebers
 
     private readonly YoloV8Metadata _metadata;
-    private readonly YoloV8Parameters _parameters;
+    private readonly YoloV8Configuration _configuration;
 
     private readonly InferenceSession _inference;
     private readonly string[] _inputNames;
@@ -20,7 +20,7 @@ public class YoloV8Predictor : IDisposable
 
     public YoloV8Metadata Metadata => _metadata;
 
-    public YoloV8Parameters Parameters => _parameters;
+    public YoloV8Configuration Configuration => _configuration;
 
     #endregion
 
@@ -48,7 +48,7 @@ public class YoloV8Predictor : IDisposable
         _inputNames = _inference.InputMetadata.Keys.ToArray();
 
         _metadata = metadata ?? YoloV8Metadata.Parse(_inference.ModelMetadata.CustomMetadataMap);
-        _parameters = YoloV8Parameters.Default;
+        _configuration = YoloV8Configuration.Default;
     }
 
     #endregion
@@ -86,7 +86,7 @@ public class YoloV8Predictor : IDisposable
 
     private IDisposableReadOnlyCollection<DisposableNamedOnnxValue> Infer(IReadOnlyCollection<NamedOnnxValue> inputs)
     {
-        if (_parameters.SuppressParallelInference)
+        if (_configuration.SuppressParallelInference)
         {
             lock (_sync)
             {
@@ -104,7 +104,7 @@ public class YoloV8Predictor : IDisposable
         var dimensions = new int[] { 1, 3, modelSize.Height, modelSize.Width };
         var input = new DenseTensor<float>(dimensions);
 
-        PreprocessHelper.ProcessToTensor(image, modelSize, _parameters.KeepOriginalAspectRatio, input, 0);
+        PreprocessHelper.ProcessToTensor(image, modelSize, _configuration.KeepOriginalAspectRatio, input, 0);
 
         return input;
     }
