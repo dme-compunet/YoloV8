@@ -84,13 +84,13 @@ public static class YoloV8Extensions
 
             for (int i = 0; i < output.Count; i++)
             {
-                var cls = predictor.Metadata.Classes[i];
-                var scr = output[i];
+                var name = predictor.Metadata.Names[i];
+                var confidence = output[i];
 
                 probs[i] = new ClassProbability
                 {
-                    Class = cls,
-                    Confidence = scr,
+                    Name = name,
+                    Confidence = confidence,
                 };
             }
 

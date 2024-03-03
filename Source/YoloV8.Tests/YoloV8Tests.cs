@@ -59,7 +59,7 @@ public class YoloV8Tests
 
         var result = predictor.Classify(image);
 
-        Assert.Equal(result.TopClass.Class.Name, label);
+        Assert.Equal(result.TopClass.Name.Name, label);
     }
 
     [Theory]
@@ -82,7 +82,7 @@ public class YoloV8Tests
         Assert.Equal(imageSize, metadata.ImageSize.Width);
         Assert.Equal(imageSize, metadata.ImageSize.Height);
 
-        Assert.Equal(classesCount, metadata.Classes.Count);
+        Assert.Equal(classesCount, metadata.Names.Count);
     }
 
     private static string GetImagePath(string image)

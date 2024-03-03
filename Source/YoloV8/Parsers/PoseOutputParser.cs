@@ -44,7 +44,7 @@ internal readonly struct PoseOutputParser(YoloV8Metadata metadata, YoloV8Configu
 
             for (int i = 0; i < shape.Count; i++)
             {
-                var offset = i * shape.Channels + 4 + poseMetadata.Classes.Count;
+                var offset = i * shape.Channels + 4 + poseMetadata.Names.Count;
 
                 var pointX = (int)((output[0, offset + 0, box.Index] - xPadding) * xRatio);
                 var pointY = (int)((output[0, offset + 1, box.Index] - yPadding) * yRatio);

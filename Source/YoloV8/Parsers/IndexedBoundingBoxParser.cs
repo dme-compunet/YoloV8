@@ -49,7 +49,7 @@ internal readonly struct IndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV
 
         Parallel.For(0, output.Dimensions[2], i =>
         {
-            for (int j = 0; j < _metadata.Classes.Count; j++)
+            for (int j = 0; j < _metadata.Names.Count; j++)
             {
                 var confidence = output[0, j + 4, i];
 
@@ -71,7 +71,7 @@ internal readonly struct IndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV
                 xMax = Math.Clamp(xMax, 0, originSize.Width);
                 yMax = Math.Clamp(yMax, 0, originSize.Height);
 
-                var name = _metadata.Classes[j];
+                var name = _metadata.Names[j];
                 var bounds = Rectangle.FromLTRB(xMin, yMin, xMax, yMax);
 
                 boxes[i] = new IndexedBoundingBox
