@@ -22,7 +22,7 @@ internal readonly struct SegmentationOutputParser(YoloV8Metadata metadata, YoloV
             yPadding = 0;
         }
 
-        var maskChannelCount = boxesOutput.Dimensions[1] - 4 - metadata.Classes.Count;
+        var maskChannelCount = boxesOutput.Dimensions[1] - 4 - metadata.Names.Count;
 
         var boxes = new IndexedBoundingBoxParser(_metadata, configuration).Parse(boxesOutput, originSize, xPadding, yPadding);
 
@@ -32,7 +32,7 @@ internal readonly struct SegmentationOutputParser(YoloV8Metadata metadata, YoloV
         {
             var box = boxes[index];
 
-            var maskWeights = ExtractMaskWeights(boxesOutput, box.Index, maskChannelCount, _metadata.Classes.Count + 4);
+            var maskWeights = ExtractMaskWeights(boxesOutput, box.Index, maskChannelCount, _metadata.Names.Count + 4);
 
             var mask = ProcessMask(maskPrototypes, maskWeights, box.Bounds, originSize, _metadata.ImageSize, xPadding, yPadding);
 
