@@ -26,22 +26,7 @@ public class YoloV8Predictor : IDisposable
 
     #region Ctors
 
-    public YoloV8Predictor(BinarySelector model)
-        : this(model.Load(), null, null)
-    { }
-
-    public YoloV8Predictor(BinarySelector model, SessionOptions options)
-        : this(model.Load(), null, options)
-    { }
-
-    public YoloV8Predictor(BinarySelector model, YoloV8Metadata metadata)
-        : this(model.Load(), metadata, null)
-    { }
-
-    public YoloV8Predictor(BinarySelector model, YoloV8Metadata metadata, SessionOptions options)
-        : this(model.Load(), metadata, options)
-    { }
-
+    public static YoloV8Predictor Create(BinarySelector model) => YoloV8Builder.CreateDefaultBuilder(model).Build();
     internal YoloV8Predictor(BinarySelector model, YoloV8Metadata? metadata, YoloV8Configuration configuration, SessionOptions options)
     {
         _inference = new InferenceSession(model.Load(), options);
@@ -52,14 +37,31 @@ public class YoloV8Predictor : IDisposable
         _configuration = configuration;
     }
 
-    private YoloV8Predictor(byte[] model, YoloV8Metadata? metadata, SessionOptions? options)
-    {
-        _inference = new(model, options ?? new SessionOptions());
-        _inputNames = _inference.InputMetadata.Keys.ToArray();
 
-        _metadata = metadata ?? YoloV8Metadata.Parse(_inference.ModelMetadata.CustomMetadataMap);
-        _configuration = YoloV8Configuration.Default;
-    }
+    //public YoloV8Predictor(BinarySelector model)
+    //    : this(model.Load(), null, null)
+    //{ }
+
+    //public YoloV8Predictor(BinarySelector model, SessionOptions options)
+    //    : this(model.Load(), null, options)
+    //{ }
+
+    //public YoloV8Predictor(BinarySelector model, YoloV8Metadata metadata)
+    //    : this(model.Load(), metadata, null)
+    //{ }
+
+    //public YoloV8Predictor(BinarySelector model, YoloV8Metadata metadata, SessionOptions options)
+    //    : this(model.Load(), metadata, options)
+    //{ }
+
+    //private YoloV8Predictor(byte[] model, YoloV8Metadata? metadata, SessionOptions? options)
+    //{
+    //    _inference = new(model, options ?? new SessionOptions());
+    //    _inputNames = _inference.InputMetadata.Keys.ToArray();
+
+    //    _metadata = metadata ?? YoloV8Metadata.Parse(_inference.ModelMetadata.CustomMetadataMap);
+    //    _configuration = YoloV8Configuration.Default;
+    //}
 
     #endregion
 
@@ -144,7 +146,9 @@ public class YoloV8Predictor : IDisposable
     public void Dispose()
     {
         if (_disposed)
+        {
             return;
+        }
 
         _inference.Dispose();
         _disposed = true;
