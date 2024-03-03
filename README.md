@@ -38,7 +38,7 @@ model.export(format='onnx')
 using Compunet.YoloV8;
 using SixLabors.ImageSharp;
 
-using var predictor = new YoloV8(model);
+using var predictor = YoloV8Predictor.Create("path/to/model");
 
 var result = predictor.Detect("path/to/image");
 // or
@@ -58,7 +58,7 @@ using SixLabors.ImageSharp;
 
 var imagePath = "path/to/image";
 
-using var predictor = new YoloV8("path/to/model");
+using var predictor = YoloV8Predictor.Create("path/to/model");
 
 var result = await predictor.PoseAsync(imagePath);
 
