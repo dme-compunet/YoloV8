@@ -1,4 +1,6 @@
-﻿namespace Compunet.YoloV8;
+﻿using System.Reflection;
+
+namespace Compunet.YoloV8;
 
 public class YoloV8Builder : IYoloV8Builder
 {
@@ -18,8 +20,7 @@ public class YoloV8Builder : IYoloV8Builder
         var builder = CreateBuilder(model).UseMetadateDetect()
                                           .UseDefaultConfiguration();
 
-        // TODO:
-        if (true) // IsGpu
+        if (IsGpuNuGetPackage())
         {
             builder.UseCuda(0);
         }
@@ -65,5 +66,17 @@ public class YoloV8Builder : IYoloV8Builder
         _configuration = configuration;
 
         return this;
+    }
+
+    private static bool IsGpuNuGetPackage()
+    {
+        var assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
+
+        if (assemblyName == "YoloV8.Gpu")
+        {
+            return true;
+        }
+
+        return false;
     }
 }
