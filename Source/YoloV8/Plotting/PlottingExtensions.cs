@@ -215,7 +215,7 @@ public static class PlottingExtensions
 
         var label = result.ToString();
 
-        var classId = result.TopClass.Class.Id;
+        var classId = result.TopClass.Name.Id;
 
         var fill = options.FillColorPalette.GetColor(classId);
         var border = options.BorderColorPalette.GetColor(classId);

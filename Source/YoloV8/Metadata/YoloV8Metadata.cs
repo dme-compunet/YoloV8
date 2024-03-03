@@ -6,7 +6,7 @@ public class YoloV8Metadata(string author,
                             YoloV8Task task,
                             int batch,
                             Size imageSize,
-                            IReadOnlyList<YoloV8Class> classes)
+                            IReadOnlyList<YoloV8Class> names)
 {
     public static YoloV8Metadata Parse(IDictionary<string, string> metadata)
     {
@@ -27,7 +27,7 @@ public class YoloV8Metadata(string author,
         var batch = int.Parse(metadata["batch"]);
 
         var imageSize = ParseSize(metadata["imgsz"]);
-        var classes = ParseClasses(metadata["names"]);
+        var classes = ParseNames(metadata["names"]);
 
         if (task is YoloV8Task.Pose)
         {
@@ -64,7 +64,7 @@ public class YoloV8Metadata(string author,
 
     public Size ImageSize { get; } = imageSize;
 
-    public IReadOnlyList<YoloV8Class> Classes { get; } = classes;
+    public IReadOnlyList<YoloV8Class> Names { get; } = names;
 
     #region Static Parsers
 
@@ -92,7 +92,7 @@ public class YoloV8Metadata(string author,
         return new KeypointShape(count, channels);
     }
 
-    private static YoloV8Class[] ParseClasses(string text)
+    private static YoloV8Class[] ParseNames(string text)
     {
         text = text[1..^1];
 
