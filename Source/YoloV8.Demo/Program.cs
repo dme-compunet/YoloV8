@@ -37,7 +37,7 @@ async Task PoseDemo(string image, string model)
     Console.WriteLine();
 
     Console.WriteLine("Loading model...");
-    using var predictor = new YoloV8Predictor(model);
+    using var predictor = YoloV8Predictor.Create(model);
 
     Console.WriteLine("Working...");
     var result = await predictor.PoseAsync(image);
@@ -66,7 +66,7 @@ async Task DetectDemo(string image, string model)
     Console.WriteLine();
 
     Console.WriteLine("Loading model...");
-    using var predictor = new YoloV8Predictor(model);
+    using var predictor = YoloV8Predictor.Create(model);
 
     Console.WriteLine("Working...");
     var result = await predictor.DetectAsync(image);
@@ -95,7 +95,7 @@ async Task SegmentDemo(string image, string model)
     Console.WriteLine();
 
     Console.WriteLine("Loading model...");
-    using var predictor = new YoloV8Predictor(model);
+    using var predictor = YoloV8Predictor.Create(model);
 
     Console.WriteLine("Working...");
     var result = await predictor.SegmentAsync(image);
@@ -127,7 +127,7 @@ async Task ClassifyDemo(string[] images, string model)
     Console.WriteLine();
 
     Console.WriteLine("Loading model...");
-    using var predictor = new YoloV8Predictor(model);
+    using var predictor = YoloV8Predictor.Create(model);
 
     foreach (var image in images)
     {
