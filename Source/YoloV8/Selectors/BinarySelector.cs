@@ -1,20 +1,20 @@
 ﻿namespace Compunet.YoloV8;
 
-public class ModelSelector
+public class BinarySelector
 {
     private readonly Func<byte[]> _factory;
 
-    public ModelSelector(string path)
+    public BinarySelector(string path)
     {
         _factory = () => File.ReadAllBytes(path);
     }
 
-    public ModelSelector(byte[] data)
+    public BinarySelector(byte[] data)
     {
         _factory = () => data;
     }
 
-    public ModelSelector(Stream stream)
+    public BinarySelector(Stream stream)
     {
         _factory = () =>
         {
@@ -27,7 +27,7 @@ public class ModelSelector
 
     internal byte[] Load() => _factory();
 
-    public static implicit operator ModelSelector(string path) => new(path);
-    public static implicit operator ModelSelector(byte[] data) => new(data);
-    public static implicit operator ModelSelector(Stream stream) => new(stream);
+    public static implicit operator BinarySelector(string path) => new(path);
+    public static implicit operator BinarySelector(byte[] data) => new(data);
+    public static implicit operator BinarySelector(Stream stream) => new(stream);
 }
