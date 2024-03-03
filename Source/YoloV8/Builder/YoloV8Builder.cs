@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace Compunet.YoloV8;
+﻿namespace Compunet.YoloV8;
 
 public class YoloV8Builder : IYoloV8Builder
 {
@@ -13,12 +11,12 @@ public class YoloV8Builder : IYoloV8Builder
 
     private YoloV8Builder(BinarySelector model) => _modelSelector = model;
 
-    public static IYoloV8Builder CreateBuilder(BinarySelector model) => new YoloV8Builder(model);
+    public static IYoloV8Builder CreateEmptyBuilder(BinarySelector model) => new YoloV8Builder(model);
 
     public static IYoloV8Builder CreateDefaultBuilder(BinarySelector model)
     {
-        var builder = CreateBuilder(model).UseMetadateDetect()
-                                          .UseDefaultConfiguration();
+        var builder = CreateEmptyBuilder(model).UseMetadateDetect()
+                                               .UseDefaultConfiguration();
 
         if (IsGpuNuGetPackage())
         {
