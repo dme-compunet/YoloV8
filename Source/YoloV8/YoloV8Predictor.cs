@@ -26,20 +26,20 @@ public class YoloV8Predictor : IDisposable
 
     #region Ctors
 
-    public YoloV8Predictor(ModelSelector selector)
-        : this(selector.Load(), null, null)
+    public YoloV8Predictor(BinarySelector model)
+        : this(model.Load(), null, null)
     { }
 
-    public YoloV8Predictor(ModelSelector selector, SessionOptions options)
-        : this(selector.Load(), null, options)
+    public YoloV8Predictor(BinarySelector model, SessionOptions options)
+        : this(model.Load(), null, options)
     { }
 
-    public YoloV8Predictor(ModelSelector selector, YoloV8Metadata metadata)
-        : this(selector.Load(), metadata, null)
+    public YoloV8Predictor(BinarySelector model, YoloV8Metadata metadata)
+        : this(model.Load(), metadata, null)
     { }
 
-    public YoloV8Predictor(ModelSelector selector, YoloV8Metadata metadata, SessionOptions options)
-        : this(selector.Load(), metadata, options)
+    public YoloV8Predictor(BinarySelector model, YoloV8Metadata metadata, SessionOptions options)
+        : this(model.Load(), metadata, options)
     { }
 
     private YoloV8Predictor(byte[] model, YoloV8Metadata? metadata, SessionOptions? options)
