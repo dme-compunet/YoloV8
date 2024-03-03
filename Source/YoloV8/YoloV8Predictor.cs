@@ -42,6 +42,16 @@ public class YoloV8Predictor : IDisposable
         : this(model.Load(), metadata, options)
     { }
 
+    internal YoloV8Predictor(BinarySelector model, YoloV8Metadata? metadata, YoloV8Configuration configuration, SessionOptions options)
+    {
+        _inference = new InferenceSession(model.Load(), options);
+        _inputNames = _inference.InputMetadata.Keys.ToArray();
+
+        _metadata = metadata ?? YoloV8Metadata.Parse(_inference.ModelMetadata.CustomMetadataMap);
+
+        _configuration = configuration;
+    }
+
     private YoloV8Predictor(byte[] model, YoloV8Metadata? metadata, SessionOptions? options)
     {
         _inference = new(model, options ?? new SessionOptions());
