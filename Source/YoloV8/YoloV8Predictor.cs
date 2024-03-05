@@ -8,7 +8,6 @@ public class YoloV8Predictor : IDisposable
     private readonly YoloV8Configuration _configuration;
 
     private readonly InferenceSession _inference;
-    private readonly string[] _inputNames;
 
     private readonly object _sync = new();
 
@@ -31,8 +30,6 @@ public class YoloV8Predictor : IDisposable
     internal YoloV8Predictor(BinarySelector model, YoloV8Metadata? metadata, YoloV8Configuration? configuration, SessionOptions? options)
     {
         _inference = new InferenceSession(model.Load(), options ?? new SessionOptions());
-
-        _inputNames = _inference.InputMetadata.Keys.ToArray();
 
         _metadata = metadata ?? YoloV8Metadata.Parse(_inference.ModelMetadata.CustomMetadataMap);
         _configuration = configuration ?? YoloV8Configuration.Default;
@@ -90,7 +87,7 @@ public class YoloV8Predictor : IDisposable
 
         var input = Preprocess(image);
 
-        var inputs = MapNamedOnnxValues([input]);
+        var inputs = CreateInputAndMapNames([input]);
 
         timer.StartInference();
 
@@ -132,7 +129,7 @@ public class YoloV8Predictor : IDisposable
         return input;
     }
 
-    private NamedOnnxValue[] MapNamedOnnxValues(ReadOnlySpan<Tensor<float>> inputs)
+    private NamedOnnxValue[] CreateInputAndMapNames(ReadOnlySpan<Tensor<float>> inputs)
     {
         var length = inputs.Length;
 
@@ -140,7 +137,7 @@ public class YoloV8Predictor : IDisposable
 
         for (int i = 0; i < length; i++)
         {
-            var name = _inputNames[i];
+            var name = _inference.InputNames[i];
 
             var value = NamedOnnxValue.CreateFromTensor(name, inputs[i]);
 
