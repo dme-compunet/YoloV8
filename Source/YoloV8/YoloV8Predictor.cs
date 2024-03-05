@@ -26,16 +26,27 @@ public class YoloV8Predictor : IDisposable
 
     #region Ctors
 
-    public static YoloV8Predictor Create(BinarySelector model) => YoloV8Builder.CreateDefaultBuilder(model).Build();
-    internal YoloV8Predictor(BinarySelector model, YoloV8Metadata? metadata, YoloV8Configuration configuration, SessionOptions options)
+    public static YoloV8Predictor Create(BinarySelector model) => YoloV8Builder.CreateDefaultBuilder().UseOnnxModel(model).Build();
+
+    internal YoloV8Predictor(BinarySelector model, YoloV8Metadata? metadata, YoloV8Configuration? configuration, SessionOptions? options)
     {
-        _inference = new InferenceSession(model.Load(), options);
+        _inference = new InferenceSession(model.Load(), options ?? new SessionOptions());
+
         _inputNames = _inference.InputMetadata.Keys.ToArray();
 
         _metadata = metadata ?? YoloV8Metadata.Parse(_inference.ModelMetadata.CustomMetadataMap);
-
-        _configuration = configuration;
+        _configuration = configuration ?? YoloV8Configuration.Default;
     }
+
+    //internal YoloV8Predictor(BinarySelector model, YoloV8Metadata? metadata, YoloV8Configuration configuration, SessionOptions options)
+    //{
+    //    _inference = new InferenceSession(model.Load(), options);
+    //    _inputNames = _inference.InputMetadata.Keys.ToArray();
+
+    //    _metadata = metadata ?? YoloV8Metadata.Parse(_inference.ModelMetadata.CustomMetadataMap);
+
+    //    _configuration = configuration;
+    //}
 
 
     //public YoloV8Predictor(BinarySelector model)
