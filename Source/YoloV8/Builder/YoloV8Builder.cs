@@ -2,21 +2,16 @@
 
 public class YoloV8Builder : IYoloV8Builder
 {
-    private readonly BinarySelector _modelSelector;
+    private BinarySelector? _model;
 
     private SessionOptions? _sessionOptions;
 
     private YoloV8Metadata? _metadata;
     private YoloV8Configuration? _configuration;
 
-    private YoloV8Builder(BinarySelector model) => _modelSelector = model;
-
-    public static IYoloV8Builder CreateEmptyBuilder(BinarySelector model) => new YoloV8Builder(model);
-
-    public static IYoloV8Builder CreateDefaultBuilder(BinarySelector model)
+    public static IYoloV8Builder CreateDefaultBuilder()
     {
-        var builder = CreateEmptyBuilder(model).UseMetadateDetect()
-                                               .UseDefaultConfiguration();
+        var builder = new YoloV8Builder();
 
         if (IsGpuNuGetPackage())
         {
@@ -28,10 +23,19 @@ public class YoloV8Builder : IYoloV8Builder
 
     public YoloV8Predictor Build()
     {
-        var options = _sessionOptions ?? new SessionOptions();
-        var configuration = _configuration ?? new YoloV8Configuration();
+        if (_model is null)
+        {
+            throw new ApplicationException("No model selected");
+        }
 
-        return new YoloV8Predictor(_modelSelector, _metadata, configuration, options);
+        return new YoloV8Predictor(_model, _metadata, _configuration, _sessionOptions);
+    }
+
+    public IYoloV8Builder UseOnnxModel(BinarySelector model)
+    {
+        _model = model;
+
+        return this;
     }
 
     public IYoloV8Builder UseCuda(int deviceId)
@@ -41,16 +45,9 @@ public class YoloV8Builder : IYoloV8Builder
         return this;
     }
 
-    public IYoloV8Builder UseDefaultConfiguration()
+    public IYoloV8Builder WithMetadata(YoloV8Metadata metadata)
     {
-        _configuration = YoloV8Configuration.Default;
-
-        return this;
-    }
-
-    public IYoloV8Builder UseMetadateDetect()
-    {
-        _metadata = null;
+        _metadata = metadata;
 
         return this;
     }
