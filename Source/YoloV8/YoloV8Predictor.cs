@@ -2,28 +2,18 @@
 
 public class YoloV8Predictor : IDisposable
 {
-    #region Private Memebers
-
     private readonly YoloV8Metadata _metadata;
     private readonly YoloV8Configuration _configuration;
 
     private readonly InferenceSession _inference;
 
-    private readonly object _sync = new();
+    private readonly object _locker = new();
 
     private bool _disposed;
-
-    #endregion
-
-    #region Public Properties
 
     public YoloV8Metadata Metadata => _metadata;
 
     public YoloV8Configuration Configuration => _configuration;
-
-    #endregion
-
-    #region Ctors
 
     public static YoloV8Predictor Create(BinarySelector model) => YoloV8Builder.CreateDefaultBuilder().UseOnnxModel(model).Build();
 
@@ -34,46 +24,6 @@ public class YoloV8Predictor : IDisposable
         _metadata = metadata ?? YoloV8Metadata.Parse(_inference.ModelMetadata.CustomMetadataMap);
         _configuration = configuration ?? YoloV8Configuration.Default;
     }
-
-    //internal YoloV8Predictor(BinarySelector model, YoloV8Metadata? metadata, YoloV8Configuration configuration, SessionOptions options)
-    //{
-    //    _inference = new InferenceSession(model.Load(), options);
-    //    _inputNames = _inference.InputMetadata.Keys.ToArray();
-
-    //    _metadata = metadata ?? YoloV8Metadata.Parse(_inference.ModelMetadata.CustomMetadataMap);
-
-    //    _configuration = configuration;
-    //}
-
-
-    //public YoloV8Predictor(BinarySelector model)
-    //    : this(model.Load(), null, null)
-    //{ }
-
-    //public YoloV8Predictor(BinarySelector model, SessionOptions options)
-    //    : this(model.Load(), null, options)
-    //{ }
-
-    //public YoloV8Predictor(BinarySelector model, YoloV8Metadata metadata)
-    //    : this(model.Load(), metadata, null)
-    //{ }
-
-    //public YoloV8Predictor(BinarySelector model, YoloV8Metadata metadata, SessionOptions options)
-    //    : this(model.Load(), metadata, options)
-    //{ }
-
-    //private YoloV8Predictor(byte[] model, YoloV8Metadata? metadata, SessionOptions? options)
-    //{
-    //    _inference = new(model, options ?? new SessionOptions());
-    //    _inputNames = _inference.InputMetadata.Keys.ToArray();
-
-    //    _metadata = metadata ?? YoloV8Metadata.Parse(_inference.ModelMetadata.CustomMetadataMap);
-    //    _configuration = YoloV8Configuration.Default;
-    //}
-
-    #endregion
-
-    #region Run
 
     public TResult Run<TResult>(ImageSelector selector, PostprocessContext<TResult> postprocess) where TResult : YoloV8Result
     {
@@ -100,15 +50,11 @@ public class YoloV8Predictor : IDisposable
         return postprocess(list, originSize, timer);
     }
 
-    #endregion
-
-    #region Private Methods
-
     private IDisposableReadOnlyCollection<DisposableNamedOnnxValue> Infer(IReadOnlyCollection<NamedOnnxValue> inputs)
     {
         if (_configuration.SuppressParallelInference)
         {
-            lock (_sync)
+            lock (_locker)
             {
                 return _inference.Run(inputs);
             }
@@ -147,10 +93,6 @@ public class YoloV8Predictor : IDisposable
         return values;
     }
 
-    #endregion
-
-    #region Dispose
-
     public void Dispose()
     {
         if (_disposed)
@@ -163,6 +105,4 @@ public class YoloV8Predictor : IDisposable
 
         GC.SuppressFinalize(this);
     }
-
-    #endregion
 }
