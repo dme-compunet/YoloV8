@@ -5,6 +5,7 @@ internal static class NonMaxSuppressionHelper
     public static IndexedBoundingBox[] Suppress(IndexedBoundingBox[] boxes, float iouThreshold)
     {
         Array.Sort(boxes);
+        Array.Reverse(boxes); // TODO: Prefer reversed for loop to improve preferences
 
         var boxCount = boxes.Length;
 
@@ -34,15 +35,18 @@ internal static class NonMaxSuppressionHelper
 
                 var boxB = boxes[j];
 
-                if (CalculateIoU(boxA.Bounds, boxB.Bounds) > iouThreshold)
+                if (boxA.Class == boxB.Class)
                 {
-                    isNotActiveBoxes[j] = true;
-
-                    activeCount--;
-
-                    if (activeCount <= 0)
+                    if (CalculateIoU(boxA.Bounds, boxB.Bounds) > iouThreshold)
                     {
-                        break;
+                        isNotActiveBoxes[j] = true;
+
+                        activeCount--;
+
+                        if (activeCount <= 0)
+                        {
+                            break;
+                        }
                     }
                 }
             }
