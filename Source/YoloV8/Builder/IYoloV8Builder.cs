@@ -4,7 +4,7 @@ public interface IYoloV8Builder
 {
     public IYoloV8Builder UseOnnxModel(BinarySelector model);
 
-#if GpuRelease
+#if GPURELEASE
 
     public IYoloV8Builder UseCuda(int deviceId = 0);
 
