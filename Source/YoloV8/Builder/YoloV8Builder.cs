@@ -13,10 +13,9 @@ public class YoloV8Builder : IYoloV8Builder
     {
         var builder = new YoloV8Builder();
 
-        if (IsGpuNuGetPackage())
-        {
-            builder.UseCuda(0);
-        }
+#if GpuRelease
+        builder.UseCuda(0);
+#endif
 
         return builder;
     }
@@ -38,12 +37,37 @@ public class YoloV8Builder : IYoloV8Builder
         return this;
     }
 
+#if GpuRelease
+
     public IYoloV8Builder UseCuda(int deviceId)
     {
         _sessionOptions = SessionOptions.MakeSessionOptionWithCudaProvider(deviceId);
 
         return this;
     }
+
+    public IYoloV8Builder UseRocm(int deviceId)
+    {
+        _sessionOptions = SessionOptions.MakeSessionOptionWithRocmProvider(deviceId);
+
+        return this;
+    }
+
+    public IYoloV8Builder UseTensorrt(int deviceId)
+    {
+        _sessionOptions = SessionOptions.MakeSessionOptionWithTensorrtProvider(deviceId);
+
+        return this;
+    }
+
+    public IYoloV8Builder UseTvm(string settings = "")
+    {
+        _sessionOptions = SessionOptions.MakeSessionOptionWithTvmProvider(settings);
+
+        return this;
+    }
+
+#endif
 
     public IYoloV8Builder WithMetadata(YoloV8Metadata metadata)
     {
@@ -61,17 +85,5 @@ public class YoloV8Builder : IYoloV8Builder
         _configuration = configuration;
 
         return this;
-    }
-
-    private static bool IsGpuNuGetPackage()
-    {
-        var assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
-
-        if (assemblyName == "YoloV8.Gpu")
-        {
-            return true;
-        }
-
-        return false;
     }
 }
