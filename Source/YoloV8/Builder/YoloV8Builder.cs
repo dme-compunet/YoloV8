@@ -4,7 +4,9 @@ public class YoloV8Builder : IYoloV8Builder
 {
     private BinarySelector? _model;
 
+#if GPURELEASE
     private SessionOptions? _sessionOptions;
+#endif
 
     private YoloV8Metadata? _metadata;
     private YoloV8Configuration? _configuration;
@@ -13,7 +15,7 @@ public class YoloV8Builder : IYoloV8Builder
     {
         var builder = new YoloV8Builder();
 
-#if GpuRelease
+#if GPURELEASE
         builder.UseCuda(0);
 #endif
 
@@ -27,7 +29,11 @@ public class YoloV8Builder : IYoloV8Builder
             throw new ApplicationException("No model selected");
         }
 
+#if GPURELEASE
         return new YoloV8Predictor(_model, _metadata, _configuration, _sessionOptions);
+#else
+        return new YoloV8Predictor(_model, _metadata, _configuration, null);
+#endif
     }
 
     public IYoloV8Builder UseOnnxModel(BinarySelector model)
@@ -37,7 +43,7 @@ public class YoloV8Builder : IYoloV8Builder
         return this;
     }
 
-#if GpuRelease
+#if GPURELEASE
 
     public IYoloV8Builder UseCuda(int deviceId)
     {

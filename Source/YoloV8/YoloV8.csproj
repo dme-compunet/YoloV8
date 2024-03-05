@@ -7,14 +7,19 @@
 		<RootNamespace>Compunet.YoloV8</RootNamespace>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<PackageId>YoloV8</PackageId>
+		<AssemblyName>YoloV8</AssemblyName>
+	</PropertyGroup>
+
 	<PropertyGroup Condition="'$(Configuration)' == 'GpuRelease'">
-		<Optimize>true</Optimize>
+		<PackageId>YoloV8.Gpu</PackageId>
+		<AssemblyName>YoloV8.Gpu</AssemblyName>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' == 'Release' OR '$(Configuration)' == 'GpuRelease'">
+		<Optimize>true</Optimize>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<PackageId Condition="'$(Configuration)' != 'GpuRelease'">YoloV8</PackageId>
-		<PackageId Condition="'$(Configuration)' == 'GpuRelease'">YoloV8.Gpu</PackageId>
 		<Description>Use YOLOv8 in real-time for object detection, instance segmentation, pose estimation and image classification, via ONNX Runtime</Description>
 		<RepositoryUrl>https://github.com/dme-compunet/YOLOv8</RepositoryUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
