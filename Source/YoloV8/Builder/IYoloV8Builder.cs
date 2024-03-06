@@ -20,5 +20,7 @@ public interface IYoloV8Builder
 
     public IYoloV8Builder WithConfiguration(Action<YoloV8Configuration> configure);
 
+    public IYoloV8Builder WithSessionOptions(SessionOptions sessionOptions);
+
     public YoloV8Predictor Build();
 }
