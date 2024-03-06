@@ -4,9 +4,7 @@ public class YoloV8Builder : IYoloV8Builder
 {
     private BinarySelector? _model;
 
-#if GPURELEASE
     private SessionOptions? _sessionOptions;
-#endif
 
     private YoloV8Metadata? _metadata;
     private YoloV8Configuration? _configuration;
@@ -29,11 +27,7 @@ public class YoloV8Builder : IYoloV8Builder
             throw new ApplicationException("No model selected");
         }
 
-#if GPURELEASE
         return new YoloV8Predictor(_model, _metadata, _configuration, _sessionOptions);
-#else
-        return new YoloV8Predictor(_model, _metadata, _configuration, null);
-#endif
     }
 
     public IYoloV8Builder UseOnnxModel(BinarySelector model)
@@ -45,33 +39,13 @@ public class YoloV8Builder : IYoloV8Builder
 
 #if GPURELEASE
 
-    public IYoloV8Builder UseCuda(int deviceId)
-    {
-        _sessionOptions = SessionOptions.MakeSessionOptionWithCudaProvider(deviceId);
+    public IYoloV8Builder UseCuda(int deviceId) => WithSessionOptions(SessionOptions.MakeSessionOptionWithCudaProvider(deviceId));
 
-        return this;
-    }
+    public IYoloV8Builder UseRocm(int deviceId) => WithSessionOptions(SessionOptions.MakeSessionOptionWithRocmProvider(deviceId));
 
-    public IYoloV8Builder UseRocm(int deviceId)
-    {
-        _sessionOptions = SessionOptions.MakeSessionOptionWithRocmProvider(deviceId);
+    public IYoloV8Builder UseTensorrt(int deviceId) => WithSessionOptions(SessionOptions.MakeSessionOptionWithTensorrtProvider(deviceId));
 
-        return this;
-    }
-
-    public IYoloV8Builder UseTensorrt(int deviceId)
-    {
-        _sessionOptions = SessionOptions.MakeSessionOptionWithTensorrtProvider(deviceId);
-
-        return this;
-    }
-
-    public IYoloV8Builder UseTvm(string settings = "")
-    {
-        _sessionOptions = SessionOptions.MakeSessionOptionWithTvmProvider(settings);
-
-        return this;
-    }
+    public IYoloV8Builder UseTvm(string settings = "") => WithSessionOptions(SessionOptions.MakeSessionOptionWithTvmProvider(settings));
 
 #endif
 
@@ -89,6 +63,13 @@ public class YoloV8Builder : IYoloV8Builder
         configure(configuration);
 
         _configuration = configuration;
+
+        return this;
+    }
+
+    public IYoloV8Builder WithSessionOptions(SessionOptions sessionOptions)
+    {
+        _sessionOptions = sessionOptions;
 
         return this;
     }
