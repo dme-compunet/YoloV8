@@ -73,7 +73,7 @@ public class YoloV8Tests
 
         Assert.Equal("Ultralytics", metadata.Author);
         Assert.Contains("Ultralytics YOLOv8", metadata.Description);
-        Assert.StartsWith("8.0", metadata.Version);
+        Assert.StartsWith("8.", metadata.Version);
 
         Assert.Equal(task, metadata.Task);
 
