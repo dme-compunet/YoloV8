@@ -1,6 +1,6 @@
 ﻿namespace Compunet.YoloV8;
 
-public static class YoloV8Extensions
+public static partial class YoloV8Extensions
 {
     public static PoseResult Pose(this YoloV8Predictor predictor, ImageSelector selector)
     {
