@@ -48,6 +48,29 @@ public static partial class YoloV8Extensions
         });
     }
 
+    public static ObbDetectionResult DetectObb(this YoloV8Predictor predictor, ImageSelector selector)
+    {
+        predictor.ValidateTask(YoloV8Task.Obb);
+
+        return predictor.Run(selector, (outputs, image, timer) =>
+        {
+            var output = outputs[0].AsTensor<float>();
+
+            var parser = new ObbDetectionOutputParser(predictor.Metadata, predictor.Configuration);
+
+            var boxes = parser.Parse(output, image);
+
+            var speed = timer.Stop();
+
+            return new ObbDetectionResult
+            {
+                Boxes = boxes,
+                Image = image,
+                Speed = speed,
+            };
+        });
+    }
+
     public static SegmentationResult Segment(this YoloV8Predictor predictor, ImageSelector selector)
     {
         predictor.ValidateTask(YoloV8Task.Segment);
@@ -119,6 +142,11 @@ public static partial class YoloV8Extensions
     public static async Task<DetectionResult> DetectAsync(this YoloV8Predictor predictor, ImageSelector selector)
     {
         return await Task.Run(() => predictor.Detect(selector));
+    }
+
+    public static async Task<ObbDetectionResult> DetectObbAsync(this YoloV8Predictor predictor, ImageSelector selector)
+    {
+        return await Task.Run(() => predictor.DetectObb(selector));
     }
 
     public static async Task<SegmentationResult> SegmentAsync(this YoloV8Predictor predictor, ImageSelector selector)
