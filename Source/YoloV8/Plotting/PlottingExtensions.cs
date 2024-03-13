@@ -1,4 +1,6 @@
-﻿namespace Compunet.YoloV8.Plotting;
+﻿using SixLabors.Fonts;
+
+namespace Compunet.YoloV8.Plotting;
 
 public static class PlottingExtensions
 {
@@ -30,9 +32,14 @@ public static class PlottingExtensions
             var label = $"{box.Class.Name} {box.Confidence:N}";
             var color = options.ColorPalette.GetColor(box.Class.Id);
 
+            var points = GetPoints(box);
+            var textLocation = points[0];
+
             process.Mutate(context =>
             {
-                DrawBoundingBox(context, box.Bounds, color, boxBorderThickness, .1F, label, textOptions, textPadding);
+                DrawBoundingBox(context, points, color, boxBorderThickness, .1f);
+
+                DrawTextLabel(context, label, textLocation, color, boxBorderThickness, textPadding, textOptions);
 
                 // Draw lines
                 for (int i = 0; i < options.Skeleton.Connections.Count; i++)
@@ -103,9 +110,57 @@ public static class PlottingExtensions
             var label = $"{box.Class.Name} {box.Confidence:N}";
             var color = options.ColorPalette.GetColor(box.Class.Id);
 
+            var points = GetPoints(box);
+            var textLocation = points[0]; // The first point is top left
+
             process.Mutate(context =>
             {
-                DrawBoundingBox(context, box.Bounds, color, thickness, .1F, label, textOptions, textPadding);
+                DrawBoundingBox(context, points, color, thickness, .1f);
+
+                DrawTextLabel(context, label, textLocation, color, thickness, textPadding, textOptions);
+            });
+        }
+
+        return process;
+    }
+
+    #endregion
+
+    #region ObbDetection
+
+    public static Image PlotImage(this ObbDetectionResult result, ImageSelector<Rgba32> originImage) => result.PlotImage(originImage, DetectionPlottingOptions.Default);
+
+    public static Image PlotImage(this ObbDetectionResult result, ImageSelector<Rgba32> originImage, DetectionPlottingOptions options)
+    {
+        var process = originImage.Load(true);
+
+        process.Mutate(x => x.AutoOrient());
+
+        EnsureSize(process.Size, result.Image);
+
+        var size = result.Image;
+
+        var ratio = Math.Max(size.Width, size.Height) / 640f;
+
+        var textOptions = new TextOptions(options.FontFamily.CreateFont(options.FontSize * ratio));
+
+        var textPadding = options.TextHorizontalPadding * ratio;
+
+        var thickness = options.BoxBorderThickness * ratio;
+
+        foreach (var box in result.Boxes)
+        {
+            var label = $"{box.Class.Name} {box.Confidence:N}";
+            var color = options.ColorPalette.GetColor(box.Class.Id);
+
+            var points = GetPoints(box);
+            var textLocation = points.MinBy(p => p.Y);
+
+            process.Mutate(context =>
+            {
+                DrawBoundingBox(context, points, color, thickness, .1f);
+
+                DrawTextLabel(context, label, textLocation, color, thickness, textPadding, textOptions);
             });
         }
 
@@ -177,16 +232,14 @@ public static class PlottingExtensions
             var label = $"{box.Class.Name} {box.Confidence:N}";
             var color = options.ColorPalette.GetColor(box.Class.Id);
 
+            var points = GetPoints(box);
+            var textLocation = points[0];
+
             process.Mutate(context =>
             {
-                DrawBoundingBox(context,
-                                box.Bounds,
-                                color,
-                                thickness,
-                                0F,
-                                label,
-                                textOptions,
-                                textPadding);
+                DrawBoundingBox(context, points, color, thickness, .1f);
+
+                DrawTextLabel(context, label, textLocation, color, thickness, textPadding, textOptions);
             });
         }
 
@@ -233,41 +286,36 @@ public static class PlottingExtensions
 
     #region Private Methods
 
-    private static void DrawBoundingBox(IImageProcessingContext context,
-                                        Rectangle bounds,
-                                        Color color,
-                                        float borderThickness,
-                                        float fillOpacity,
-                                        string labelText,
-                                        TextOptions textOptions,
-                                        float textPadding)
+    private static void DrawBoundingBox(IImageProcessingContext context, PointF[] points, Color color, float thickness, float opacity)
     {
-        var polygon = new RectangularPolygon(bounds);
+        var polygon = new Polygon(points);
 
-        context.Draw(color, borderThickness, polygon);
+        context.Draw(color, thickness, polygon);
 
-        if (fillOpacity > 0F)
-            context.Fill(color.WithAlpha(fillOpacity), polygon);
+        if (opacity > 0f)
+        {
+            context.Fill(color.WithAlpha(opacity), polygon);
+        }
+    }
 
-        var rendered = TextMeasurer.MeasureSize(labelText, textOptions);
-        var renderedSize = new Size((int)(rendered.Width + textPadding), (int)rendered.Height);
-
-        var location = bounds.Location;
+    private static void DrawTextLabel(IImageProcessingContext context, string text, PointF location, Color color, float thickness, float padding, TextOptions options)
+    {
+        var rendered = TextMeasurer.MeasureSize(text, options);
+        var renderedSize = new Size((int)(rendered.Width + padding), (int)rendered.Height);
 
         location.Offset(0, -renderedSize.Height);
 
-        //var textLocation = new Point((int)(location.X + textPadding / 2), location.Y);
-        var textLocation = new PointF(location.X + textPadding / 2, location.Y);
+        var textLocation = new PointF(location.X + padding / 2, location.Y);
 
         var textBoxPolygon = new RectangularPolygon(location, renderedSize);
 
         context.Fill(color, textBoxPolygon);
-        context.Draw(color, borderThickness, textBoxPolygon);
+        context.Draw(color, thickness, textBoxPolygon);
 
-        context.DrawText(labelText, textOptions.Font, Color.White, textLocation);
+        context.DrawText(text, options.Font, Color.White, textLocation);
     }
 
-    private static Image CreateContours(this Image source, Color color, float thickness)
+    private static Image<Rgba32> CreateContours(this Image source, Color color, float thickness)
     {
         var contours = ImageContoursDetector.FindContours(source);
 
@@ -276,7 +324,9 @@ public static class PlottingExtensions
         foreach (var points in contours)
         {
             if (points.Count < 2)
+            {
                 continue;
+            }
 
             var pathBuilder = new PathBuilder();
             pathBuilder.AddLines(points.Select(x => (PointF)x));
@@ -292,11 +342,32 @@ public static class PlottingExtensions
         return result;
     }
 
+    private static PointF[] GetPoints(BoundingBox box)
+    {
+        var rect = box.Bounds;
+
+        return
+        [
+            new PointF(rect.Left, rect.Top),
+            new PointF(rect.Right, rect.Top),
+            new PointF(rect.Right, rect.Bottom),
+            new PointF(rect.Left, rect.Bottom),
+        ];
+    }
+
+    private static PointF[] GetPoints(ObbBoundingBox box)
+    {
+        var points = box.GetCornerPoints();
+
+        return [.. points.Select(point => new PointF(point.X, point.Y))];
+    }
 
     private static void EnsureSize(Size origin, Size result)
     {
         if (origin != result)
+        {
             throw new InvalidOperationException("Original image size must to be equals to prediction result image size");
+        }
     }
 
     #endregion
