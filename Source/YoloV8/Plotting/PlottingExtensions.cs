@@ -1,6 +1,4 @@
-﻿using SixLabors.Fonts;
-
-namespace Compunet.YoloV8.Plotting;
+﻿namespace Compunet.YoloV8.Plotting;
 
 public static class PlottingExtensions
 {
