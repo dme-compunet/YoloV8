@@ -51,8 +51,6 @@
 #define use_lines
 
 
-using System;
-using System.Collections.Generic;
 //using System.Text;          //for Int128.AsString() & StringBuilder
 //using System.IO;            //debugging with streamReader & StreamWriter
 //using System.Windows.Forms; //debugging to clipboard
