@@ -2,12 +2,10 @@
 
 public static class PlottingExtensions
 {
-    #region Pose
-
-    public static Image PlotImage(this PoseResult result, ImageSelector<Rgba32> originImage) => PlotImage(result, originImage, PosePlottingOptions.Default);
-
-    public static Image PlotImage(this PoseResult result, ImageSelector<Rgba32> originImage, PosePlottingOptions options)
+    public static Image PlotImage(this PoseResult result, ImageSelector<Rgba32> originImage, PosePlottingOptions? options = null)
     {
+        options ??= PosePlottingOptions.Default;
+
         var process = originImage.Load(true);
 
         EnsureSize(process.Size, result.Image);
@@ -79,14 +77,10 @@ public static class PlottingExtensions
         return process;
     }
 
-    #endregion
-
-    #region Detection
-
-    public static Image PlotImage(this DetectionResult result, ImageSelector<Rgba32> originImage) => result.PlotImage(originImage, DetectionPlottingOptions.Default);
-
-    public static Image PlotImage(this DetectionResult result, ImageSelector<Rgba32> originImage, DetectionPlottingOptions options)
+    public static Image PlotImage(this DetectionResult result, ImageSelector<Rgba32> originImage, DetectionPlottingOptions? options = null)
     {
+        options ??= DetectionPlottingOptions.Default;
+
         var process = originImage.Load(true);
 
         process.Mutate(x => x.AutoOrient());
@@ -122,14 +116,10 @@ public static class PlottingExtensions
         return process;
     }
 
-    #endregion
-
-    #region ObbDetection
-
-    public static Image PlotImage(this ObbDetectionResult result, ImageSelector<Rgba32> originImage) => result.PlotImage(originImage, DetectionPlottingOptions.Default);
-
-    public static Image PlotImage(this ObbDetectionResult result, ImageSelector<Rgba32> originImage, DetectionPlottingOptions options)
+    public static Image PlotImage(this ObbDetectionResult result, ImageSelector<Rgba32> originImage, DetectionPlottingOptions? options = null)
     {
+        options ??= DetectionPlottingOptions.Default;
+
         var process = originImage.Load(true);
 
         process.Mutate(x => x.AutoOrient());
@@ -165,14 +155,10 @@ public static class PlottingExtensions
         return process;
     }
 
-    #endregion
-
-    #region Segmentation
-
-    public static Image PlotImage(this SegmentationResult result, ImageSelector<Rgba32> originImage) => result.PlotImage(originImage, SegmentationPlottingOptions.Default);
-
-    public static Image PlotImage(this SegmentationResult result, ImageSelector<Rgba32> originImage, SegmentationPlottingOptions options)
+    public static Image PlotImage(this SegmentationResult result, ImageSelector<Rgba32> originImage, SegmentationPlottingOptions? options = null)
     {
+        options ??= SegmentationPlottingOptions.Default;
+
         var process = originImage.Load(true);
 
         EnsureSize(process.Size, result.Image);
@@ -246,14 +232,10 @@ public static class PlottingExtensions
         return process;
     }
 
-    #endregion
-
-    #region Classification
-
-    public static Image PlotImage(this ClassificationResult result, ImageSelector<Rgba32> originImage) => PlotImage(result, originImage, ClassificationPlottingOptions.Default);
-
-    public static Image PlotImage(this ClassificationResult result, ImageSelector<Rgba32> originImage, ClassificationPlottingOptions options)
+    public static Image PlotImage(this ClassificationResult result, ImageSelector<Rgba32> originImage, ClassificationPlottingOptions? options = null)
     {
+        options ??= ClassificationPlottingOptions.Default;
+
         var process = originImage.Load(true);
 
         EnsureSize(process.Size, result.Image);
@@ -279,8 +261,6 @@ public static class PlottingExtensions
 
         return process;
     }
-
-    #endregion
 
     #region Private Methods
 
