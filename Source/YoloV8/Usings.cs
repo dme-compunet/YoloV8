@@ -2,6 +2,7 @@
 global using Compunet.YoloV8.Extensions;
 global using Compunet.YoloV8.Metadata;
 global using Compunet.YoloV8.Parsers;
+global using Compunet.YoloV8.Plotting;
 global using Compunet.YoloV8.Timing;
 global using Compunet.YoloV8.Utilities;
 global using Microsoft.ML.OnnxRuntime;

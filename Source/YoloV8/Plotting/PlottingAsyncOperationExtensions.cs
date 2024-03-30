@@ -12,6 +12,11 @@ public static class PlottingAsyncOperationExtensions
         return await Task.Run(() => result.PlotImage(originImage, options));
     }
 
+    public static async Task<Image> PlotImageAsync(this ObbDetectionResult result, Image originImage, DetectionPlottingOptions? options = null)
+    {
+        return await Task.Run(() => result.PlotImage(originImage, options));
+    }
+
     public static async Task<Image> PlotImageAsync(this SegmentationResult result, Image originImage, SegmentationPlottingOptions? options = null)
     {
         return await Task.Run(() => result.PlotImage(originImage, options));
