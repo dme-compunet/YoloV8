@@ -2,18 +2,15 @@
 
 public class YoloV8Predictor : IDisposable
 {
-    private readonly YoloV8Metadata _metadata;
-    private readonly YoloV8Configuration _configuration;
-
     private readonly InferenceSession _inference;
 
     private readonly object _locker = new();
 
     private bool _disposed;
 
-    public YoloV8Metadata Metadata => _metadata;
+    public YoloV8Metadata Metadata { get; }
 
-    public YoloV8Configuration Configuration => _configuration;
+    public YoloV8Configuration Configuration { get; }
 
     public static YoloV8Predictor Create(BinarySelector model) => YoloV8Builder.CreateDefaultBuilder().UseOnnxModel(model).Build();
 
@@ -21,12 +18,14 @@ public class YoloV8Predictor : IDisposable
     {
         _inference = new InferenceSession(model.Load(), options ?? new SessionOptions());
 
-        _metadata = metadata ?? YoloV8Metadata.Parse(_inference.ModelMetadata.CustomMetadataMap);
-        _configuration = configuration ?? YoloV8Configuration.Default;
+        Metadata = metadata ?? YoloV8Metadata.Parse(_inference.ModelMetadata.CustomMetadataMap);
+        Configuration = configuration ?? YoloV8Configuration.Default;
     }
 
-    public TResult Run<TResult>(ImageSelector selector, PostprocessContext<TResult> postprocess) where TResult : YoloV8Result
+    public TResult Run<TResult>(ImageSelector selector, PostprocessContext<TResult> postprocess, YoloV8Configuration? configuration = null) where TResult : YoloV8Result
     {
+        configuration ??= Configuration;
+
         using var image = selector.Load(true);
 
         var originSize = image.Size;
@@ -35,13 +34,13 @@ public class YoloV8Predictor : IDisposable
 
         timer.StartPreprocess();
 
-        var input = Preprocess(image);
+        var input = Preprocess(image, configuration);
 
         var inputs = CreateInputAndMapNames([input]);
 
         timer.StartInference();
 
-        using var outputs = Infer(inputs);
+        using var outputs = Infer(inputs, configuration);
 
         var list = new List<NamedOnnxValue>(outputs);
 
@@ -50,9 +49,9 @@ public class YoloV8Predictor : IDisposable
         return postprocess(list, originSize, timer);
     }
 
-    private IDisposableReadOnlyCollection<DisposableNamedOnnxValue> Infer(IReadOnlyCollection<NamedOnnxValue> inputs)
+    private IDisposableReadOnlyCollection<DisposableNamedOnnxValue> Infer(IReadOnlyCollection<NamedOnnxValue> inputs, YoloV8Configuration configuration)
     {
-        if (_configuration.SuppressParallelInference)
+        if (configuration.SuppressParallelInference)
         {
             lock (_locker)
             {
@@ -63,14 +62,14 @@ public class YoloV8Predictor : IDisposable
         return _inference.Run(inputs);
     }
 
-    private Tensor<float> Preprocess(Image<Rgb24> image)
+    private Tensor<float> Preprocess(Image<Rgb24> image, YoloV8Configuration configuration)
     {
-        var modelSize = _metadata.ImageSize;
+        var modelSize = Metadata.ImageSize;
 
         var dimensions = new int[] { 1, 3, modelSize.Height, modelSize.Width };
         var input = new DenseTensor<float>(dimensions);
 
-        PreprocessHelper.ProcessToTensor(image, modelSize, _configuration.KeepOriginalAspectRatio, input, 0);
+        PreprocessHelper.ProcessToTensor(image, modelSize, configuration.KeepOriginalAspectRatio, input, 0);
 
         return input;
     }

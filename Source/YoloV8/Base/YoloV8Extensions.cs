@@ -2,15 +2,17 @@
 
 public static partial class YoloV8Extensions
 {
-    public static PoseResult Pose(this YoloV8Predictor predictor, ImageSelector selector)
+    public static PoseResult Pose(this YoloV8Predictor predictor, ImageSelector selector, YoloV8Configuration? configuration = null)
     {
+        configuration ??= predictor.Configuration;
+
         predictor.ValidatePoseShape();
 
         return predictor.Run(selector, (outputs, image, timer) =>
         {
             var output = outputs[0].AsTensor<float>();
 
-            var parser = new PoseOutputParser(predictor.Metadata, predictor.Configuration);
+            var parser = new PoseOutputParser(predictor.Metadata, configuration);
 
             var boxes = parser.Parse(output, image);
 
@@ -22,18 +24,20 @@ public static partial class YoloV8Extensions
                 Image = image,
                 Speed = speed,
             };
-        });
+        }, configuration);
     }
 
-    public static DetectionResult Detect(this YoloV8Predictor predictor, ImageSelector selector)
+    public static DetectionResult Detect(this YoloV8Predictor predictor, ImageSelector selector, YoloV8Configuration? configuration = null)
     {
+        configuration ??= predictor.Configuration;
+
         predictor.ValidateTask(YoloV8Task.Detect);
 
         return predictor.Run(selector, (outputs, image, timer) =>
         {
             var output = outputs[0].AsTensor<float>();
 
-            var parser = new DetectionOutputParser(predictor.Metadata, predictor.Configuration);
+            var parser = new DetectionOutputParser(predictor.Metadata, configuration);
 
             var boxes = parser.Parse(output, image);
 
@@ -45,18 +49,20 @@ public static partial class YoloV8Extensions
                 Image = image,
                 Speed = speed,
             };
-        });
+        }, configuration);
     }
 
-    public static ObbDetectionResult DetectObb(this YoloV8Predictor predictor, ImageSelector selector)
+    public static ObbDetectionResult DetectObb(this YoloV8Predictor predictor, ImageSelector selector, YoloV8Configuration? configuration = null)
     {
+        configuration ??= predictor.Configuration;
+
         predictor.ValidateTask(YoloV8Task.Obb);
 
         return predictor.Run(selector, (outputs, image, timer) =>
         {
             var output = outputs[0].AsTensor<float>();
 
-            var parser = new ObbDetectionOutputParser(predictor.Metadata, predictor.Configuration);
+            var parser = new ObbDetectionOutputParser(predictor.Metadata, configuration);
 
             var boxes = parser.Parse(output, image);
 
@@ -68,16 +74,18 @@ public static partial class YoloV8Extensions
                 Image = image,
                 Speed = speed,
             };
-        });
+        }, configuration);
     }
 
-    public static SegmentationResult Segment(this YoloV8Predictor predictor, ImageSelector selector)
+    public static SegmentationResult Segment(this YoloV8Predictor predictor, ImageSelector selector, YoloV8Configuration? configuration = null)
     {
+        configuration ??= predictor.Configuration;
+
         predictor.ValidateTask(YoloV8Task.Segment);
 
         return predictor.Run(selector, (outputs, image, timer) =>
         {
-            var parser = new SegmentationOutputParser(predictor.Metadata, predictor.Configuration);
+            var parser = new SegmentationOutputParser(predictor.Metadata, configuration);
 
             var boxesOutput = outputs[0].AsTensor<float>();
             var maskPrototypes = outputs[1].AsTensor<float>();
@@ -92,11 +100,13 @@ public static partial class YoloV8Extensions
                 Image = image,
                 Speed = speed,
             };
-        });
+        }, configuration);
     }
 
-    public static ClassificationResult Classify(this YoloV8Predictor predictor, ImageSelector selector)
+    public static ClassificationResult Classify(this YoloV8Predictor predictor, ImageSelector selector, YoloV8Configuration? configuration = null)
     {
+        configuration ??= predictor.Configuration;
+
         predictor.ValidateTask(YoloV8Task.Classify);
 
         return predictor.Run(selector, (outputs, image, timer) =>
@@ -128,35 +138,34 @@ public static partial class YoloV8Extensions
                 Image = image,
                 Speed = speed,
             };
-        });
-
+        }, configuration);
     }
 
     #region Async Operations
 
-    public static async Task<PoseResult> PoseAsync(this YoloV8Predictor predictor, ImageSelector selector)
+    public static async Task<PoseResult> PoseAsync(this YoloV8Predictor predictor, ImageSelector selector, YoloV8Configuration? configuration = null)
     {
-        return await Task.Run(() => predictor.Pose(selector));
+        return await Task.Run(() => predictor.Pose(selector, configuration));
     }
 
-    public static async Task<DetectionResult> DetectAsync(this YoloV8Predictor predictor, ImageSelector selector)
+    public static async Task<DetectionResult> DetectAsync(this YoloV8Predictor predictor, ImageSelector selector, YoloV8Configuration? configuration = null)
     {
-        return await Task.Run(() => predictor.Detect(selector));
+        return await Task.Run(() => predictor.Detect(selector, configuration));
     }
 
-    public static async Task<ObbDetectionResult> DetectObbAsync(this YoloV8Predictor predictor, ImageSelector selector)
+    public static async Task<ObbDetectionResult> DetectObbAsync(this YoloV8Predictor predictor, ImageSelector selector, YoloV8Configuration? configuration = null)
     {
-        return await Task.Run(() => predictor.DetectObb(selector));
+        return await Task.Run(() => predictor.DetectObb(selector, configuration));
     }
 
-    public static async Task<SegmentationResult> SegmentAsync(this YoloV8Predictor predictor, ImageSelector selector)
+    public static async Task<SegmentationResult> SegmentAsync(this YoloV8Predictor predictor, ImageSelector selector, YoloV8Configuration? configuration = null)
     {
-        return await Task.Run(() => predictor.Segment(selector));
+        return await Task.Run(() => predictor.Segment(selector, configuration));
     }
 
-    public static async Task<ClassificationResult> ClassifyAsync(this YoloV8Predictor predictor, ImageSelector selector)
+    public static async Task<ClassificationResult> ClassifyAsync(this YoloV8Predictor predictor, ImageSelector selector, YoloV8Configuration? configuration = null)
     {
-        return await Task.Run(() => predictor.Classify(selector));
+        return await Task.Run(() => predictor.Classify(selector, configuration));
     }
 
     #endregion
@@ -164,7 +173,9 @@ public static partial class YoloV8Extensions
     private static void ValidateTask(this YoloV8Predictor predictor, YoloV8Task task)
     {
         if (predictor.Metadata.Task != task)
+        {
             throw new InvalidOperationException("The loaded model does not support this task");
+        }
     }
 
     private static void ValidatePoseShape(this YoloV8Predictor predictor)
@@ -176,7 +187,9 @@ public static partial class YoloV8Extensions
             var shape = metadata.KeypointShape;
 
             if (shape.Channels is 2 or 3)
+            {
                 return;
+            }
         }
 
         throw new NotSupportedException("The this keypoint shape is not supported");
