@@ -38,7 +38,7 @@ public static class PlottingExtensions
                 DrawTextLabel(context, label, textLocation, color, boxBorderThickness, textPadding, textOptions);
 
                 // Draw lines
-                for (int i = 0; i < options.Skeleton.Connections.Count; i++)
+                for (int i = 0; i < options.Skeleton.Connections.Length; i++)
                 {
                     var connection = options.Skeleton.Connections[i];
 
