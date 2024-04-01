@@ -59,7 +59,7 @@ internal class HumanSkeleton : ISkeleton
         9, 9, 9, 9, 7, 7, 7, 0, 0, 0, 0, 0, 16, 16, 16, 16, 16, 16, 16
     ];
 
-    public IReadOnlyList<SkeletonConnection> Connections => _connections;
+    public SkeletonConnection[] Connections => _connections;
 
     public Color GetKeypointColor(int index)
     {
