@@ -1,155 +1,48 @@
 ﻿using Compunet.YoloV8;
-using Compunet.YoloV8.Plotting;
-using SixLabors.ImageSharp;
 using System.Diagnostics;
 
-var output = "./output";
+Console.WriteLine("Loading pose estimation model...");
+using var posePredictor = YoloV8Predictor.Create("./models/yolov8s-pose.onnx");
 
-if (Directory.Exists(output) == false)
-    Directory.CreateDirectory(output);
+Console.WriteLine("Loading detection model...");
+using var detectPredictor = YoloV8Predictor.Create("./models/yolov8s.onnx");
 
-await PoseDemo("./images/sports.jpg", "./models/yolov8s-pose.onnx");
+Console.WriteLine("Loading segmentation model...");
+using var segmentPredictor = YoloV8Predictor.Create("./models/yolov8s-seg.onnx");
 
-await DetectDemo("./images/bus.jpg", "./models/yolov8s.onnx");
+Console.WriteLine("Loading classification model...");
+using var classifyPredictor = YoloV8Predictor.Create("./models/yolov8s-cls.onnx");
 
-await SegmentDemo("./images/sports.jpg", "./models/yolov8s-seg.onnx");
+await PredictAndSaveAsync(posePredictor, "bus.jpg");
+await PredictAndSaveAsync(posePredictor, "sports.jpg");
 
-await ClassifyDemo(
-[
-    "./images/pizza.jpg",
-    "./images/teddy.jpg",
-    "./images/toaster.jpg",
-], "./models/yolov8s-cls.onnx");
+await PredictAndSaveAsync(detectPredictor, "bus.jpg");
+await PredictAndSaveAsync(detectPredictor, "sports.jpg");
+
+await PredictAndSaveAsync(segmentPredictor, "sports.jpg");
+
+await PredictAndSaveAsync(classifyPredictor, "pizza.jpg");
+await PredictAndSaveAsync(classifyPredictor, "teddy.jpg");
+await PredictAndSaveAsync(classifyPredictor, "toaster.jpg");
 
 if (OperatingSystem.IsWindows())
 {
     Process.Start(new ProcessStartInfo
     {
-        FileName = Path.GetFullPath(output),
+        FileName = Path.GetFullPath("./images"),
         UseShellExecute = true,
     });
 }
 
-async Task PoseDemo(string image, string model)
+static async Task PredictAndSaveAsync(YoloV8Predictor predictor, string image)
 {
-    Console.WriteLine();
-    Console.WriteLine("================ POSE DEMO ================");
-    Console.WriteLine();
+    var path = $"./images/{image}";
 
-    Console.WriteLine("Loading model...");
-    using var predictor = YoloV8Predictor.Create(model);
-
-    Console.WriteLine("Working...");
-    var result = await predictor.PoseAsync(image);
+    var result = await predictor.PredictAndSaveAsync(path);
 
     Console.WriteLine();
-
+    Console.WriteLine($"Task:   {predictor.Metadata.Task}");
+    Console.WriteLine($"Image:  {image}");
     Console.WriteLine($"Result: {result}");
-    Console.WriteLine($"Speed: {result.Speed}");
-
-    Console.WriteLine();
-
-    Console.WriteLine("Plotting and saving...");
-    using var origin = Image.Load(image);
-
-    using var ploted = await result.PlotImageAsync(origin);
-
-    var pathToSave = Path.Combine(output, Path.GetFileName(image));
-
-    ploted.Save(pathToSave);
-}
-
-async Task DetectDemo(string image, string model)
-{
-    Console.WriteLine();
-    Console.WriteLine("================ DETECTION DEMO ================");
-    Console.WriteLine();
-
-    Console.WriteLine("Loading model...");
-    using var predictor = YoloV8Predictor.Create(model);
-
-    Console.WriteLine("Working...");
-    var result = await predictor.DetectAsync(image);
-
-    Console.WriteLine();
-
-    Console.WriteLine($"Result: {result}");
-    Console.WriteLine($"Speed: {result.Speed}");
-
-    Console.WriteLine();
-
-    Console.WriteLine("Plotting and saving...");
-    using var origin = Image.Load(image);
-
-    using var ploted = await result.PlotImageAsync(origin);
-
-    var pathToSave = Path.Combine(output, Path.GetFileName(image));
-
-    ploted.Save(pathToSave);
-}
-
-async Task SegmentDemo(string image, string model)
-{
-    Console.WriteLine();
-    Console.WriteLine("================ SEGMENTATION DEMO ================");
-    Console.WriteLine();
-
-    Console.WriteLine("Loading model...");
-    using var predictor = YoloV8Predictor.Create(model);
-
-    Console.WriteLine("Working...");
-    var result = await predictor.SegmentAsync(image);
-
-    Console.WriteLine();
-
-    Console.WriteLine($"Result: {result}");
-    Console.WriteLine($"Speed: {result.Speed}");
-
-    Console.WriteLine();
-
-    Console.WriteLine("Plotting and saving...");
-    using var origin = Image.Load(image);
-
-    using var ploted = await result.PlotImageAsync(origin, new SegmentationPlottingOptions { MaskConfidence = .65F });
-
-    var filename = $"{Path.GetFileNameWithoutExtension(image)}_seg";
-    var extension = Path.GetExtension(image);
-
-    var pathToSave = Path.Combine(output, filename + extension);
-
-    ploted.Save(pathToSave);
-}
-
-async Task ClassifyDemo(string[] images, string model)
-{
-    Console.WriteLine();
-    Console.WriteLine("================ CLASSIFICATION DEMO ================");
-    Console.WriteLine();
-
-    Console.WriteLine("Loading model...");
-    using var predictor = YoloV8Predictor.Create(model);
-
-    foreach (var image in images)
-    {
-        Console.WriteLine("Working... ({0})", image);
-        var result = await predictor.ClassifyAsync(image);
-
-        Console.WriteLine();
-
-        Console.WriteLine($"Result: {result}");
-        Console.WriteLine($"Speed: {result.Speed}");
-
-        Console.WriteLine();
-
-        Console.WriteLine("Plotting and saving...");
-        using var origin = Image.Load(image);
-
-        using var ploted = await result.PlotImageAsync(origin);
-
-        var pathToSave = Path.Combine(output, Path.GetFileName(image));
-
-        ploted.Save(pathToSave);
-
-        Console.WriteLine();
-    }
+    Console.WriteLine($"Speed:  {result.Speed}");
 }
