@@ -2,7 +2,7 @@
 
 public interface ISkeleton
 {
-    IReadOnlyList<SkeletonConnection> Connections { get; }
+    SkeletonConnection[] Connections { get; }
 
     Color GetKeypointColor(int index);
 
