@@ -10,7 +10,7 @@ The `YoloV8` project is available in two nuget packages: [YoloV8](https://www.nu
 dotnet add package YoloV8
 ```
 
-If you use with GPU you need to add the [YoloV8.Gpu](https://www.nuget.org/packages/YoloV8.Gpu) package reference (contains reference to [Microsoft.ML.OnnxRuntime.Gpu](https://www.nuget.org/packages/Microsoft.ML.OnnxRuntime.Gpu) package)
+If you use with GPU you can add the [YoloV8.Gpu](https://www.nuget.org/packages/YoloV8.Gpu) package reference (contains reference to [Microsoft.ML.OnnxRuntime.Gpu](https://www.nuget.org/packages/Microsoft.ML.OnnxRuntime.Gpu) package)
 
 ```shell
 dotnet add package YoloV8.Gpu
@@ -20,7 +20,7 @@ dotnet add package YoloV8.Gpu
 
 ### Export the model from PyTorch to ONNX format:
 
-Run the following python code to export the model to ONNX format:
+Run this python code to export the model in ONNX format:
 
 ```python
 from ultralytics import YOLO
@@ -49,23 +49,34 @@ Console.WriteLine(result);
 
 # Plotting
 
-You can to plot the input image for preview the model prediction results, this code demonstrates how to perform a prediction with the model and then plot the prediction results on the input image and save to file:
+You can to plot the input image for preview the model prediction results, this code demonstrates how to perform a prediction, plot the results and save to file:
 
 ```csharp
 using Compunet.YoloV8;
 using Compunet.YoloV8.Plotting;
 using SixLabors.ImageSharp;
 
-var imagePath = "path/to/image";
+using var image = Image.Load("path/to/image");
 
 using var predictor = YoloV8Predictor.Create("path/to/model");
 
-var result = await predictor.PoseAsync(imagePath);
+var result = await predictor.PoseAsync(image);
 
-using var image = Image.Load(imagePath);
-using var ploted = await result.PlotImageAsync(image);
+using var plotted = await result.PlotImageAsync(image);
 
-ploted.Save("./pose_demo.jpg")
+plotted.Save("./pose_demo.jpg")
+```
+
+You can also predict and save to file in one operation:
+
+```csharp
+using Compunet.YoloV8;
+using Compunet.YoloV8.Plotting;
+using SixLabors.ImageSharp;
+
+using var predictor = YoloV8Predictor.Create("path/to/model");
+
+predictor.PredictAndSaveAsync("path/to/image");
 ```
 
 ## Demo Images:
