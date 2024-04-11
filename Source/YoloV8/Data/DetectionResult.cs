@@ -4,8 +4,5 @@ public class DetectionResult : YoloV8Result
 {
     public required BoundingBox[] Boxes { get; init; }
 
-    public override string ToString()
-    {
-        return Boxes.Summary();
-    }
+    public override string ToString() => Boxes.Summary();
 }
