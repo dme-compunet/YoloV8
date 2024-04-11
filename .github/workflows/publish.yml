@@ -1,12 +1,11 @@
-name: Build, Pack & Publish to Nuget
+name: Build & Publish
 
 on:
-  release:
-    types: [created]
-
-env:
-  MAIN_PROJECT: Source/YoloV8/YoloV8.csproj
-  TEST_PROJECT: Source/YoloV8.Tests/YoloV8.Tests.csproj
+  push:
+    branches:
+      - master
+    tags:
+      - "v*.*.*"
 
 jobs:
   publish:
@@ -21,20 +20,28 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Build YoloV8
-        run: dotnet build -c Release ${{ env.MAIN_PROJECT }}
+      - name: Build
+        run: |
+          dotnet build -c Release Source/YoloV8/YoloV8.csproj -p:Version=${{ github.ref_name }}
+          dotnet build -c Release Source/YoloV8.Tests/YoloV8.Tests.csproj -p:Version=${{ github.ref_name }}
 
-      - name: Build YoloV8.Gpu
-        run: dotnet build -c GpuRelease ${{ env.MAIN_PROJECT }}
+      - name: Test
+        run: dotnet test Source/YoloV8.Tests/YoloV8.Tests.csproj
 
-      - name: Run Tests
-        run: dotnet test ${{ env.TEST_PROJECT }}
+      - name: Pack
+        run: |
+          dotnet pack -c Release -o . Source/YoloV8/YoloV8.csproj -p:Version=${{ github.ref_name }}
+          dotnet pack -c GpuRelease -o . Source/YoloV8/YoloV8.csproj -p:Version=${{ github.ref_name }}
 
-      - name: Pack YoloV8
-        run: dotnet pack -c Release -o . ${{ env.MAIN_PROJECT }}
+      - name: Publish
+        run: dotnet nuget push *.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicat
 
-      - name: Pack YoloV8.Gpu
-        run: dotnet pack -c GpuRelease -o . ${{ env.MAIN_PROJECT }}
-
-      - name: Publish Nuget Packages
-        run: dotnet nuget push *.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+      - name: Create release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >
+          gh release create ${{ github.ref_name }}
+          --repo ${{ github.event.repository.full_name }}
+          --title ${{ github.ref_name }}
+          --generate-notes
+          --verify-tag
