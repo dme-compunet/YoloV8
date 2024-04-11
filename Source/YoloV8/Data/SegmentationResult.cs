@@ -3,4 +3,6 @@
 public class SegmentationResult : YoloV8Result
 {
     public required SegmentationBoundingBox[] Boxes { get; init; }
+
+    public override string ToString() => Boxes.Summary();
 }
