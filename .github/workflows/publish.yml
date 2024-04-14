@@ -34,7 +34,7 @@ jobs:
           dotnet pack -c GpuRelease -o . Source/YoloV8/YoloV8.csproj -p:Version=${{ github.ref_name }}
 
       - name: Publish
-        run: dotnet nuget push *.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicat
+        run: dotnet nuget push *.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
 
       - name: Create release
         env:
