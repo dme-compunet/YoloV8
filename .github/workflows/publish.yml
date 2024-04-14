@@ -23,7 +23,7 @@ jobs:
       - name: Build
         run: |
           dotnet build -c Release Source/YoloV8/YoloV8.csproj -p:Version=${{ github.ref_name }}
-          dotnet build -c Release Source/YoloV8.Tests/YoloV8.Tests.csproj -p:Version=${{ github.ref_name }}
+          dotnet build -c ReleaseGpu Source/YoloV8/YoloV8.csproj -p:Version=${{ github.ref_name }}
 
       - name: Test
         run: dotnet test Source/YoloV8.Tests/YoloV8.Tests.csproj
