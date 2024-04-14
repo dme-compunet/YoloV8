@@ -22,16 +22,16 @@ jobs:
 
       - name: Build
         run: |
-          dotnet build -c Release Source/YoloV8/YoloV8.csproj -p:Version=${{ github.ref_name }}
-          dotnet build -c Release Source/YoloV8.Tests/YoloV8.Tests.csproj -p:Version=${{ github.ref_name }}
+          dotnet build -c Release Source/YoloV8/YoloV8.csproj -p:Version=${{ github.ref_name }}.replace('v', '')
+          dotnet build -c Release Source/YoloV8.Tests/YoloV8.Tests.csproj -p:Version=${{ github.ref_name }}.replace('v', '')
 
       - name: Test
         run: dotnet test Source/YoloV8.Tests/YoloV8.Tests.csproj
 
       - name: Pack
         run: |
-          dotnet pack -c Release -o . Source/YoloV8/YoloV8.csproj -p:Version=${{ github.ref_name }}
-          dotnet pack -c GpuRelease -o . Source/YoloV8/YoloV8.csproj -p:Version=${{ github.ref_name }}
+          dotnet pack -c Release -o . Source/YoloV8/YoloV8.csproj -p:Version=${{ github.ref_name }}.replace('v', '')
+          dotnet pack -c GpuRelease -o . Source/YoloV8/YoloV8.csproj -p:Version=${{ github.ref_name }}.replace('v', '')
 
       - name: Publish
         run: dotnet nuget push *.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicat
