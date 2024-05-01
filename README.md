@@ -95,4 +95,4 @@ predictor.PredictAndSaveAsync("path/to/image");
 
 # License
 
-MIT License
+AGPL-3.0 License
