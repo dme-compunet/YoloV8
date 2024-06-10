@@ -8,8 +8,8 @@ on:
       - "*.*.*"
   workflow_dispatch:
 
-env:
-  VERSION: ${{ github.ref_name }}
+# env:
+#   VERSION: ${{ github.ref_name }}
 
 jobs:
   publish:
