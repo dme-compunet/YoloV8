@@ -29,16 +29,16 @@ jobs:
 
       - name: Build
         run: |
-          dotnet build -c Release Source/YoloV8/YoloV8.csproj -p:Version="$VERSION"
-          dotnet build -c GpuRelease Source/YoloV8/YoloV8.csproj -p:Version="$VERSION"
+          dotnet build -c Release Source/YoloV8/YoloV8.csproj -p:Version=$VERSION
+          dotnet build -c GpuRelease Source/YoloV8/YoloV8.csproj -p:Version=$VERSION
 
       - name: Test
         run: dotnet test Source/YoloV8.Tests/YoloV8.Tests.csproj
 
       - name: Pack
         run: |
-          dotnet pack -c Release -o . Source/YoloV8/YoloV8.csproj -p:Version="$VERSION"
-          dotnet pack -c GpuRelease -o . Source/YoloV8/YoloV8.csproj -p:Version="$VERSION"
+          dotnet pack -c Release -o . Source/YoloV8/YoloV8.csproj -p:Version=$VERSION
+          dotnet pack -c GpuRelease -o . Source/YoloV8/YoloV8.csproj -p:Version=$VERSION
 
       - name: Publish
         run: dotnet nuget push *.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
@@ -47,8 +47,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >
-          gh release create "$VERSION"
+          gh release create $VERSION
           --repo ${{ github.event.repository.full_name }}
-          --title "$VERSION"
+          --title $VERSION
           --generate-notes
           --verify-tag
