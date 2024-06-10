@@ -9,8 +9,7 @@ on:
   workflow_dispatch:
 
 env:
-  # VERSION: ${{ env.VERSION }}
-  VERSION: 4.1.6
+  VERSION: ${{ github.ref_name }}
 
 jobs:
   publish:
