@@ -23,7 +23,7 @@
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Description>Use YOLOv8 in real-time for object detection, instance segmentation, pose estimation and image classification, via ONNX Runtime</Description>
 		<RepositoryUrl>https://github.com/dme-compunet/YOLOv8</RepositoryUrl>
-		<PackageLicenseExpression>AGPL-3.0</PackageLicenseExpression>
+		<PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageTags>image-classification object-detection pose-estimation instance-segmentation onnx imagesharp onnx-runtime ultralytics yolov8</PackageTags>
 		<PackageIcon>Icon.png</PackageIcon>
