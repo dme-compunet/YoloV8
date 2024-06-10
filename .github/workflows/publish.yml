@@ -8,6 +8,9 @@ on:
       - "*.*.*"
   workflow_dispatch:
 
+env:
+  VERSION: ${{ github.ref_name }}
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -21,18 +24,21 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
+      - name: Set Version
+        run: export VERSION=$(git describe --tags --abbrev=0)
+
       - name: Build
         run: |
-          dotnet build -c Release Source/YoloV8/YoloV8.csproj -p:Version=${{ github.ref_name }}
-          dotnet build -c GpuRelease Source/YoloV8/YoloV8.csproj -p:Version=${{ github.ref_name }}
+          dotnet build -c Release Source/YoloV8/YoloV8.csproj -p:Version=${{ env.VERSION }}
+          dotnet build -c GpuRelease Source/YoloV8/YoloV8.csproj -p:Version=${{ env.VERSION }}
 
       - name: Test
         run: dotnet test Source/YoloV8.Tests/YoloV8.Tests.csproj
 
       - name: Pack
         run: |
-          dotnet pack -c Release -o . Source/YoloV8/YoloV8.csproj -p:Version=${{ github.ref_name }}
-          dotnet pack -c GpuRelease -o . Source/YoloV8/YoloV8.csproj -p:Version=${{ github.ref_name }}
+          dotnet pack -c Release -o . Source/YoloV8/YoloV8.csproj -p:Version=${{ env.VERSION }}
+          dotnet pack -c GpuRelease -o . Source/YoloV8/YoloV8.csproj -p:Version=${{ env.VERSION }}
 
       - name: Publish
         run: dotnet nuget push *.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
@@ -41,8 +47,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >
-          gh release create ${{ github.ref_name }}
+          gh release create ${{ env.VERSION }}
           --repo ${{ github.event.repository.full_name }}
-          --title ${{ github.ref_name }}
+          --title ${{ env.VERSION }}
           --generate-notes
           --verify-tag
