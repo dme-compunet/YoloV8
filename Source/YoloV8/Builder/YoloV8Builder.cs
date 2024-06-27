@@ -39,16 +39,16 @@ public class YoloV8Builder : IYoloV8Builder
 
 #if GPURELEASE
 
-   public IYoloV8Builder UseCuda(int deviceId) => WithSessionOptions(SessionOptions.MakeSessionOptionWithCudaProvider(deviceId));
-   public IYoloV8Builder UseCuda(OrtCUDAProviderOptions options) => WithSessionOptions(SessionOptions.MakeSessionOptionWithCudaProvider(options));
-
-   public IYoloV8Builder UseRocm(int deviceId) => WithSessionOptions(SessionOptions.MakeSessionOptionWithRocmProvider(deviceId));
-   public IYoloV8Builder UseRocm(OrtROCMProviderOptions options) => WithSessionOptions(SessionOptions.MakeSessionOptionWithRocmProvider(options));
-
-   public IYoloV8Builder UseTensorrt(int deviceId) => WithSessionOptions(SessionOptions.MakeSessionOptionWithTensorrtProvider(deviceId));
-   public IYoloV8Builder UseTensorrt(OrtTensorRTProviderOptions options) => WithSessionOptions(SessionOptions.MakeSessionOptionWithTensorrtProvider(options));
-
-   public IYoloV8Builder UseTvm(string settings = "") => WithSessionOptions(SessionOptions.MakeSessionOptionWithTvmProvider(settings));
+    public IYoloV8Builder UseCuda(int deviceId) => WithSessionOptions(SessionOptions.MakeSessionOptionWithCudaProvider(deviceId));
+    public IYoloV8Builder UseCuda(OrtCUDAProviderOptions options) => WithSessionOptions(SessionOptions.MakeSessionOptionWithCudaProvider(options));
+    
+    public IYoloV8Builder UseRocm(int deviceId) => WithSessionOptions(SessionOptions.MakeSessionOptionWithRocmProvider(deviceId));
+    public IYoloV8Builder UseRocm(OrtROCMProviderOptions options) => WithSessionOptions(SessionOptions.MakeSessionOptionWithRocmProvider(options));
+    
+    public IYoloV8Builder UseTensorrt(int deviceId) => WithSessionOptions(SessionOptions.MakeSessionOptionWithTensorrtProvider(deviceId));
+    public IYoloV8Builder UseTensorrt(OrtTensorRTProviderOptions options) => WithSessionOptions(SessionOptions.MakeSessionOptionWithTensorrtProvider(options));
+    
+    public IYoloV8Builder UseTvm(string settings = "") => WithSessionOptions(SessionOptions.MakeSessionOptionWithTvmProvider(settings));
 
 #endif
 

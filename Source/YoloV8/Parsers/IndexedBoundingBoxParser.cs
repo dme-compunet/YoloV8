@@ -54,7 +54,9 @@ internal readonly struct IndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV
                 var confidence = output[0, j + 4, i];
 
                 if (confidence <= _configuration.Confidence)
+                {
                     continue;
+                }
 
                 var x = output[0, 0, i];
                 var y = output[0, 1, i];
