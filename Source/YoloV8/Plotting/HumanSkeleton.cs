@@ -28,25 +28,25 @@ internal class HumanSkeleton : ISkeleton
 
     private readonly SkeletonConnection[] _connections =
     [
-        new(15, 13),
-        new(13, 11),
-        new(16, 14),
-        new(14, 12),
-        new(11, 12),
-        new(5, 11),
-        new(6, 12),
-        new(5, 6),
-        new(5, 7),
-        new(6, 8),
-        new(7, 9),
-        new(8, 10),
-        new(1, 2),
-        new(0, 1),
-        new(0, 2),
-        new(1, 3),
-        new(2, 4),
-        new(3, 5),
-        new(4, 6)
+        (15, 13),
+        (13, 11),
+        (16, 14),
+        (14, 12),
+        (11, 12),
+        (5, 11),
+        (6, 12),
+        (5, 6),
+        (5, 7),
+        (6, 8),
+        (7, 9),
+        (8, 10),
+        (1, 2),
+        (0, 1),
+        (0, 2),
+        (1, 3),
+        (2, 4),
+        (3, 5),
+        (4, 6)
     ];
 
     private readonly int[] _keypointColorMap =
