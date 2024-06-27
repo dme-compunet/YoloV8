@@ -48,20 +48,22 @@ internal readonly struct SegmentationOutputParser(YoloV8Metadata metadata, YoloV
         return result;
     }
 
-    private static SegmentationMask ProcessMask(Tensor<float> maskPrototypes,
-                                                float[] maskWeights,
+    private static SegmentationMask ProcessMask(Tensor<float> prototypes,
+                                                float[] weights,
                                                 Rectangle bounds,
                                                 Size originSize,
                                                 Size modelSize,
                                                 int xPadding,
                                                 int yPadding)
     {
-        var maskChannels = maskPrototypes.Dimensions[1];
-        var maskHeight = maskPrototypes.Dimensions[2];
-        var maskWidth = maskPrototypes.Dimensions[3];
+        var maskChannels = prototypes.Dimensions[1];
+        var maskHeight = prototypes.Dimensions[2];
+        var maskWidth = prototypes.Dimensions[3];
 
-        if (maskChannels != maskWeights.Length)
+        if (maskChannels != weights.Length)
+        {
             throw new InvalidOperationException();
+        }
 
         using var bitmap = new Image<L8>(maskWidth, maskHeight);
 
@@ -72,7 +74,7 @@ internal readonly struct SegmentationOutputParser(YoloV8Metadata metadata, YoloV
                 var value = 0F;
 
                 for (int i = 0; i < maskChannels; i++)
-                    value += maskPrototypes[0, i, y, x] * maskWeights[i];
+                    value += prototypes[0, i, y, x] * weights[i];
 
                 value = Sigmoid(value);
 
@@ -133,7 +135,10 @@ internal readonly struct SegmentationOutputParser(YoloV8Metadata metadata, YoloV
 
     private static float Sigmoid(float value)
     {
+        //return 1 / (1 + MathF.Exp(-value));
+
         var k = MathF.Exp(value);
+
         return k / (1.0f + k);
     }
 

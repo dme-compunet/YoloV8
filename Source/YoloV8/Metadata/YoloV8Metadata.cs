@@ -21,7 +21,7 @@ public class YoloV8Metadata(string author,
             "detect" => YoloV8Task.Detect,
             "segment" => YoloV8Task.Segment,
             "classify" => YoloV8Task.Classify,
-            _ => throw new ArgumentException("Unknow YoloV8 'task' value")
+            _ => throw new InvalidOperationException("Unknow YoloV8 'task' value")
         };
 
         var batch = int.Parse(metadata["batch"]);
