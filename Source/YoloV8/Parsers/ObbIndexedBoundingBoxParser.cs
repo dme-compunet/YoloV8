@@ -2,7 +2,7 @@
 
 namespace Compunet.YoloV8;
 
-internal readonly struct ObbIndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV8Configuration configuration)
+internal readonly ref struct ObbIndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV8Configuration configuration)
 {
     public ObbIndexedBoundingBox[] Parse(Tensor<float> output, SixLabors.ImageSharp.Size originSize)
     {

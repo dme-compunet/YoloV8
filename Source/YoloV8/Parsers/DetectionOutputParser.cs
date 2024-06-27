@@ -1,6 +1,6 @@
 ﻿namespace Compunet.YoloV8.Parsers;
 
-internal readonly struct DetectionOutputParser(YoloV8Metadata metadata, YoloV8Configuration configuration)
+internal readonly ref struct DetectionOutputParser(YoloV8Metadata metadata, YoloV8Configuration configuration)
 {
     public BoundingBox[] Parse(Tensor<float> output, Size originSize)
     {
