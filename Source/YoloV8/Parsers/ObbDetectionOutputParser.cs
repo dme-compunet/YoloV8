@@ -1,6 +1,6 @@
 ﻿namespace Compunet.YoloV8;
 
-internal readonly struct ObbDetectionOutputParser(YoloV8Metadata metadata, YoloV8Configuration configuration)
+internal readonly ref struct ObbDetectionOutputParser(YoloV8Metadata metadata, YoloV8Configuration configuration)
 {
     public ObbBoundingBox[] Parse(Tensor<float> output, Size originSize)
     {

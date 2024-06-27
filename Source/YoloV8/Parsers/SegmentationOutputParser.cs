@@ -1,6 +1,6 @@
 ﻿namespace Compunet.YoloV8.Parsers;
 
-internal readonly struct SegmentationOutputParser(YoloV8Metadata metadata, YoloV8Configuration configuration)
+internal readonly ref struct SegmentationOutputParser(YoloV8Metadata metadata, YoloV8Configuration configuration)
 {
     public SegmentationBoundingBox[] Parse(Tensor<float> boxesOutput, Tensor<float> maskPrototypes, Size originSize)
     {
