@@ -74,6 +74,11 @@ internal readonly struct IndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV
                 var name = _metadata.Names[j];
                 var bounds = Rectangle.FromLTRB(xMin, yMin, xMax, yMax);
 
+                if (bounds.Width == 0 || bounds.Height == 0)
+                {
+                    continue;
+                }
+
                 boxes[i] = new IndexedBoundingBox
                 {
                     Index = i,
