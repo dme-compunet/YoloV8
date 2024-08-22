@@ -1,6 +1,4 @@
-﻿using ClipperLib;
-
-namespace Compunet.YoloV8.Utilities;
+﻿namespace Compunet.YoloV8.Utilities;
 
 internal static class ObbNonMaxSuppressionHelper
 {
@@ -58,38 +56,33 @@ internal static class ObbNonMaxSuppressionHelper
         return [.. selected];
     }
 
-    private static double CalculateIoU(this ObbIndexedBoundingBox boxA, ObbIndexedBoundingBox boxB)
+    private static double CalculateIoU(this ObbIndexedBoundingBox box1, ObbIndexedBoundingBox box2)
     {
-        var areaA = Area(boxA);
+        var areaA = Area(box1);
 
         if (areaA <= 0f)
         {
             return 0f;
         }
 
-        var areaB = Area(boxB);
+        var areaB = Area(box2);
 
         if (areaB <= 0f)
         {
             return 0f;
         }
 
-        var vertices1 = boxA.GetCornerPoints();
-        var vertices2 = boxB.GetCornerPoints();
+        var vertices1 = box1.GetCornerPoints();
+        var vertices2 = box2.GetCornerPoints();
 
-        var rect1 = vertices1.Select(v => new IntPoint(v.X, v.Y)).ToList();
-        var rect2 = vertices2.Select(v => new IntPoint(v.X, v.Y)).ToList();
+        var rect1 = new Path64(vertices1.Select(v => new Point64(v.X, v.Y)));
+        var rect2 = new Path64(vertices2.Select(v => new Point64(v.X, v.Y)));
 
-        var clipper = new Clipper();
+        var subject = new Paths64([rect1]);
+        var clip = new Paths64([rect2]);
 
-        var intersection = new List<List<IntPoint>>();
-        var union = new List<List<IntPoint>>();
-
-        clipper.AddPath(rect1, PolyType.ptSubject, true);
-        clipper.AddPath(rect2, PolyType.ptClip, true);
-
-        clipper.Execute(ClipType.ctIntersection, intersection, PolyFillType.pftEvenOdd, PolyFillType.pftEvenOdd);
-        clipper.Execute(ClipType.ctUnion, union, PolyFillType.pftEvenOdd, PolyFillType.pftEvenOdd);
+        var intersection = Clipper.Intersect(subject, clip, FillRule.EvenOdd);
+        var union = Clipper.Union(subject, clip, FillRule.EvenOdd);
 
         if (intersection.Count == 0 || union.Count == 0)
         {

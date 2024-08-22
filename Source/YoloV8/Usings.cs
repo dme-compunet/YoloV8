@@ -1,4 +1,5 @@
-﻿global using Compunet.YoloV8.Data;
+﻿global using Clipper2Lib;
+global using Compunet.YoloV8.Data;
 global using Compunet.YoloV8.Extensions;
 global using Compunet.YoloV8.Metadata;
 global using Compunet.YoloV8.Parsers;
