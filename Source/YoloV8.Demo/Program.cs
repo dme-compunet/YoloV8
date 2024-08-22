@@ -2,16 +2,16 @@
 using System.Diagnostics;
 
 Console.WriteLine("Loading pose estimation model...");
-using var posePredictor = YoloV8Predictor.Create("./models/yolov8s-pose.onnx");
+using var posePredictor = YoloV8Predictor.Create("./models/yolov8n-pose-uint8.onnx");
 
 Console.WriteLine("Loading detection model...");
-using var detectPredictor = YoloV8Predictor.Create("./models/yolov8s.onnx");
+using var detectPredictor = YoloV8Predictor.Create("./models/yolov8n-uint8.onnx");
 
 Console.WriteLine("Loading segmentation model...");
-using var segmentPredictor = YoloV8Predictor.Create("./models/yolov8s-seg.onnx");
+using var segmentPredictor = YoloV8Predictor.Create("./models/yolov8n-seg-uint8.onnx");
 
 Console.WriteLine("Loading classification model...");
-using var classifyPredictor = YoloV8Predictor.Create("./models/yolov8s-cls.onnx");
+using var classifyPredictor = YoloV8Predictor.Create("./models/yolov8n-cls-uint8.onnx");
 
 await PredictAndSaveAsync(posePredictor, "bus.jpg");
 await PredictAndSaveAsync(posePredictor, "sports.jpg");
