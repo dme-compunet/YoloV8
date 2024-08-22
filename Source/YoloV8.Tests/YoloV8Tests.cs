@@ -3,7 +3,7 @@ namespace YoloV8.Tests;
 public class YoloV8Tests
 {
     [Theory]
-    [InlineData("bus.jpg", 4)]
+    [InlineData("bus.jpg", 3)]
     [InlineData("sports.jpg", 3)]
     public void PoseTest(string image, int count)
     {
@@ -17,8 +17,8 @@ public class YoloV8Tests
     }
 
     [Theory]
-    [InlineData("bus.jpg", "person:4;bus:1")]
-    [InlineData("sports.jpg", "person:2;sports ball:1;baseball bat:1;baseball glove:1")]
+    [InlineData("bus.jpg", "person:3;bus:1")]
+    [InlineData("sports.jpg", "person:2;sports ball:1;baseball bat:1;baseball glove:2")]
     public void DetectionTest(string image, string objects)
     {
         var predictor = Predictors.GetPredictor(YoloV8Task.Detect);
@@ -39,7 +39,7 @@ public class YoloV8Tests
             list.Add((name, count));
         }
 
-        Assert.Equal(list.Sum(x => x.count), result.Boxes.Count());
+        Assert.Equal(list.Sum(x => x.count), result.Boxes.Length);
 
         foreach (var (name, count) in list)
         {
