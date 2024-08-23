@@ -79,10 +79,11 @@ internal readonly ref struct ObbIndexedBoundingBoxParser(YoloV8Metadata metadata
             var bounds = new Rectangle(x, y, w, h);
 
             var angle = (output[0, detectionDataSize - 1, i]); // Radians
-                                                               // Angle in [-pi/4,3/4 pi) --》 [-pi/2,pi/2)
-            if (angle >= Math.PI && angle <= 0.75 * Math.PI)
+                                                               
+            // Angle in [-pi/4,3/4 pi) --》 [-pi/2,pi/2)
+            if (angle >= MathF.PI && angle <= 0.75 * MathF.PI)
             {
-                angle -= (float)Math.PI;
+                angle -= MathF.PI;
             }
 
             var name = _metadata.Names[maxConfidenceIndex];
@@ -92,7 +93,7 @@ internal readonly ref struct ObbIndexedBoundingBoxParser(YoloV8Metadata metadata
                 Index = i,
                 Class = name,
                 Bounds = bounds,
-                Angle = (float)(angle * 180 / Math.PI), // Degrees
+                Angle = angle * 180 / MathF.PI, // Degrees
                 Confidence = maxConfidence
             };
         });
