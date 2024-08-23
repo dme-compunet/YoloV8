@@ -2,6 +2,8 @@
 
 internal static class NonMaxSuppressionHelper
 {
+    private static readonly ArrayPool<bool> _arrayPool = ArrayPool<bool>.Create();
+
     public static IndexedBoundingBox[] Suppress(IndexedBoundingBox[] boxes, float iouThreshold)
     {
         Array.Sort(boxes);
@@ -10,53 +12,60 @@ internal static class NonMaxSuppressionHelper
 
         var activeCount = boxCount;
 
-        var isNotActiveBoxes = new bool[boxCount];
+        var isNotActiveBoxes = _arrayPool.Rent(boxCount);
 
-        var selected = new List<IndexedBoundingBox>();
-
-        for (int i = boxCount - 1; i >= 0; i--)
+        try
         {
-            if (isNotActiveBoxes[i])
+            var selected = new List<IndexedBoundingBox>();
+
+            for (int i = boxCount - 1; i >= 0; i--)
             {
-                continue;
-            }
-
-            var boxA = boxes[i];
-
-            selected.Add(boxA);
-
-            for (var j = i; j >= 0; j--)
-            {
-                if (isNotActiveBoxes[j])
+                if (isNotActiveBoxes[i])
                 {
                     continue;
                 }
 
-                var boxB = boxes[j];
+                var boxA = boxes[i];
 
-                if (boxA.Class == boxB.Class)
+                selected.Add(boxA);
+
+                for (var j = i; j >= 0; j--)
                 {
-                    if (CalculateIoU(boxA.Bounds, boxB.Bounds) > iouThreshold)
+                    if (isNotActiveBoxes[j])
                     {
-                        isNotActiveBoxes[j] = true;
+                        continue;
+                    }
 
-                        activeCount--;
+                    var boxB = boxes[j];
 
-                        if (activeCount <= 0)
+                    if (boxA.Class == boxB.Class)
+                    {
+                        if (CalculateIoU(boxA.Bounds, boxB.Bounds) > iouThreshold)
                         {
-                            break;
+                            isNotActiveBoxes[j] = true;
+
+                            activeCount--;
+
+                            if (activeCount <= 0)
+                            {
+                                break;
+                            }
                         }
                     }
                 }
+
+                if (activeCount <= 0)
+                {
+                    break;
+                }
             }
 
-            if (activeCount <= 0)
-            {
-                break;
-            }
+            return [.. selected];
         }
-
-        return [.. selected];
+        finally
+        {
+            _arrayPool.Return(isNotActiveBoxes, true);
+        }
     }
 
     private static float CalculateIoU(Rectangle rectA, Rectangle rectB)
