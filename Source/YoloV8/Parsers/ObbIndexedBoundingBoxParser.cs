@@ -39,10 +39,10 @@ internal readonly ref struct ObbIndexedBoundingBoxParser(YoloV8Metadata metadata
             yRatio = maxRatio;
         }
 
-        return Parse(output, originSize, xPadding, yPadding, xRatio, yRatio);
+        return Parse(output, xPadding, yPadding, xRatio, yRatio);
     }
 
-    public ObbIndexedBoundingBox[] Parse(Tensor<float> output, Size originSize, int xPadding, int yPadding, float xRatio, float yRatio)
+    public ObbIndexedBoundingBox[] Parse(Tensor<float> output, int xPadding, int yPadding, float xRatio, float yRatio)
     {
         var _metadata = metadata;
         var _parameters = configuration;
@@ -79,7 +79,7 @@ internal readonly ref struct ObbIndexedBoundingBoxParser(YoloV8Metadata metadata
             var bounds = new Rectangle(x, y, w, h);
 
             var angle = (output[0, detectionDataSize - 1, i]); // Radians
-                                                               
+
             // Angle in [-pi/4,3/4 pi) --》 [-pi/2,pi/2)
             if (angle >= MathF.PI && angle <= 0.75 * MathF.PI)
             {
