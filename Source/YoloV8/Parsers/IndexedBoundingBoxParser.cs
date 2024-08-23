@@ -96,37 +96,41 @@ internal readonly ref struct IndexedBoundingBoxParser(YoloV8Metadata metadata, Y
                 }
             });
 
-            var count = 0;
-
-            for (int i = 0; i < boxesCount; i++)
-            {
-                if (boxes[i].IsEmpty == false)
-                {
-                    count++;
-                }
-            }
-
-            var topBoxes = new IndexedBoundingBox[count];
-
-            var topIndex = 0;
-
-            for (int i = 0; i < boxesCount; i++)
-            {
-                var box = boxes[i];
-
-                if (box.IsEmpty)
-                {
-                    continue;
-                }
-
-                topBoxes[topIndex++] = box;
-            }
-
-            return NonMaxSuppressionHelper.Suppress(topBoxes, configuration.IoU);
+            return NonMaxSuppressionHelper.Suppress(GetActiveBoxes(boxes, boxesCount), configuration.IoU);
         }
         finally
         {
             _boxesArrayPool.Return(boxes, true);
         }
+    }
+
+    private static IndexedBoundingBox[] GetActiveBoxes(IndexedBoundingBox[] boxes, int boxesCount)
+    {
+        var activeCount = 0;
+
+        for (var i = 0; i < boxesCount; i++)
+        {
+            if (boxes[i].IsEmpty == false)
+            {
+                activeCount++;
+            }
+        }
+
+        var activeIndex = 0;
+        var activeBoxes = new IndexedBoundingBox[activeCount];
+
+        for (var i = 0; i < boxesCount; i++)
+        {
+            var box = boxes[i];
+
+            if (box.IsEmpty)
+            {
+                continue;
+            }
+
+            activeBoxes[activeIndex++] = box;
+        }
+
+        return activeBoxes;
     }
 }
