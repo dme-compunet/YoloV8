@@ -2,6 +2,8 @@
 
 internal readonly ref struct IndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV8Configuration configuration)
 {
+    private readonly ArrayPool<IndexedBoundingBox> _boxesArrayPool = ArrayPool<IndexedBoundingBox>.Create();
+
     public IndexedBoundingBox[] Parse(Tensor<float> output, Size originSize)
     {
         int xPadding;
@@ -45,78 +47,86 @@ internal readonly ref struct IndexedBoundingBoxParser(YoloV8Metadata metadata, Y
         var _metadata = metadata;
         var _configuration = configuration;
 
-        var boxes = new IndexedBoundingBox[output.Dimensions[2]];
+        var boxesCount = output.Dimensions[2];
+        var boxes = _boxesArrayPool.Rent(boxesCount);
 
-        Parallel.For(0, output.Dimensions[2], i =>
+        try
         {
-            for (int j = 0; j < _metadata.Names.Count; j++)
+            Parallel.For(0, boxesCount, i =>
             {
-                var confidence = output[0, j + 4, i];
+                for (int j = 0; j < _metadata.Names.Count; j++)
+                {
+                    var confidence = output[0, j + 4, i];
 
-                if (confidence <= _configuration.Confidence)
+                    if (confidence <= _configuration.Confidence)
+                    {
+                        continue;
+                    }
+
+                    var x = output[0, 0, i];
+                    var y = output[0, 1, i];
+                    var w = output[0, 2, i];
+                    var h = output[0, 3, i];
+
+                    var xMin = (int)((x - w / 2 - xPadding) * xRatio);
+                    var yMin = (int)((y - h / 2 - yPadding) * yRatio);
+                    var xMax = (int)((x + w / 2 - xPadding) * xRatio);
+                    var yMax = (int)((y + h / 2 - yPadding) * yRatio);
+
+                    xMin = Math.Clamp(xMin, 0, originSize.Width);
+                    yMin = Math.Clamp(yMin, 0, originSize.Height);
+                    xMax = Math.Clamp(xMax, 0, originSize.Width);
+                    yMax = Math.Clamp(yMax, 0, originSize.Height);
+
+                    var name = _metadata.Names[j];
+                    var bounds = Rectangle.FromLTRB(xMin, yMin, xMax, yMax);
+
+                    if (bounds.Width == 0 || bounds.Height == 0)
+                    {
+                        continue;
+                    }
+
+                    boxes[i] = new IndexedBoundingBox
+                    {
+                        Index = i,
+                        Class = name,
+                        Bounds = bounds,
+                        Confidence = confidence
+                    };
+                }
+            });
+
+            var count = 0;
+
+            for (int i = 0; i < boxesCount; i++)
+            {
+                if (boxes[i].IsEmpty == false)
+                {
+                    count++;
+                }
+            }
+
+            var topBoxes = new IndexedBoundingBox[count];
+
+            var topIndex = 0;
+
+            for (int i = 0; i < boxesCount; i++)
+            {
+                var box = boxes[i];
+
+                if (box.IsEmpty)
                 {
                     continue;
                 }
 
-                var x = output[0, 0, i];
-                var y = output[0, 1, i];
-                var w = output[0, 2, i];
-                var h = output[0, 3, i];
-
-                var xMin = (int)((x - w / 2 - xPadding) * xRatio);
-                var yMin = (int)((y - h / 2 - yPadding) * yRatio);
-                var xMax = (int)((x + w / 2 - xPadding) * xRatio);
-                var yMax = (int)((y + h / 2 - yPadding) * yRatio);
-
-                xMin = Math.Clamp(xMin, 0, originSize.Width);
-                yMin = Math.Clamp(yMin, 0, originSize.Height);
-                xMax = Math.Clamp(xMax, 0, originSize.Width);
-                yMax = Math.Clamp(yMax, 0, originSize.Height);
-
-                var name = _metadata.Names[j];
-                var bounds = Rectangle.FromLTRB(xMin, yMin, xMax, yMax);
-
-                if (bounds.Width == 0 || bounds.Height == 0)
-                {
-                    continue;
-                }
-
-                boxes[i] = new IndexedBoundingBox
-                {
-                    Index = i,
-                    Class = name,
-                    Bounds = bounds,
-                    Confidence = confidence
-                };
+                topBoxes[topIndex++] = box;
             }
-        });
 
-        var count = 0;
-
-        for (int i = 0; i < boxes.Length; i++)
-        {
-            if (boxes[i].IsEmpty == false)
-            {
-                count++;
-            }
+            return NonMaxSuppressionHelper.Suppress(topBoxes, configuration.IoU);
         }
-
-        var topBoxes = new IndexedBoundingBox[count];
-
-        var topIndex = 0;
-
-        for (int i = 0; i < boxes.Length; i++)
+        finally
         {
-            var box = boxes[i];
-
-            if (box.IsEmpty)
-            {
-                continue;
-            }
-
-            topBoxes[topIndex++] = box;
+            _boxesArrayPool.Return(boxes, true);
         }
-
-        return NonMaxSuppressionHelper.Suppress(topBoxes, configuration.IoU);
     }
 }
