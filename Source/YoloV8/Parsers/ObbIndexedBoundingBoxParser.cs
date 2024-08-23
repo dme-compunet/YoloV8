@@ -4,7 +4,7 @@ namespace Compunet.YoloV8;
 
 internal readonly ref struct ObbIndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV8Configuration configuration)
 {
-    public ObbIndexedBoundingBox[] Parse(Tensor<float> output, SixLabors.ImageSharp.Size originSize)
+    public ObbIndexedBoundingBox[] Parse(Tensor<float> output, Size originSize)
     {
         int xPadding;
         int yPadding;
@@ -26,7 +26,7 @@ internal readonly ref struct ObbIndexedBoundingBoxParser(YoloV8Metadata metadata
         return Parse(output, originSize, xPadding, yPadding);
     }
 
-    public ObbIndexedBoundingBox[] Parse(Tensor<float> output, SixLabors.ImageSharp.Size originSize, int xPadding, int yPadding)
+    public ObbIndexedBoundingBox[] Parse(Tensor<float> output, Size originSize, int xPadding, int yPadding)
     {
         var xRatio = (float)originSize.Width / metadata.ImageSize.Width;
         var yRatio = (float)originSize.Height / metadata.ImageSize.Height;
