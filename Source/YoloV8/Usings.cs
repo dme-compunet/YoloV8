@@ -15,5 +15,6 @@ global using SixLabors.ImageSharp.Drawing;
 global using SixLabors.ImageSharp.Drawing.Processing;
 global using SixLabors.ImageSharp.PixelFormats;
 global using SixLabors.ImageSharp.Processing;
+global using System.Buffers;
 global using System.Data;
 global using System.Diagnostics;

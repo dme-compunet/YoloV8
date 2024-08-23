@@ -4,6 +4,8 @@ namespace Compunet.YoloV8;
 
 internal readonly ref struct ObbIndexedBoundingBoxParser(YoloV8Metadata metadata, YoloV8Configuration configuration)
 {
+    private static readonly ArrayPool<ObbIndexedBoundingBox> _boxesArrayPool = ArrayPool<ObbIndexedBoundingBox>.Create();
+
     public ObbIndexedBoundingBox[] Parse(Tensor<float> output, Size originSize)
     {
         int xPadding;
@@ -48,82 +50,90 @@ internal readonly ref struct ObbIndexedBoundingBoxParser(YoloV8Metadata metadata
         var _parameters = configuration;
 
         var detectionDataSize = output.Dimensions[1];
-        var boxes = new ObbIndexedBoundingBox[output.Dimensions[2]];
+        var boxesCount = output.Dimensions[2];
+        var boxes = _boxesArrayPool.Rent(boxesCount);
 
-        Parallel.For(0, output.Dimensions[2], i =>
+        try
         {
-            var maxConfidence = _parameters.Confidence;
-            var maxConfidenceIndex = -1;
-
-            for (int j = 0; j < _metadata.Names.Count; j++)
+            Parallel.For(0, boxesCount, i =>
             {
-                var confidence = output[0, j + 4, i];
+                var maxConfidence = _parameters.Confidence;
+                var maxConfidenceIndex = -1;
 
-                if (confidence > maxConfidence)
+                for (int j = 0; j < _metadata.Names.Count; j++)
                 {
-                    maxConfidence = confidence;
-                    maxConfidenceIndex = j;
+                    var confidence = output[0, j + 4, i];
+
+                    if (confidence > maxConfidence)
+                    {
+                        maxConfidence = confidence;
+                        maxConfidenceIndex = j;
+                    }
+                }
+
+                if (maxConfidenceIndex == -1)
+                {
+                    return;
+                }
+
+                var x = (int)((output[0, 0, i] - xPadding) * xRatio);
+                var y = (int)((output[0, 1, i] - yPadding) * yRatio);
+                var w = (int)(output[0, 2, i] * xRatio);
+                var h = (int)(output[0, 3, i] * yRatio);
+
+                var bounds = new Rectangle(x, y, w, h);
+
+                var angle = (output[0, detectionDataSize - 1, i]); // Radians
+
+                // Angle in [-pi/4,3/4 pi) --》 [-pi/2,pi/2)
+                if (angle >= MathF.PI && angle <= 0.75 * MathF.PI)
+                {
+                    angle -= MathF.PI;
+                }
+
+                var name = _metadata.Names[maxConfidenceIndex];
+
+                boxes[i] = new ObbIndexedBoundingBox
+                {
+                    Index = i,
+                    Class = name,
+                    Bounds = bounds,
+                    Angle = angle * 180 / MathF.PI, // Degrees
+                    Confidence = maxConfidence
+                };
+            });
+
+            var count = 0;
+
+            for (int i = 0; i < boxesCount; i++)
+            {
+                if (boxes[i].IsEmpty == false)
+                {
+                    count++;
                 }
             }
 
-            if (maxConfidenceIndex == -1)
+            var topBoxes = new ObbIndexedBoundingBox[count];
+
+            var topIndex = 0;
+
+            for (int i = 0; i < boxesCount; i++)
             {
-                return;
+                var box = boxes[i];
+
+                if (box.IsEmpty)
+                {
+                    continue;
+                }
+
+                topBoxes[topIndex++] = box;
             }
 
-            var x = (int)((output[0, 0, i] - xPadding) * xRatio);
-            var y = (int)((output[0, 1, i] - yPadding) * yRatio);
-            var w = (int)(output[0, 2, i] * xRatio);
-            var h = (int)(output[0, 3, i] * yRatio);
-
-            var bounds = new Rectangle(x, y, w, h);
-
-            var angle = (output[0, detectionDataSize - 1, i]); // Radians
-
-            // Angle in [-pi/4,3/4 pi) --》 [-pi/2,pi/2)
-            if (angle >= MathF.PI && angle <= 0.75 * MathF.PI)
-            {
-                angle -= MathF.PI;
-            }
-
-            var name = _metadata.Names[maxConfidenceIndex];
-
-            boxes[i] = new ObbIndexedBoundingBox
-            {
-                Index = i,
-                Class = name,
-                Bounds = bounds,
-                Angle = angle * 180 / MathF.PI, // Degrees
-                Confidence = maxConfidence
-            };
-        });
-
-        var count = 0;
-
-        for (int i = 0; i < boxes.Length; i++)
-        {
-            if (boxes[i].IsEmpty == false)
-            {
-                count++;
-            }
+            return ObbNonMaxSuppressionHelper.Suppress(topBoxes, configuration.IoU);
         }
-
-        var topBoxes = new ObbIndexedBoundingBox[count];
-
-        var topIndex = 0;
-
-        for (int i = 0; i < boxes.Length; i++)
+        finally
         {
-            var box = boxes[i];
-
-            if (box.IsEmpty)
-            {
-                continue;
-            }
-
-            topBoxes[topIndex++] = box;
+            _boxesArrayPool.Return(boxes, true);
         }
-
-        return ObbNonMaxSuppressionHelper.Suppress(topBoxes, configuration.IoU);
     }
 }
