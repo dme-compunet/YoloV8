@@ -30,8 +30,8 @@ public class ColorPalette
 
     private static ColorPalette CreateDefault()
     {
-        return new ColorPalette(new string[]
-        {
+        return new ColorPalette(
+        [
             "FF3838",
             "FF9D97",
             "FF701F",
@@ -52,6 +52,6 @@ public class ColorPalette
             "CB38FF",
             "FF95C8",
             "FF37C7",
-        });
+        ]);
     }
 }

@@ -22,10 +22,10 @@
 		<Optimize>true</Optimize>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Description>Use YOLOv8 in real-time for object detection, instance segmentation, pose estimation and image classification, via ONNX Runtime</Description>
-		<RepositoryUrl>https://github.com/dme-compunet/YOLOv8</RepositoryUrl>
+		<RepositoryUrl>https://github.com/dme-compunet/YoloV8</RepositoryUrl>
 		<PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageTags>image-classification object-detection pose-estimation instance-segmentation onnx imagesharp onnx-runtime ultralytics yolov8</PackageTags>
+		<PackageTags>image-classification object-detection pose-estimation instance-segmentation onnx imagesharp onnx-runtime ultralytics yolov8 yolov10</PackageTags>
 		<PackageIcon>Icon.png</PackageIcon>
 		<Authors>Compunet</Authors>
 		<Version>4.2.0</Version>
@@ -40,6 +40,7 @@
 		<PackageReference Include="Clipper2" Version="1.4.0" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
 		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.4" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
 		<PackageReference Condition="'$(Configuration)' != 'GpuRelease'" Include="Microsoft.ML.OnnxRuntime" Version="1.19.1" />
 		<PackageReference Condition="'$(Configuration)' == 'GpuRelease'" Include="Microsoft.ML.OnnxRuntime.Gpu" Version="1.19.1" />
 	</ItemGroup>

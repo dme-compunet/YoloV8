@@ -1,46 +1,50 @@
-﻿namespace YoloV8.Tests;
+﻿using Compunet.YoloV8.Parsing;
+
+namespace YoloV8.Tests;
 
 public class NonMaxSuppressionTests
 {
     [Fact]
     public void NonMaxSuppressionBasicTest()
     {
-        var classA = new YoloV8Class(0, "a");
-        var classB = new YoloV8Class(1, "b");
+        var nonMaxSuppression = new NonMaxSuppressionService();
 
-        IndexedBoundingBox[] boxes =
+        var classA = new YoloName(0, "a");
+        var classB = new YoloName(1, "b");
+
+        RawBoundingBox[] boxes =
         [
-            new IndexedBoundingBox
+            new RawBoundingBox
             {
                 Index = 0,
-                Class = classA,
+                Name = classA,
                 Bounds = new Rectangle(0, 0, 50, 50),
                 Confidence = .8f
             },
-            new IndexedBoundingBox
+            new RawBoundingBox
             {
                 Index = 1,
-                Class = classA,
+                Name = classA,
                 Bounds = new Rectangle(0, 0, 50, 50),
                 Confidence = .9f
             },
-            new IndexedBoundingBox
+            new RawBoundingBox
             {
                 Index = 2,
-                Class = classB,
+                Name = classB,
                 Bounds = new Rectangle(0, 0, 50, 50),
                 Confidence = .9f
             },
-            new IndexedBoundingBox
+            new RawBoundingBox
             {
                 Index = 3,
-                Class = classA,
+                Name = classA,
                 Bounds = new Rectangle(50, 50, 50, 50),
                 Confidence = .5f
             },
         ];
 
-        var selected = NonMaxSuppressionHelper.Suppress(boxes, .5f);
+        var selected = nonMaxSuppression.Suppress(boxes.AsSpan(), .5f);
 
         Assert.Equal([1, 2, 3], selected.Select(x => x.Index).Order());
     }
