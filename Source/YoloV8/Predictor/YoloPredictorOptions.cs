@@ -4,8 +4,11 @@ public class YoloPredictorOptions
 {
     public static YoloPredictorOptions Default { get; } = new();
 
+#if GPURELEASE
+    public bool UseCuda { get; init; } = true;
+#else 
     public bool UseCuda { get; init; }
-
+#endif
     public int CudaDeviceId { get; init; }
 
     public SessionOptions? SessionOptions { get; init; }
