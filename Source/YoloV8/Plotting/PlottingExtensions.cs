@@ -1,52 +1,51 @@
-﻿namespace Compunet.YoloV8.Plotting;
+﻿using System.Numerics;
+
+namespace Compunet.YoloV8.Plotting;
 
 public static class PlottingExtensions
 {
-    public static Image PlotImage(this PoseResult result, ImageSelector<Rgba32> originImage, PosePlottingOptions? options = null)
+    public static Image PlotImage(this YoloResult<Pose> result, Image image, PosePlottingOptions? options = null)
     {
         options ??= PosePlottingOptions.Default;
 
-        var process = originImage.Load(true);
+        var target = image.CloneAs<Rgba32>();
 
-        EnsureSize(process.Size, result.Image);
+        target.AutoOrient();
 
-        var size = result.Image;
+        ValidateSize(image.Size, result.ImageSize);
 
-        var ratio = Math.Max(size.Width, size.Height) / 640F;
-
+        var ratio = GetRatio(image.Size);
         var textOptions = new TextOptions(options.FontFamily.CreateFont(options.FontSize * ratio));
-
-        var textPadding = options.TextHorizontalPadding * ratio;
-
+        var textPadding = new Vector2(options.LabelTextXPadding, options.LabelTextYPadding) * ratio;
         var boxBorderThickness = options.BoxBorderThickness * ratio;
-
         var radius = options.KeypointRadius * ratio;
         var lineThickness = options.KeypointLineThickness * ratio;
 
-        foreach (var box in result.Boxes)
+        foreach (var box in result)
         {
-            var label = $"{box.Class.Name} {box.Confidence:N}";
-            var color = options.ColorPalette.GetColor(box.Class.Id);
+            var label = $"{box.Name.Name} {box.Confidence:N}";
+            var color = options.ColorPalette.GetColor(box.Name.Id);
 
             var points = GetPoints(box);
             var textLocation = points[0];
 
-            process.Mutate(context =>
+            target.Mutate(context =>
             {
-                DrawBoundingBox(context, points, color, boxBorderThickness, .1f);
-
-                DrawTextLabel(context, label, textLocation, color, boxBorderThickness, textPadding, textOptions);
+                context.DrawBox(points, color, boxBorderThickness, .1f);
+                context.DrawLabel(label, textLocation, color, boxBorderThickness, textPadding, textOptions);
 
                 // Draw lines
-                for (int i = 0; i < options.Skeleton.Connections.Length; i++)
+                for (var i = 0; i < options.Skeleton.Connections.Length; i++)
                 {
                     var connection = options.Skeleton.Connections[i];
 
-                    var first = box.Keypoints.ElementAt(connection.First);
-                    var second = box.Keypoints.ElementAt(connection.Second);
+                    var first = box[connection.First];
+                    var second = box[connection.Second];
 
                     if (first.Confidence < options.KeypointConfidence || second.Confidence < options.KeypointConfidence)
+                    {
                         continue;
+                    }
 
                     var points = new PointF[]
                     {
@@ -60,10 +59,12 @@ public static class PlottingExtensions
                 }
 
                 // Draw keypoints
-                foreach (var keypoint in box.Keypoints)
+                foreach (var keypoint in box)
                 {
                     if (keypoint.Confidence < options.KeypointConfidence)
+                    {
                         continue;
+                    }
 
                     var ellipse = new EllipsePolygon(keypoint.Point, radius);
 
@@ -74,103 +75,94 @@ public static class PlottingExtensions
             });
         }
 
-        return process;
+        return target;
     }
 
-    public static Image PlotImage(this DetectionResult result, ImageSelector<Rgba32> originImage, DetectionPlottingOptions? options = null)
+    public static Image PlotImage(this YoloResult<Detection> result, Image image, DetectionPlottingOptions? options = null)
     {
         options ??= DetectionPlottingOptions.Default;
 
-        var process = originImage.Load(true);
+        var target = image.CloneAs<Rgba32>();
 
-        process.Mutate(x => x.AutoOrient());
+        target.AutoOrient();
 
-        EnsureSize(process.Size, result.Image);
+        ValidateSize(image.Size, result.ImageSize);
 
-        var size = result.Image;
+        var ratio = GetRatio(image.Size);
 
-        var ratio = Math.Max(size.Width, size.Height) / 640F;
-
-        var textOptions = new TextOptions(options.FontFamily.CreateFont(options.FontSize * ratio));
-
-        var textPadding = options.TextHorizontalPadding * ratio;
+        var textOptions = new TextOptions(options.FontFamily.CreateFont(options.FontSize * ratio))
+        {
+            VerticalAlignment = VerticalAlignment.Center,
+        };
 
         var thickness = options.BoxBorderThickness * ratio;
+        var textPadding = new Vector2(options.LabelTextXPadding, options.LabelTextYPadding) * ratio;
 
-        foreach (var box in result.Boxes)
+        foreach (var box in result)
         {
-            var label = $"{box.Class.Name} {box.Confidence:N}";
-            var color = options.ColorPalette.GetColor(box.Class.Id);
+            var label = $"{box.Name.Name} {box.Confidence:N}";
+            var color = options.ColorPalette.GetColor(box.Name.Id);
 
             var points = GetPoints(box);
             var textLocation = points[0]; // The first point is top left
 
-            process.Mutate(context =>
+            target.Mutate(context =>
             {
-                DrawBoundingBox(context, points, color, thickness, .1f);
-
-                DrawTextLabel(context, label, textLocation, color, thickness, textPadding, textOptions);
+                context.DrawBox(points, color, thickness, .1f);
+                context.DrawLabel(label, textLocation, color, thickness, textPadding, textOptions);
             });
         }
 
-        return process;
+        return target;
     }
 
-    public static Image PlotImage(this ObbDetectionResult result, ImageSelector<Rgba32> originImage, DetectionPlottingOptions? options = null)
+    public static Image PlotImage(this YoloResult<ObbDetection> result, Image image, DetectionPlottingOptions? options = null)
     {
         options ??= DetectionPlottingOptions.Default;
 
-        var process = originImage.Load(true);
+        var target = image.CloneAs<Rgba32>();
 
-        process.Mutate(x => x.AutoOrient());
+        target.AutoOrient();
 
-        EnsureSize(process.Size, result.Image);
+        ValidateSize(target.Size, result.ImageSize);
 
-        var size = result.Image;
-
-        var ratio = Math.Max(size.Width, size.Height) / 640f;
-
+        var ratio = GetRatio(image.Size);
         var textOptions = new TextOptions(options.FontFamily.CreateFont(options.FontSize * ratio));
-
-        var textPadding = options.TextHorizontalPadding * ratio;
-
+        var textPadding = new Vector2(options.LabelTextXPadding, options.LabelTextYPadding) * ratio;
         var thickness = options.BoxBorderThickness * ratio;
 
-        foreach (var box in result.Boxes)
+        foreach (var box in result)
         {
-            var label = $"{box.Class.Name} {box.Confidence:N}";
-            var color = options.ColorPalette.GetColor(box.Class.Id);
+            var label = $"{box.Name.Name} {box.Confidence:N}";
+            var color = options.ColorPalette.GetColor(box.Name.Id);
 
             var points = GetPoints(box);
             var textLocation = points.MinBy(p => p.Y);
 
-            process.Mutate(context =>
+            target.Mutate(context =>
             {
-                DrawBoundingBox(context, points, color, thickness, .1f);
-
-                DrawTextLabel(context, label, textLocation, color, thickness, textPadding, textOptions);
+                context.DrawBox(points, color, thickness, .1f);
+                context.DrawLabel(label, textLocation, color, thickness, textPadding, textOptions);
             });
         }
 
-        return process;
+        return target;
     }
 
-    public static Image PlotImage(this SegmentationResult result, ImageSelector<Rgba32> originImage, SegmentationPlottingOptions? options = null)
+    public static Image PlotImage(this YoloResult<Segmentation> result, Image image, SegmentationPlottingOptions? options = null)
     {
         options ??= SegmentationPlottingOptions.Default;
 
-        var process = originImage.Load(true);
+        var target = image.CloneAs<Rgba32>();
 
-        EnsureSize(process.Size, result.Image);
+        target.AutoOrient();
 
-        var size = result.Image;
+        ValidateSize(target.Size, result.ImageSize);
 
-        var ratio = Math.Max(size.Width, size.Height) / 640F;
-
+        var size = result.ImageSize;
+        var ratio = GetRatio(image.Size);
         var textOptions = new TextOptions(options.FontFamily.CreateFont(options.FontSize * ratio));
-
-        var textPadding = options.TextHorizontalPadding * ratio;
-
+        var textPadding = new Vector2(options.LabelTextXPadding, options.LabelTextYPadding) * ratio;
         var thickness = options.BoxBorderThickness * ratio;
 
         #region Draw Masks
@@ -178,77 +170,76 @@ public static class PlottingExtensions
         using var masksLayer = new Image<Rgba32>(size.Width, size.Height);
         using var contoursLayer = new Image<Rgba32>(size.Width, size.Height);
 
-        foreach (var box in result.Boxes)
+        foreach (var box in result)
         {
-            var color = options.ColorPalette.GetColor(box.Class.Id);
+            var color = options.ColorPalette.GetColor(box.Name.Id);
 
             using var mask = new Image<Rgba32>(box.Bounds.Width, box.Bounds.Height);
 
-            for (int x = 0; x < box.Mask.Width; x++)
+            for (var x = 0; x < box.Mask.Width; x++)
             {
-                for (int y = 0; y < box.Mask.Height; y++)
+                for (var y = 0; y < box.Mask.Height; y++)
                 {
                     var value = box.Mask[x, y];
 
                     if (value > options.MaskConfidence)
+                    {
                         mask[x, y] = color;
+                    }
                 }
             }
 
             masksLayer.Mutate(x => x.DrawImage(mask, box.Bounds.Location, 1F));
 
-            if (options.ContoursThickness > 0F)
+            if (options.ContoursThickness > 0f)
             {
                 using var contours = CreateContours(mask, color, options.ContoursThickness * ratio);
-                contoursLayer.Mutate(x => x.DrawImage(contours, box.Bounds.Location, 1F));
+                contoursLayer.Mutate(x => x.DrawImage(contours, box.Bounds.Location, 1f));
             }
         }
 
-        process.Mutate(x => x.DrawImage(masksLayer, .4F));
-        process.Mutate(x => x.DrawImage(contoursLayer, 1F));
+        target.Mutate(x => x.DrawImage(masksLayer, .4F));
+        target.Mutate(x => x.DrawImage(contoursLayer, 1F));
 
         #endregion
 
         #region Draw Boxes
 
-        foreach (var box in result.Boxes)
+        foreach (var box in result)
         {
-            var label = $"{box.Class.Name} {box.Confidence:N}";
-            var color = options.ColorPalette.GetColor(box.Class.Id);
+            var label = $"{box.Name.Name} {box.Confidence:N}";
+            var color = options.ColorPalette.GetColor(box.Name.Id);
 
             var points = GetPoints(box);
             var textLocation = points[0];
 
-            process.Mutate(context =>
+            target.Mutate(context =>
             {
-                DrawBoundingBox(context, points, color, thickness, .1f);
-
-                DrawTextLabel(context, label, textLocation, color, thickness, textPadding, textOptions);
+                context.DrawBox(points, color, thickness, .1f);
+                context.DrawLabel(label, textLocation, color, thickness, textPadding, textOptions);
             });
         }
 
         #endregion
 
-        return process;
+        return target;
     }
 
-    public static Image PlotImage(this ClassificationResult result, ImageSelector<Rgba32> originImage, ClassificationPlottingOptions? options = null)
+    public static Image PlotImage(this YoloResult<Classification> result, Image image, ClassificationPlottingOptions? options = null)
     {
         options ??= ClassificationPlottingOptions.Default;
 
-        var process = originImage.Load(true);
+        var target = image.CloneAs<Rgba32>();
 
-        EnsureSize(process.Size, result.Image);
+        target.AutoOrient();
 
-        var size = result.Image;
+        ValidateSize(target.Size, result.ImageSize);
 
-        var ratio = Math.Max(size.Width, size.Height) / 640F;
-
+        var ratio = GetRatio(image.Size);
         var textOptions = new TextOptions(options.FontFamily.CreateFont(options.FontSize * ratio));
 
         var label = result.ToString();
-
-        var classId = result.TopClass.Name.Id;
+        var classId = result.GetTopClass().Name.Id;
 
         var fill = options.FillColorPalette.GetColor(classId);
         var border = options.BorderColorPalette.GetColor(classId);
@@ -257,14 +248,14 @@ public static class PlottingExtensions
         var brush = new SolidBrush(fill);
         var location = new PointF(options.XOffset * ratio, options.YOffset * ratio);
 
-        process.Mutate(x => x.DrawText(label, textOptions.Font, brush, pen, location));
+        target.Mutate(x => x.DrawText(label, textOptions.Font, brush, pen, location));
 
-        return process;
+        return target;
     }
 
     #region Private Methods
 
-    private static void DrawBoundingBox(IImageProcessingContext context, PointF[] points, Color color, float thickness, float opacity)
+    private static void DrawBox(this IImageProcessingContext context, PointF[] points, Color color, float thickness, float opacity)
     {
         var polygon = new Polygon(points);
 
@@ -276,16 +267,21 @@ public static class PlottingExtensions
         }
     }
 
-    private static void DrawTextLabel(IImageProcessingContext context, string text, PointF location, Color color, float thickness, float padding, TextOptions options)
+    private static void DrawLabel(this IImageProcessingContext context, string text, PointF location, Color color, float thickness, Vector2 padding, TextOptions options)
     {
-        var rendered = TextMeasurer.MeasureSize(text, options);
-        var renderedSize = new Size((int)(rendered.Width + padding), (int)rendered.Height);
+        var xPadding = padding.X;
+        var yPadding = padding.Y;
 
-        location.Offset(0, -renderedSize.Height);
+        var rendered = TextMeasurer.MeasureBounds(text, options);
+        var labelSize = new SizeF(rendered.Width + xPadding, options.Font.Size + yPadding);
 
-        var textLocation = new PointF(location.X + padding / 2, location.Y);
+        location.Offset(0, -labelSize.Height);
 
-        var textBoxPolygon = new RectangularPolygon(location, renderedSize);
+        var textLocation = new PointF(location.X + xPadding / 2, location.Y + yPadding / 2);
+        var textBoxPolygon = new RectangularPolygon(location, labelSize);
+
+        // Fix text position
+        textLocation.Offset(0, -(yPadding * .1f));
 
         context.Fill(color, textBoxPolygon);
         context.Draw(color, thickness, textBoxPolygon);
@@ -301,15 +297,12 @@ public static class PlottingExtensions
 
         foreach (var points in contours)
         {
-            if (points.Count < 2)
+            if (points.Length < 2)
             {
                 continue;
             }
 
-            var pathBuilder = new PathBuilder();
-            pathBuilder.AddLines(points.Select(x => (PointF)x));
-
-            var path = pathBuilder.Build();
+            var path = new PathBuilder().AddLines(points.Select(point => (PointF)point)).Build();
 
             result.Mutate(x =>
             {
@@ -320,7 +313,7 @@ public static class PlottingExtensions
         return result;
     }
 
-    private static PointF[] GetPoints(BoundingBox box)
+    private static PointF[] GetPoints(Detection box)
     {
         var rect = box.Bounds;
 
@@ -333,19 +326,24 @@ public static class PlottingExtensions
         ];
     }
 
-    private static PointF[] GetPoints(ObbBoundingBox box)
+    private static PointF[] GetPoints(ObbDetection box)
     {
         var points = box.GetCornerPoints();
 
         return [.. points.Select(point => new PointF(point.X, point.Y))];
     }
 
-    private static void EnsureSize(Size origin, Size result)
+    private static void ValidateSize(Size origin, Size result)
     {
         if (origin != result)
         {
             throw new InvalidOperationException("Original image size must to be equals to prediction result image size");
         }
+    }
+
+    private static float GetRatio(Size size)
+    {
+        return Math.Max(size.Width, size.Height) / 640f;
     }
 
     #endregion

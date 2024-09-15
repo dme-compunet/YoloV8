@@ -2,16 +2,18 @@
 using System.Diagnostics;
 
 Console.WriteLine("Loading pose estimation model...");
-using var posePredictor = YoloV8Predictor.Create("./models/yolov8n-pose-uint8.onnx");
+using var posePredictor = new YoloPredictor("./models/yolov8n-pose-uint8.onnx");
 
 Console.WriteLine("Loading detection model...");
-using var detectPredictor = YoloV8Predictor.Create("./models/yolov8n-uint8.onnx");
+using var detectPredictor = new YoloPredictor("./models/yolov8n-uint8.onnx");
 
 Console.WriteLine("Loading segmentation model...");
-using var segmentPredictor = YoloV8Predictor.Create("./models/yolov8n-seg-uint8.onnx");
+using var segmentPredictor = new YoloPredictor("./models/yolov8n-seg-uint8.onnx");
 
 Console.WriteLine("Loading classification model...");
-using var classifyPredictor = YoloV8Predictor.Create("./models/yolov8n-cls-uint8.onnx");
+using var classifyPredictor = new YoloPredictor("./models/yolov8n-cls-uint8.onnx");
+
+Console.WriteLine();
 
 await PredictAndSaveAsync(posePredictor, "bus.jpg");
 await PredictAndSaveAsync(posePredictor, "sports.jpg");
@@ -34,15 +36,17 @@ if (OperatingSystem.IsWindows())
     });
 }
 
-static async Task PredictAndSaveAsync(YoloV8Predictor predictor, string image)
+static async Task PredictAndSaveAsync(YoloPredictor predictor, string image)
 {
     var path = $"./images/{image}";
+    var task = predictor.Metadata.Task;
+
+    Console.WriteLine($"Running '{image}' (test: {task})...");
 
     var result = await predictor.PredictAndSaveAsync(path);
 
-    Console.WriteLine();
-    Console.WriteLine($"Task:   {predictor.Metadata.Task}");
-    Console.WriteLine($"Image:  {image}");
     Console.WriteLine($"Result: {result}");
     Console.WriteLine($"Speed:  {result.Speed}");
+
+    Console.WriteLine();
 }

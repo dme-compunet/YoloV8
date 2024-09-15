@@ -1,0 +1,1 @@
+﻿[assembly: InternalsVisibleTo("YoloV8.Tests")]

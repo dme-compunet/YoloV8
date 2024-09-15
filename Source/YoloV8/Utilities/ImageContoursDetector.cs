@@ -2,12 +2,12 @@
 
 internal static class ImageContoursDetector
 {
-    private static readonly (Func<Point, Point> func, int neighborhood)[] _neighborhood;
+    private static readonly (Func<Point, Point> Func, int Neighborhood)[] _neighborhood;
 
     static ImageContoursDetector()
     {
-        _neighborhood = new (Func<Point, Point>, int)[]
-        {
+        _neighborhood =
+        [
             (point => new Point(point.X - 1, point.Y), 7),
             (point => new Point(point.X - 1, point.Y - 1), 7),
             (point => new Point(point.X, point.Y - 1), 1),
@@ -16,23 +16,21 @@ internal static class ImageContoursDetector
             (point => new Point(point.X + 1, point.Y + 1), 3),
             (point => new Point(point.X, point.Y+1), 5),
             (point => new Point(point.X -1, point.Y + 1), 5)
-        };
+        ];
     }
 
-    public static IReadOnlyList<IReadOnlyList<Point>> FindContours(this Image image)
+    public static Point[][] FindContours(this Image image)
     {
         var luminance = image.CloneAs<L8>();
-
         var found = new HashSet<Point>();
+        var inside = false;
+        var contours = new List<Point[]>();
 
-        bool inside = false;
-
-        var contours = new List<IReadOnlyList<Point>>();
-
-        for (int y = 0; y < luminance.Height; y++)
-            for (int x = 0; x < luminance.Width; x++)
+        for (var y = 0; y < luminance.Height; y++)
+        {
+            for (var x = 0; x < luminance.Width; x++)
             {
-                Point point = new(x, y);
+                var point = new Point(x, y);
 
                 if (found.Contains(point) && !inside)
                 {
@@ -40,10 +38,12 @@ internal static class ImageContoursDetector
                     continue;
                 }
 
-                bool transparent = IsTransparent(luminance, point);
+                var transparent = IsTransparent(luminance, point);
 
                 if (!transparent && inside)
+                {
                     continue;
+                }
 
                 if (transparent && inside)
                 {
@@ -55,22 +55,19 @@ internal static class ImageContoursDetector
                 {
                     var contour = new List<Point>();
 
-                    contours.Add(contour);
-
                     found.Add(point);
                     contour.Add(point);
 
-                    int checkLocationNr = 1;
-                    Point startPos = point;
+                    var checkLocationNr = 1;
+                    var startPos = point;
 
-                    int counter1 = 0;
-                    int counter2 = 0;
+                    var counter1 = 0;
+                    var counter2 = 0;
 
                     while (true)
                     {
-                        Point checkPosition = _neighborhood[checkLocationNr - 1].func(point);
-
-                        int newCheckLocationNr = _neighborhood[checkLocationNr - 1].neighborhood;
+                        var checkPosition = _neighborhood[checkLocationNr - 1].Func(point);
+                        var newCheckLocationNr = _neighborhood[checkLocationNr - 1].Neighborhood;
 
                         if (!IsTransparent(luminance, checkPosition))
                         {
@@ -96,15 +93,22 @@ internal static class ImageContoursDetector
                             checkLocationNr = 1 + (checkLocationNr % 8);
 
                             if (counter2 > 8)
+                            {
                                 break;
+                            }
                             else
+                            {
                                 counter2++;
+                            }
                         }
                     }
+
+                    contours.Add([.. contour]);
                 }
             }
+        }
 
-        return contours;
+        return [.. contours];
     }
 
     private static bool IsTransparent(Image<L8> image, Point pixel)

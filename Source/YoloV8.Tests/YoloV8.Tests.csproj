@@ -13,7 +13,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="..\Assets\**" CopyToOutputDirectory="PreserveNewest" />
+		<None Include="..\Assets\**" CopyToOutputDirectory="PreserveNewest" Visible="false" />
 	</ItemGroup>
 
 	<ItemGroup>

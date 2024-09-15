@@ -2,38 +2,15 @@
 
 internal static class ImageSharpExtensions
 {
-    public static void EnumeratePixels<TPixel>(this Image<TPixel> image, Action<Point, TPixel> iterator) where TPixel : unmanaged, IPixel<TPixel>
+    public static Image<TPixel> As<TPixel>(this Image image) where TPixel : unmanaged, IPixel<TPixel>
     {
-        var width = image.Width;
-        var height = image.Height;
-
-        if (image.DangerousTryGetSinglePixelMemory(out var memory))
+        if (image is Image<TPixel> result)
         {
-            Parallel.For(0, width * height, index =>
-            {
-                int x = index % width;
-                int y = index / width;
-
-                var point = new Point(x, y);
-                var pixel = memory.Span[index];
-
-                iterator(point, pixel);
-            });
+            return result;
         }
-        else
-        {
-            Parallel.For(0, image.Height, y =>
-            {
-                var row = image.DangerousGetPixelRowMemory(y).Span;
 
-                for (int x = 0; x < image.Width; x++)
-                {
-                    var point = new Point(x, y);
-                    var pixel = row[x];
-
-                    iterator(point, pixel);
-                }
-            });
-        }
+        return image.CloneAs<TPixel>();
     }
+
+    public static void AutoOrient(this Image image) => image.Mutate(x => x.AutoOrient());
 }
