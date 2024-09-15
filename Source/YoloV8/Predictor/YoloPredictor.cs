@@ -2,8 +2,8 @@
 
 public class YoloPredictor : IDisposable
 {
-    private readonly ServiceResolver _resolver;
     private readonly InferenceSession _session;
+    private readonly PredictorServiceResolver _resolver;
 
     private bool _disposed;
 
@@ -25,7 +25,7 @@ public class YoloPredictor : IDisposable
         _session = options.CreateSession(model);
 
         // Create predictor services resolver
-        _resolver = new ServiceResolver(_session, options.Configuration ?? YoloConfiguration.Default);
+        _resolver = new PredictorServiceResolver(_session, options.Configuration ?? YoloConfiguration.Default);
 
         Metadata = _resolver.Resolve<YoloMetadata>();
         Configuration = _resolver.Resolve<YoloConfiguration>();

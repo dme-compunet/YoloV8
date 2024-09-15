@@ -6,7 +6,7 @@ global using Compunet.YoloV8.Memory;
 global using Compunet.YoloV8.Metadata;
 global using Compunet.YoloV8.Parsing;
 global using Compunet.YoloV8.Plotting;
-global using Compunet.YoloV8.Services;
+global using Compunet.YoloV8.Services.Resolvers;
 global using Compunet.YoloV8.Utilities;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.ML.OnnxRuntime;

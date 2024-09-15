@@ -1,6 +1,6 @@
-﻿namespace Compunet.YoloV8;
+﻿namespace Compunet.YoloV8.Services.Resolvers;
 
-internal class ServiceResolver : IDisposable
+internal class PredictorServiceResolver : IDisposable
 {
     private readonly YoloMetadata _metadata;
     private readonly InferenceSession _session;
@@ -12,7 +12,7 @@ internal class ServiceResolver : IDisposable
 
     private bool _disposed;
 
-    public ServiceResolver(InferenceSession session, YoloConfiguration configuration)
+    public PredictorServiceResolver(InferenceSession session, YoloConfiguration configuration)
     {
         _session = session;
         _configuration = configuration;
