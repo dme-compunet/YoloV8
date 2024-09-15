@@ -84,7 +84,7 @@ using Compunet.YoloV8.Plotting;
 using SixLabors.ImageSharp;
 
 // Load the YOLOv8 predictor
-using var predictor = YoloV8Predictor.Create("path/to/model");
+using var predictor = new YoloPredictor("path/to/model.onnx");
 
 // Run model, plot predictions and write to file
 predictor.PredictAndSaveAsync("path/to/image");
