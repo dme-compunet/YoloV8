@@ -55,7 +55,7 @@ internal class RawBoundingBoxParser(YoloMetadata metadata,
         var namesCount = metadata.Names.Length;
 
         var boxes = memoryAllocator.Allocate<T>(boxesCount);
-
+        var boxesIndex = 0;
         var boxesSpan = boxes.Memory.Span;
         var tensorSpan = tensor.Buffer.Span;
 
@@ -68,12 +68,8 @@ internal class RawBoundingBoxParser(YoloMetadata metadata,
             NameCount = namesCount,
         };
 
-        var nonEmptyBoxesCount = 0;
-
         for (var boxIndex = 0; boxIndex < boxesCount; boxIndex++)
         {
-            var emptyBox = true;
-
             for (var nameIndex = 0; nameIndex < namesCount; nameIndex++)
             {
                 var confidence = tensorSpan[(nameIndex + 4) * stride1 + boxIndex];
@@ -83,8 +79,6 @@ internal class RawBoundingBoxParser(YoloMetadata metadata,
                     continue;
                 }
 
-                emptyBox = false;
-
                 var name = metadata.Names[nameIndex];
                 var box = T.Parse(ref context, boxIndex, name, confidence, YoloArchitecture.YoloV8);
 
@@ -93,22 +87,11 @@ internal class RawBoundingBoxParser(YoloMetadata metadata,
                     continue;
                 }
 
-                boxesSpan[boxIndex] = box;
-            }
-
-            if (emptyBox)
-            {
-                boxesSpan[boxIndex] = T.Empty;
-            }
-            else
-            {
-                nonEmptyBoxesCount++;
+                boxesSpan[boxesIndex++] = box;
             }
         }
 
-        using var nonEmptyBoxes = GetNonEmptyBoxes<T>(boxes.Memory.Span, nonEmptyBoxesCount);
-
-        return nonMaxSuppression.Suppress(nonEmptyBoxes.Memory.Span, configuration.IoU);
+        return nonMaxSuppression.Suppress(boxesSpan[..boxesIndex], configuration.IoU);
     }
 
     private T[] ParseYoloV10<T>(DenseTensor<float> tensor, Vector<int> padding, Vector<float> ratio) where T : IRawBoundingBox<T>
@@ -118,7 +101,7 @@ internal class RawBoundingBoxParser(YoloMetadata metadata,
 
         var boxesCount = tensor.Dimensions[1];
         var boxes = memoryAllocator.Allocate<T>(boxesCount);
-
+        var boxesIndex = 0;
         var boxesSpan = boxes.Memory.Span;
         var tensorSpan = tensor.Buffer.Span;
 
@@ -130,8 +113,6 @@ internal class RawBoundingBoxParser(YoloMetadata metadata,
             Stride1 = stride1
         };
 
-        var nonEmptyBoxesCount = 0;
-
         for (var index = 0; index < boxesCount; index++)
         {
             var boxOffset = index * stride1;
@@ -140,11 +121,8 @@ internal class RawBoundingBoxParser(YoloMetadata metadata,
 
             if (confidence <= configuration.Confidence)
             {
-                boxesSpan[index] = T.Empty;
                 continue;
             }
-
-            nonEmptyBoxesCount++;
 
             var name = metadata.Names[(int)tensorSpan[boxOffset + 5 * stride2]];
             var box = T.Parse(ref context, index, name, confidence, YoloArchitecture.YoloV10);
@@ -154,42 +132,9 @@ internal class RawBoundingBoxParser(YoloMetadata metadata,
                 continue;
             }
 
-            boxesSpan[index] = box;
+            boxesSpan[boxesIndex++] = box;
         }
 
-        using var nonEmptyBoxes = GetNonEmptyBoxes<T>(boxes.Memory.Span, nonEmptyBoxesCount);
-
-        return nonMaxSuppression.Suppress(nonEmptyBoxes.Memory.Span, configuration.IoU);
-    }
-
-    private IMemoryOwner<T> GetNonEmptyBoxes<T>(ReadOnlySpan<T> boxes, int count) where T : IRawBoundingBox<T>
-    {
-        //var activeCount = 0;
-
-        //// Count the non-empty boxes
-        //for (var i = 0; i < boxes.Length; i++)
-        //{
-        //    if (boxes[i].IsEmpty == false)
-        //    {
-        //        activeCount++;
-        //    }
-        //}
-
-        var activeIndex = 0;
-        var activeBoxes = memoryAllocator.Allocate<T>(count);
-
-        for (var i = 0; i < boxes.Length; i++)
-        {
-            var box = boxes[i];
-
-            if (box.IsEmpty)
-            {
-                continue;
-            }
-
-            activeBoxes.Memory.Span[activeIndex++] = box;
-        }
-
-        return activeBoxes;
+        return nonMaxSuppression.Suppress(boxesSpan[..boxesIndex], configuration.IoU);
     }
 }
