@@ -8,7 +8,7 @@ internal class SessionRunnerService(InferenceSession session,
                                     IMemoryAllocatorService memoryAllocator) : ISessionRunnerService
 {
     private readonly object _lock = new();
-    private readonly RunOptions _runOptions = new();
+    private readonly RunOptions _options = new();
 
     public YoloRawOutput PreprocessAndRun(Image<Rgb24> image, out PredictorTimer timer)
     {
@@ -24,8 +24,11 @@ internal class SessionRunnerService(InferenceSession session,
         // Start pre-process timer
         timer.StartPreprocess();
 
+        // Allocate the input tensor
+        using var input = memoryAllocator.AllocateTensor<float>(tensorInfo.Input0, true);
+
         // Preprocess image to tensor and bind to ort binding
-        ProcessInput(image, binding);
+        ProcessInput(image, input.Tensor, binding);
 
         // Start inference timer
         timer.StartInference();
@@ -35,12 +38,12 @@ internal class SessionRunnerService(InferenceSession session,
         {
             lock (_lock)
             {
-                session.RunWithBinding(_runOptions, binding);
+                session.RunWithBinding(_options, binding);
             }
         }
         else
         {
-            session.RunWithBinding(_runOptions, binding);
+            session.RunWithBinding(_options, binding);
         }
 
         // Return the yolo raw output
@@ -74,7 +77,7 @@ internal class SessionRunnerService(InferenceSession session,
 
     #region Preprocess
 
-    private void ProcessInput(Image<Rgb24> image, OrtIoBinding binding)
+    private void ProcessInput(Image<Rgb24> image, DenseTensor<float> target, OrtIoBinding binding)
     {
         // Apply auto orient if required
         if (configuration.SkipImageAutoOrient == false)
@@ -85,14 +88,11 @@ internal class SessionRunnerService(InferenceSession session,
         // Resize the input image
         using var resized = ResizeImage(image, out var padding);
 
-        // Rent the input tensor
-        var inputTensor = memoryAllocator.AllocateTensor<float>(tensorInfo.Input0, true);
-
         // Process the image to tensor
-        preprocess.ProcessImageToTensor(resized, inputTensor.Tensor, padding);
+        preprocess.ProcessImageToTensor(resized, target, padding);
 
         // Create ort values
-        var ortInput = CreateOrtValue(inputTensor.Tensor.Buffer, tensorInfo.Input0.Dimensions64);
+        var ortInput = CreateOrtValue(target.Buffer, tensorInfo.Input0.Dimensions64);
 
         // Bind input to ort io binding
         binding.BindInput(session.InputNames[0], ortInput);
