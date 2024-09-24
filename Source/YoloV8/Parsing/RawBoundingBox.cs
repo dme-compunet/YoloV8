@@ -2,8 +2,6 @@
 
 internal readonly struct RawBoundingBox : IRawBoundingBox<RawBoundingBox>
 {
-    public static RawBoundingBox Empty { get; } = default;
-
     public required int Index { get; init; }
 
     public required YoloName Name { get; init; }
