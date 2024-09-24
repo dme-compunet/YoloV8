@@ -2,8 +2,6 @@
 
 internal interface IRawBoundingBox<TSelf> : IComparable<TSelf>
 {
-    public static abstract TSelf Empty { get; }
-
     public bool IsEmpty => Bounds.IsEmpty;
 
     public YoloName Name { get; }
