@@ -32,6 +32,8 @@ internal class MemoryAllocatorService : IMemoryAllocatorService
             _buffer = source;
         }
 
+        ~ArrayMemoryPoolBuffer() => Dispose();
+
         public void Dispose()
         {
             if (_buffer != null)
@@ -39,6 +41,8 @@ internal class MemoryAllocatorService : IMemoryAllocatorService
                 ArrayPool<T>.Shared.Return(_buffer);
                 _buffer = null;
             }
+
+            GC.SuppressFinalize(this);
         }
     }
 
