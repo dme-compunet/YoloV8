@@ -19,9 +19,11 @@ public class YoloMetadata
     public YoloArchitecture Architecture { get; }
 
     internal YoloMetadata(InferenceSession session)
+        : 
+        this(session.ModelMetadata.CustomMetadataMap, GetYoloArchitecture(session)) 
+    { }
+    internal YoloMetadata(Dictionary<string, string> metadata, YoloArchitecture architecture)
     {
-        var metadata = session.ModelMetadata.CustomMetadataMap;
-
         Author = metadata["author"];
         Description = metadata["description"];
         Version = metadata["version"];
@@ -36,11 +38,7 @@ public class YoloMetadata
             _ => throw new InvalidOperationException("Unknow YoloV8 'task' value")
         };
 
-        if (Task == YoloTask.Detect && session.OutputMetadata.Values.First().Dimensions[2] == 6) // YOLOv10 output shape => [<batch>, 300, 6]
-        {
-            Architecture = YoloArchitecture.YoloV10;
-        }
-
+        Architecture = architecture;
         BatchSize = int.Parse(metadata["batch"]);
         ImageSize = ParseSize(metadata["imgsz"]);
         Names = ParseNames(metadata["names"]);
@@ -61,6 +59,21 @@ public class YoloMetadata
         {
             throw new InvalidOperationException("The metadata parsing failed, making sure you use an official YOLOv8 model", inner);
         }
+    }
+
+    private static YoloArchitecture GetYoloArchitecture(InferenceSession session)
+    {
+        if (session.ModelMetadata.CustomMetadataMap["task"] != "detect")
+        {
+            return YoloArchitecture.YoloV8;
+        }
+
+        if (session.OutputMetadata.Values.First().Dimensions[2] == 6) // YOLOv10 output shape => [<batch>, 300, 6]
+        {
+            return YoloArchitecture.YoloV10;
+        }
+
+        return YoloArchitecture.YoloV8;
     }
 
     #region Parsers
