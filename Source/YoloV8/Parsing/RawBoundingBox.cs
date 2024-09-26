@@ -35,7 +35,7 @@ internal readonly struct RawBoundingBox : IRawBoundingBox<RawBoundingBox>
         return (float)intersectionArea / (area1 + area2 - intersectionArea);
     }
 
-    public static RawBoundingBox Parse(ref RawParsingContext context, int index, YoloName name, float confidence, YoloArchitecture architecture)
+    public static RawBoundingBox Parse(ref RawParsingContext context, int index, int nameIndex, float confidence)
     {
         var tensor = context.Tensor;
         var tensorSpan = tensor.Buffer.Span;
@@ -48,7 +48,7 @@ internal readonly struct RawBoundingBox : IRawBoundingBox<RawBoundingBox>
         int xMax;
         int yMax;
 
-        if (architecture == YoloArchitecture.YoloV10)
+        if (context.Architecture == YoloArchitecture.YoloV10)
         {
             var boxOffset = index * stride1;
 

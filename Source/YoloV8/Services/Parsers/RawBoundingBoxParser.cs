@@ -61,6 +61,7 @@ internal class RawBoundingBoxParser(YoloMetadata metadata,
 
         var context = new RawParsingContext
         {
+            Architecture = YoloArchitecture.YoloV8,
             Tensor = tensor,
             Padding = padding,
             Ratio = ratio,
@@ -79,8 +80,7 @@ internal class RawBoundingBoxParser(YoloMetadata metadata,
                     continue;
                 }
 
-                var name = metadata.Names[nameIndex];
-                var box = T.Parse(ref context, boxIndex, name, confidence, YoloArchitecture.YoloV8);
+                var box = T.Parse(ref context, boxIndex, nameIndex, confidence);
 
                 if (box.Bounds.Width == 0 || box.Bounds.Height == 0)
                 {
@@ -107,9 +107,8 @@ internal class RawBoundingBoxParser(YoloMetadata metadata,
 
         var context = new RawParsingContext
         {
+            Architecture = YoloArchitecture.YoloV10,
             Tensor = tensor,
-            Padding = padding,
-            Ratio = ratio,
             Stride1 = stride1
         };
 
@@ -124,8 +123,8 @@ internal class RawBoundingBoxParser(YoloMetadata metadata,
                 continue;
             }
 
-            var name = metadata.Names[(int)tensorSpan[boxOffset + 5 * stride2]];
-            var box = T.Parse(ref context, index, name, confidence, YoloArchitecture.YoloV10);
+            var nameIndex = (int)tensorSpan[boxOffset + 5 * stride2];
+            var box = T.Parse(ref context, index, nameIndex, confidence);
 
             if (box.Bounds.Width == 0 || box.Bounds.Height == 0)
             {
