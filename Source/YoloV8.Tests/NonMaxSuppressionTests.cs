@@ -17,28 +17,28 @@ public class NonMaxSuppressionTests
             new RawBoundingBox
             {
                 Index = 0,
-                Name = classA,
+                NameIndex = classA.Id,
                 Bounds = new Rectangle(0, 0, 50, 50),
                 Confidence = .8f
             },
             new RawBoundingBox
             {
                 Index = 1,
-                Name = classA,
+                NameIndex = classA.Id,
                 Bounds = new Rectangle(0, 0, 50, 50),
                 Confidence = .9f
             },
             new RawBoundingBox
             {
                 Index = 2,
-                Name = classB,
+                NameIndex = classB.Id,
                 Bounds = new Rectangle(0, 0, 50, 50),
                 Confidence = .9f
             },
             new RawBoundingBox
             {
                 Index = 3,
-                Name = classA,
+                NameIndex = classA.Id,
                 Bounds = new Rectangle(50, 50, 50, 50),
                 Confidence = .5f
             },
