@@ -73,7 +73,7 @@ var result = await predictor.PoseAsync(image);
 using var plotted = await result.PlotImageAsync(image);
 
 // Write the plotted image to file
-plotted.Save("./pose_demo.jpg")
+plotted.Save("./pose_demo.jpg");
 ```
 
 You can also predict and save to file in one operation:
