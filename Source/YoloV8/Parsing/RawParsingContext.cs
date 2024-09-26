@@ -2,6 +2,8 @@
 
 internal readonly ref struct RawParsingContext
 {
+    public required YoloArchitecture Architecture { get; init; }
+
     public required DenseTensor<float> Tensor { get; init; }
 
     public required Vector<int> Padding { get; init; }

@@ -56,7 +56,7 @@ internal readonly struct RawObbBoundingBox : IRawBoundingBox<RawObbBoundingBox>
         return (float)(intersectionArea / unionArea);
     }
 
-    public static RawObbBoundingBox Parse(ref RawParsingContext context, int index, YoloName name, float confidence, YoloArchitecture architecture)
+    public static RawObbBoundingBox Parse(ref RawParsingContext context, int index, int nameIndex, float confidence)
     {
         var tensorSpan = context.Tensor.Buffer.Span;
         var stride1 = context.Stride1;
