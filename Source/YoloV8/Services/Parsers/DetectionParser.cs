@@ -1,11 +1,14 @@
 ﻿namespace Compunet.YoloV8.Services;
 
-internal class DetectionParser(IRawBoundingBoxParser rawBoundingBoxParser) : IParser<Detection>
+internal class DetectionParser(YoloMetadata metadata,
+                               IImageAdjustmentService imageAdjustment,
+                               IRawBoundingBoxParser rawBoundingBoxParser) : IParser<Detection>
 {
     public Detection[] ProcessTensorToResult(YoloRawOutput output, Size size)
     {
-        var boxes = rawBoundingBoxParser.Parse<RawBoundingBox>(output.Output0, size);
-
+        var adjustment = imageAdjustment.Calculate(size);
+        var boxes = rawBoundingBoxParser.Parse<RawBoundingBox>(output.Output0);
+        
         var result = new Detection[boxes.Length];
 
         for (var i = 0; i < boxes.Length; i++)
@@ -14,8 +17,8 @@ internal class DetectionParser(IRawBoundingBoxParser rawBoundingBoxParser) : IPa
 
             result[i] = new Detection
             {
-                Name = box.Name,
-                Bounds = box.Bounds,
+                Name = metadata.Names[box.NameIndex],
+                Bounds = imageAdjustment.Adjust(box.Bounds, adjustment),
                 Confidence = box.Confidence,
             };
         }

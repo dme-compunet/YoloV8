@@ -1,12 +1,13 @@
-﻿namespace Compunet.YoloV8.Parsing;
+﻿
+namespace Compunet.YoloV8.Parsing;
 
 internal readonly struct RawObbBoundingBox : IRawBoundingBox<RawObbBoundingBox>
 {
     public required int Index { get; init; }
 
-    public required YoloName Name { get; init; }
+    public required int NameIndex { get; init; }
 
-    public required Rectangle Bounds { get; init; }
+    public required RectangleF Bounds { get; init; }
 
     public required float Angle { get; init; }
 
@@ -60,8 +61,6 @@ internal readonly struct RawObbBoundingBox : IRawBoundingBox<RawObbBoundingBox>
     {
         var tensorSpan = context.Tensor.Buffer.Span;
         var stride1 = context.Stride1;
-        var padding = context.Padding;
-        var ratio = context.Ratio;
         var nameCount = context.NameCount;
 
         if (nameCount == 0)
@@ -69,10 +68,10 @@ internal readonly struct RawObbBoundingBox : IRawBoundingBox<RawObbBoundingBox>
             throw new ArgumentException(nameof(nameCount));
         }
 
-        var x = (tensorSpan[index] - padding.X) * ratio.X;
-        var y = (tensorSpan[1 * stride1 + index] - padding.Y) * ratio.X;
-        var w = tensorSpan[2 * stride1 + index] * ratio.X;
-        var h = tensorSpan[3 * stride1 + index] * ratio.Y;
+        var x = tensorSpan[index];
+        var y = tensorSpan[1 * stride1 + index];
+        var w = tensorSpan[2 * stride1 + index];
+        var h = tensorSpan[3 * stride1 + index];
 
         // Radians
         var angle = tensorSpan[(4 + nameCount) * stride1 + index];
@@ -86,12 +85,12 @@ internal readonly struct RawObbBoundingBox : IRawBoundingBox<RawObbBoundingBox>
         // Degrees
         angle *= 180f / MathF.PI;
 
-        var bounds = new Rectangle((int)x, (int)y, (int)w, (int)h);
+        var bounds = new RectangleF(x, y, w, h);
 
         return new RawObbBoundingBox
         {
             Index = index,
-            Name = name,
+            NameIndex = nameIndex,
             Angle = angle,
             Bounds = bounds,
             Confidence = confidence

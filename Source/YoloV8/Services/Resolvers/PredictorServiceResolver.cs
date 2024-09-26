@@ -75,6 +75,7 @@ internal class PredictorServiceResolver : IDisposable
             .AddSingleton<ISessionRunnerService, SessionRunnerService>()
             .AddSingleton<IRawBoundingBoxParser, RawBoundingBoxParser>()
             .AddSingleton<IMemoryAllocatorService, MemoryAllocatorService>()
+            .AddSingleton<IImageAdjustmentService, ImageAdjustmentService>()
             .AddSingleton<INonMaxSuppressionService, NonMaxSuppressionService>();
 
         switch (metadata.Task)

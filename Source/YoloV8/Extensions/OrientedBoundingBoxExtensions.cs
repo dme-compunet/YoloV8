@@ -12,7 +12,7 @@ internal static class OrientedBoundingBoxExtensions
         return GetCornerPoints(obb.Bounds, obb.Angle);
     }
 
-    private static Point[] GetCornerPoints(Rectangle bounds, float angle)
+    private static Point[] GetCornerPoints(RectangleF bounds, float angle)
     {
         var _angle = angle * MathF.PI / 180.0f; // Radians
 
