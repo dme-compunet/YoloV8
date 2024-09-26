@@ -1,41 +1,15 @@
 ﻿namespace Compunet.YoloV8.Services;
 
 internal class PoseParser(YoloPoseMetadata metadata,
-                          YoloConfiguration configuration,
+                          IImageAdjustmentService imageAdjustment,
                           IRawBoundingBoxParser rawBoundingBoxParser) : IParser<Pose>
 {
     public Pose[] ProcessTensorToResult(YoloRawOutput output, Size size)
     {
-        int xPadding;
-        int yPadding;
+        var tensor = output.Output0;
+        var adjustment = imageAdjustment.Calculate(size);
 
-        var xRatio = (float)size.Width / metadata.ImageSize.Width;
-        var yRatio = (float)size.Height / metadata.ImageSize.Height;
-
-        if (configuration.KeepAspectRatio)
-        {
-            var reductionRatio = Math.Min(metadata.ImageSize.Width / (float)size.Width, metadata.ImageSize.Height / (float)size.Height);
-
-            xPadding = (int)((metadata.ImageSize.Width - size.Width * reductionRatio) / 2);
-            yPadding = (int)((metadata.ImageSize.Height - size.Height * reductionRatio) / 2);
-
-            var maxRatio = Math.Max(xRatio, yRatio);
-
-            xRatio = maxRatio;
-            yRatio = maxRatio;
-        }
-        else
-        {
-            xPadding = 0;
-            yPadding = 0;
-        }
-
-        return ProcessTensorToResult(output.Output0, new Vector<int>(xPadding, yPadding), new Vector<float>(xRatio, yRatio));
-    }
-
-    private Pose[] ProcessTensorToResult(DenseTensor<float> tensor, Vector<int> padding, Vector<float> ratio)
-    {
-        var boxes = rawBoundingBoxParser.Parse<RawBoundingBox>(tensor, padding, ratio);
+        var boxes = rawBoundingBoxParser.Parse<RawBoundingBox>(tensor);
 
         var shape = metadata.KeypointShape;
         var result = new Pose[boxes.Length];
@@ -52,8 +26,8 @@ internal class PoseParser(YoloPoseMetadata metadata,
             {
                 var offset = index * shape.Channels + 4 + metadata.Names.Length;
 
-                var pointX = (int)((tensorSpan[offset * boxInfoStride + box.Index] - padding.X) * ratio.X);
-                var pointY = (int)((tensorSpan[(offset + 1) * boxInfoStride + box.Index] - padding.Y) * ratio.Y);
+                var pointX = (int)((tensorSpan[offset * boxInfoStride + box.Index] - adjustment.Padding.X) * adjustment.Ratio.X);
+                var pointY = (int)((tensorSpan[(offset + 1) * boxInfoStride + box.Index] - adjustment.Padding.Y) * adjustment.Ratio.Y);
 
                 var pointConfidence = metadata.KeypointShape.Channels switch
                 {
@@ -72,8 +46,8 @@ internal class PoseParser(YoloPoseMetadata metadata,
 
             result[i] = new Pose(keypoints)
             {
-                Name = box.Name,
-                Bounds = box.Bounds,
+                Name = metadata.Names[box.NameIndex],
+                Bounds = imageAdjustment.Adjust(box.Bounds, adjustment),
                 Confidence = box.Confidence,
             };
         }

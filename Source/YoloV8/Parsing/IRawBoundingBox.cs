@@ -2,11 +2,9 @@
 
 internal interface IRawBoundingBox<TSelf> : IComparable<TSelf>
 {
-    public bool IsEmpty => Bounds.IsEmpty;
+    public int NameIndex { get; }
 
-    public YoloName Name { get; }
-
-    public Rectangle Bounds { get; }
+    public RectangleF Bounds { get; }
 
     public float Confidence { get; }
 

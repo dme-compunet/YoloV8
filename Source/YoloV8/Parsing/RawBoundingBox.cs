@@ -1,12 +1,12 @@
 ﻿namespace Compunet.YoloV8.Parsing;
 
-internal readonly struct RawBoundingBox : IRawBoundingBox<RawBoundingBox>
+internal struct RawBoundingBox : IRawBoundingBox<RawBoundingBox>
 {
     public required int Index { get; init; }
 
-    public required YoloName Name { get; init; }
+    public required int NameIndex { get; init; }
 
-    public required Rectangle Bounds { get; init; }
+    public required RectangleF Bounds { get; set; }
 
     public required float Confidence { get; init; }
 
@@ -29,7 +29,7 @@ internal readonly struct RawBoundingBox : IRawBoundingBox<RawBoundingBox>
             return 0f;
         }
 
-        var intersection = Rectangle.Intersect(rect1, rect2);
+        var intersection = RectangleF.Intersect(rect1, rect2);
         var intersectionArea = intersection.Width * intersection.Height;
 
         return (float)intersectionArea / (area1 + area2 - intersectionArea);
@@ -40,27 +40,19 @@ internal readonly struct RawBoundingBox : IRawBoundingBox<RawBoundingBox>
         var tensor = context.Tensor;
         var tensorSpan = tensor.Buffer.Span;
         var stride1 = context.Stride1;
-        var padding = context.Padding;
-        var ratio = context.Ratio;
 
-        int xMin;
-        int yMin;
-        int xMax;
-        int yMax;
+        RectangleF bounds;
 
         if (context.Architecture == YoloArchitecture.YoloV10)
         {
             var boxOffset = index * stride1;
 
-            var x = tensorSpan[boxOffset + 0];
-            var y = tensorSpan[boxOffset + 1];
-            var w = tensorSpan[boxOffset + 2];
-            var h = tensorSpan[boxOffset + 3];
+            var xMin = (int)tensorSpan[boxOffset + 0];
+            var yMin = (int)tensorSpan[boxOffset + 1];
+            var xMax = (int)tensorSpan[boxOffset + 2];
+            var yMax = (int)tensorSpan[boxOffset + 3];
 
-            xMin = (int)((x - padding.X) * ratio.X);
-            yMin = (int)((y - padding.Y) * ratio.Y);
-            xMax = (int)((w - padding.X) * ratio.X);
-            yMax = (int)((h - padding.Y) * ratio.X);
+            bounds = new RectangleF(xMin, yMin, xMax - xMin, yMax - yMin);
         }
         else // YOLOv8
         {
@@ -69,22 +61,17 @@ internal readonly struct RawBoundingBox : IRawBoundingBox<RawBoundingBox>
             var w = tensorSpan[2 * stride1 + index];
             var h = tensorSpan[3 * stride1 + index];
 
-            xMin = (int)((x - w / 2 - padding.X) * ratio.X);
-            yMin = (int)((y - h / 2 - padding.Y) * ratio.Y);
-            xMax = (int)((x + w / 2 - padding.X) * ratio.X);
-            yMax = (int)((y + h / 2 - padding.Y) * ratio.Y);
+            bounds = new RectangleF(x - w / 2, y - h / 2, w, h);
         }
-
-        var bounds = Rectangle.FromLTRB(xMin, yMin, xMax, yMax);
 
         return new RawBoundingBox
         {
             Index = index,
             Bounds = bounds,
-            Name = name,
+            NameIndex = nameIndex,
             Confidence = confidence,
         };
     }
 
-    public int CompareTo(RawBoundingBox other) => Confidence.CompareTo(other.Confidence);
+    public readonly int CompareTo(RawBoundingBox other) => Confidence.CompareTo(other.Confidence);
 }

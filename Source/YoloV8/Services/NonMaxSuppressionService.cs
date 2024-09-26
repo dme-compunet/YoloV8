@@ -29,7 +29,7 @@ internal class NonMaxSuppressionService : INonMaxSuppressionService
                 var box2 = result[j];
 
                 // Skip boxers with different label
-                if (box1.Name != box2.Name)
+                if (box1.NameIndex != box2.NameIndex)
                 {
                     continue;
                 }

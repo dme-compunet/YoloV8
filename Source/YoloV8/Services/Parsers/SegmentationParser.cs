@@ -1,28 +1,18 @@
 ﻿namespace Compunet.YoloV8.Services;
 
 internal class SegmentationParser(YoloMetadata metadata,
-                                  YoloConfiguration configuration,
+                                  IImageAdjustmentService imageAdjustment,
                                   IMemoryAllocatorService memoryAllocator,
                                   IRawBoundingBoxParser rawBoundingBoxParser) : IParser<Segmentation>
 {
     public Segmentation[] ProcessTensorToResult(YoloRawOutput output, Size size)
     {
-        var xPadding = 0;
-        var yPadding = 0;
-
-        if (configuration.KeepAspectRatio)
-        {
-            var reductionRatio = Math.Min(metadata.ImageSize.Width / (float)size.Width,
-                                          metadata.ImageSize.Height / (float)size.Height);
-
-            xPadding = (int)((metadata.ImageSize.Width - size.Width * reductionRatio) / 2);
-            yPadding = (int)((metadata.ImageSize.Height - size.Height * reductionRatio) / 2);
-        }
+        var adjustment = imageAdjustment.Calculate(size);
 
         var output0 = output.Output0;
         var output1 = output.Output1 ?? throw new Exception();
 
-        var boxes = rawBoundingBoxParser.Parse<RawBoundingBox>(output0, size);
+        var boxes = rawBoundingBoxParser.Parse<RawBoundingBox>(output0);
         var maskChannelCount = output0.Dimensions[1] - 4 - metadata.Names.Length;
 
         var result = new Segmentation[boxes.Length];
@@ -30,16 +20,17 @@ internal class SegmentationParser(YoloMetadata metadata,
         for (var index = 0; index < boxes.Length; index++)
         {
             var box = boxes[index];
+            var bounds = imageAdjustment.Adjust(box.Bounds, adjustment);
 
             using var maskWeights = CollectMaskWeights(output0, box.Index, maskChannelCount, metadata.Names.Length + 4);
 
-            var mask = ProcessMask(output1, maskWeights.Memory.Span, box.Bounds, size, metadata.ImageSize, xPadding, yPadding);
+            var mask = ProcessMask(output1, maskWeights.Memory.Span, bounds, size, metadata.ImageSize, adjustment.Padding);
 
             result[index] = new Segmentation
             {
                 Mask = mask,
-                Name = box.Name,
-                Bounds = box.Bounds,
+                Name = metadata.Names[box.NameIndex],
+                Bounds = bounds,
                 Confidence = box.Confidence,
             };
         }
@@ -52,8 +43,7 @@ internal class SegmentationParser(YoloMetadata metadata,
                                                 Rectangle bounds,
                                                 Size imageSize,
                                                 Size modelSize,
-                                                int xPadding,
-                                                int yPadding)
+                                                Vector<int> padding)
     {
         var maskChannels = prototypes.Dimensions[1];
         var maskHeight = prototypes.Dimensions[2];
@@ -86,13 +76,13 @@ internal class SegmentationParser(YoloMetadata metadata,
             }
         }
 
-        var xPad = xPadding * maskWidth / modelSize.Width;
-        var yPad = yPadding * maskHeight / modelSize.Height;
+        var xPadding = padding.X * maskWidth / modelSize.Width;
+        var yPadding = padding.Y * maskHeight / modelSize.Height;
 
-        var paddingCropRectangle = new Rectangle(xPad,
-                                                 yPad,
-                                                 maskWidth - xPad * 2,
-                                                 maskHeight - yPad * 2);
+        var paddingCropRectangle = new Rectangle(xPadding,
+                                                 yPadding,
+                                                 maskWidth - xPadding * 2,
+                                                 maskHeight - yPadding * 2);
 
         bitmap.Mutate(x =>
         {
@@ -107,20 +97,7 @@ internal class SegmentationParser(YoloMetadata metadata,
         });
 
         return CreateMaskFromBitmap(bitmap);
-
-        //var mask = new float[bounds.Width, bounds.Height];
-
-        //bitmap.EnumeratePixels((point, pixel) =>
-        //{
-        //    mask[point.X, point.Y] = GetConfidence(pixel.PackedValue);
-        //});
-
-        //return new SegmentationMask
-        //{
-        //    Mask = mask
-        //};
     }
-
 
     private IMemoryOwner<float> CollectMaskWeights(Tensor<float> output, int boxIndex, int maskChannelCount, int maskWeightsOffset)
     {

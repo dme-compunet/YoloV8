@@ -5,50 +5,7 @@ internal class RawBoundingBoxParser(YoloMetadata metadata,
                                     IMemoryAllocatorService memoryAllocator,
                                     INonMaxSuppressionService nonMaxSuppression) : IRawBoundingBoxParser
 {
-    public T[] Parse<T>(DenseTensor<float> tensor, Size size) where T : IRawBoundingBox<T>
-    {
-        var xPadding = 0;
-        var yPadding = 0;
-
-        if (configuration.KeepAspectRatio)
-        {
-            var reductionRatio = Math.Min(metadata.ImageSize.Width / (float)size.Width,
-                                          metadata.ImageSize.Height / (float)size.Height);
-
-            xPadding = (int)((metadata.ImageSize.Width - size.Width * reductionRatio) / 2);
-            yPadding = (int)((metadata.ImageSize.Height - size.Height * reductionRatio) / 2);
-        }
-
-        return Parse<T>(tensor, size, new Vector<int>(xPadding, yPadding));
-    }
-
-    public T[] Parse<T>(DenseTensor<float> tensor, Size imageSize, Vector<int> padding) where T : IRawBoundingBox<T>
-    {
-        var xRatio = (float)imageSize.Width / metadata.ImageSize.Width;
-        var yRatio = (float)imageSize.Height / metadata.ImageSize.Height;
-
-        if (configuration.KeepAspectRatio)
-        {
-            var maxRatio = Math.Max(xRatio, yRatio);
-
-            xRatio = maxRatio;
-            yRatio = maxRatio;
-        }
-
-        return Parse<T>(tensor, padding, new Vector<float>(xRatio, yRatio));
-    }
-
-    public T[] Parse<T>(DenseTensor<float> tensor, Vector<int> padding, Vector<float> ratio) where T : IRawBoundingBox<T>
-    {
-        if (metadata.Architecture == YoloArchitecture.YoloV10)
-        {
-            return ParseYoloV10<T>(tensor, padding, ratio);
-        }
-
-        return ParseYoloV8<T>(tensor, padding, ratio);
-    }
-
-    private T[] ParseYoloV8<T>(DenseTensor<float> tensor, Vector<int> padding, Vector<float> ratio) where T : IRawBoundingBox<T>
+    private T[] ParseYoloV8<T>(DenseTensor<float> tensor) where T : IRawBoundingBox<T>
     {
         var stride1 = tensor.Strides[1];
         var boxesCount = tensor.Dimensions[2];
@@ -63,8 +20,6 @@ internal class RawBoundingBoxParser(YoloMetadata metadata,
         {
             Architecture = YoloArchitecture.YoloV8,
             Tensor = tensor,
-            Padding = padding,
-            Ratio = ratio,
             Stride1 = stride1,
             NameCount = namesCount,
         };
@@ -94,7 +49,7 @@ internal class RawBoundingBoxParser(YoloMetadata metadata,
         return nonMaxSuppression.Suppress(boxesSpan[..boxesIndex], configuration.IoU);
     }
 
-    private T[] ParseYoloV10<T>(DenseTensor<float> tensor, Vector<int> padding, Vector<float> ratio) where T : IRawBoundingBox<T>
+    private T[] ParseYoloV10<T>(DenseTensor<float> tensor) where T : IRawBoundingBox<T>
     {
         var stride1 = tensor.Strides[1];
         var stride2 = tensor.Strides[2];
@@ -135,5 +90,15 @@ internal class RawBoundingBoxParser(YoloMetadata metadata,
         }
 
         return nonMaxSuppression.Suppress(boxesSpan[..boxesIndex], configuration.IoU);
+    }
+
+    public T[] Parse<T>(DenseTensor<float> tensor) where T : IRawBoundingBox<T>
+    {
+        if (metadata.Architecture == YoloArchitecture.YoloV10)
+        {
+            return ParseYoloV10<T>(tensor);
+        }
+
+        return ParseYoloV8<T>(tensor);
     }
 }
