@@ -32,7 +32,7 @@ public static class PlottingExtensions
             target.Mutate(context =>
             {
                 context.DrawBox(points, color, boxBorderThickness, .1f);
-                context.DrawLabel(label, textLocation, color, boxBorderThickness, textPadding, textOptions);
+                context.DrawLabel(label,box.Confidence, textLocation, color, boxBorderThickness, textPadding, textOptions);
 
                 // Draw lines
                 for (var i = 0; i < options.Skeleton.Connections.Length; i++)
@@ -109,7 +109,7 @@ public static class PlottingExtensions
             target.Mutate(context =>
             {
                 context.DrawBox(points, color, thickness, .1f);
-                context.DrawLabel(label, textLocation, color, thickness, textPadding, textOptions);
+                context.DrawLabel(label, box.Confidence, textLocation, color, thickness, textPadding, textOptions);
             });
         }
 
@@ -142,7 +142,7 @@ public static class PlottingExtensions
             target.Mutate(context =>
             {
                 context.DrawBox(points, color, thickness, .1f);
-                context.DrawLabel(label, textLocation, color, thickness, textPadding, textOptions);
+                context.DrawLabel(label, box.Confidence, textLocation, color, thickness, textPadding, textOptions);
             });
         }
 
@@ -216,7 +216,7 @@ public static class PlottingExtensions
             target.Mutate(context =>
             {
                 context.DrawBox(points, color, thickness, .1f);
-                context.DrawLabel(label, textLocation, color, thickness, textPadding, textOptions);
+                context.DrawLabel(label, box.Confidence, textLocation, color, thickness, textPadding, textOptions);
             });
         }
 
@@ -267,7 +267,7 @@ public static class PlottingExtensions
         }
     }
 
-    private static void DrawLabel(this IImageProcessingContext context, string text, PointF location, Color color, float thickness, Vector2 padding, TextOptions options)
+    private static void DrawLabel(this IImageProcessingContext context, string text, float confidence, PointF location, Color color, float thickness, Vector2 padding, TextOptions options)
     {
         var xPadding = padding.X;
         var yPadding = padding.Y;
@@ -283,7 +283,7 @@ public static class PlottingExtensions
         // Fix text position
         textLocation.Offset(0, -(yPadding * .1f));
 
-        context.Fill(color, textBoxPolygon);
+        context.Fill(color.WithAlpha(confidence), textBoxPolygon);
         context.Draw(color, thickness, textBoxPolygon);
 
         context.DrawText(text, options.Font, Color.White, textLocation);
