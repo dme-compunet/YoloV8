@@ -7,6 +7,9 @@ using var posePredictor = new YoloPredictor("./models/yolov8n-pose-uint8.onnx");
 Console.WriteLine("Loading detection model...");
 using var detectPredictor = new YoloPredictor("./models/yolov8n-uint8.onnx");
 
+Console.WriteLine("Loading obb detection model...");
+using var obbPredictor = new YoloPredictor("./models/yolov8n-obb-uint8.onnx");
+
 Console.WriteLine("Loading segmentation model...");
 using var segmentPredictor = new YoloPredictor("./models/yolov8n-seg-uint8.onnx");
 
@@ -20,6 +23,8 @@ await PredictAndSaveAsync(posePredictor, "sports.jpg");
 
 await PredictAndSaveAsync(detectPredictor, "bus.jpg");
 await PredictAndSaveAsync(detectPredictor, "sports.jpg");
+
+await PredictAndSaveAsync(obbPredictor, "obb.jpg");
 
 await PredictAndSaveAsync(segmentPredictor, "sports.jpg");
 
