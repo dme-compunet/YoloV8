@@ -4089,6 +4089,35 @@
     "Confidence": 0.3446359
   },
   {
+    "Angle": 38.324535,
+    "Bounds": {
+      "X": 1258,
+      "Y": 1169,
+      "Width": 10,
+      "Height": 30,
+      "Location": {
+        "X": 1258,
+        "Y": 1169,
+        "IsEmpty": false
+      },
+      "Size": {
+        "Width": 10,
+        "Height": 30,
+        "IsEmpty": false
+      },
+      "IsEmpty": false,
+      "Top": 1169,
+      "Right": 1268,
+      "Bottom": 1199,
+      "Left": 1258
+    },
+    "Name": {
+      "Id": 1,
+      "Name": "ship"
+    },
+    "Confidence": 0.34398156
+  },
+  {
     "Angle": 49.57621,
     "Bounds": {
       "X": 960,
