@@ -6,7 +6,7 @@ Integrate [YOLOv8](https://github.com/ultralytics/ultralytics) into your C# proj
 - **YOLOv8 Tasks** 🌟 Support for all YOLOv8 tasks ([Detect](https://docs.ultralytics.com/tasks/detect), [Segment](https://docs.ultralytics.com/tasks/segment), [Classify](https://docs.ultralytics.com/tasks/classify), [Pose](https://docs.ultralytics.com/tasks/pose) and [OBB](https://docs.ultralytics.com/tasks/obb))
 - **High Performance** 🚀 Various techniques and use of .NET features to maximize performance
 - **Reduced Memory Usage** 🧠 By reusing memory blocks and reducing the pressure on the GC
-- **Plotting Options** 📊 Plotting operations for preview of model results on the target image.
+- **Plotting Options** ✏️ Plotting operations for preview of model results on the target image.
 - **YOLOv10 Support** 🔧 Includes additional support for [YOLOv10](https://docs.ultralytics.com/models/yolov10)
 
 # Installation
