@@ -7,6 +7,7 @@ public class YoloMetadataTests
     {
         Assert.Equal(YoloTask.Pose, Predictors.Pose.Metadata.Task);
         Assert.Equal(YoloTask.Detect, Predictors.Detection.Metadata.Task);
+        Assert.Equal(YoloTask.Obb, Predictors.ObbDetection.Metadata.Task);
         Assert.Equal(YoloTask.Segment, Predictors.Segmentation.Metadata.Task);
         Assert.Equal(YoloTask.Classify, Predictors.Classification.Metadata.Task);
     }
