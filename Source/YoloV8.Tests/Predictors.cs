@@ -2,10 +2,12 @@
 
 public static class Predictors
 {
-    public static readonly YoloPredictor Pose = new("./models/yolov8n-pose-uint8.onnx");
-    public static readonly YoloPredictor Detection = new("./models/yolov8n-uint8.onnx");
-    public static readonly YoloPredictor Segmentation = new("./models/yolov8n-seg-uint8.onnx");
-    public static readonly YoloPredictor Classification = new("./models/yolov8n-cls-uint8.onnx");
+    public static YoloPredictor Pose { get; } = new("./models/yolov8n-pose-uint8.onnx");
+    public static YoloPredictor Detection { get; } = new("./models/yolov8n-uint8.onnx");
+
+    public static YoloPredictor ObbDetection { get; } = new("./models/yolov8n-obb-uint8.onnx");
+    public static YoloPredictor Segmentation { get; } = new("./models/yolov8n-seg-uint8.onnx");
+    public static YoloPredictor Classification { get; } = new("./models/yolov8n-cls-uint8.onnx");
 
     public static YoloPredictor GetPredictor(YoloTask task)
     {
@@ -13,6 +15,7 @@ public static class Predictors
         {
             YoloTask.Pose => Pose,
             YoloTask.Detect => Detection,
+            YoloTask.Obb => ObbDetection,
             YoloTask.Segment => Segmentation,
             YoloTask.Classify => Classification,
             _ => throw new InvalidEnumArgumentException()

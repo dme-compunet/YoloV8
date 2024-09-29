@@ -1,0 +1,170 @@
+[
+  {
+    "Bounds": {
+      "X": 450,
+      "Y": 117,
+      "Width": 436,
+      "Height": 582,
+      "Location": {
+        "X": 450,
+        "Y": 117,
+        "IsEmpty": false
+      },
+      "Size": {
+        "Width": 436,
+        "Height": 582,
+        "IsEmpty": false
+      },
+      "IsEmpty": false,
+      "Top": 117,
+      "Right": 886,
+      "Bottom": 699,
+      "Left": 450
+    },
+    "Name": {
+      "Id": 0,
+      "Name": "person"
+    },
+    "Confidence": 0.94825494
+  },
+  {
+    "Bounds": {
+      "X": 0,
+      "Y": 323,
+      "Width": 458,
+      "Height": 435,
+      "Location": {
+        "X": 0,
+        "Y": 323,
+        "IsEmpty": false
+      },
+      "Size": {
+        "Width": 458,
+        "Height": 435,
+        "IsEmpty": false
+      },
+      "IsEmpty": false,
+      "Top": 323,
+      "Right": 458,
+      "Bottom": 758,
+      "Left": 0
+    },
+    "Name": {
+      "Id": 0,
+      "Name": "person"
+    },
+    "Confidence": 0.9426538
+  },
+  {
+    "Bounds": {
+      "X": 875,
+      "Y": 346,
+      "Width": 187,
+      "Height": 125,
+      "Location": {
+        "X": 875,
+        "Y": 346,
+        "IsEmpty": false
+      },
+      "Size": {
+        "Width": 187,
+        "Height": 125,
+        "IsEmpty": false
+      },
+      "IsEmpty": false,
+      "Top": 346,
+      "Right": 1062,
+      "Bottom": 471,
+      "Left": 875
+    },
+    "Name": {
+      "Id": 34,
+      "Name": "baseball bat"
+    },
+    "Confidence": 0.9200837
+  },
+  {
+    "Bounds": {
+      "X": 1037,
+      "Y": 373,
+      "Width": 33,
+      "Height": 33,
+      "Location": {
+        "X": 1037,
+        "Y": 373,
+        "IsEmpty": false
+      },
+      "Size": {
+        "Width": 33,
+        "Height": 33,
+        "IsEmpty": false
+      },
+      "IsEmpty": false,
+      "Top": 373,
+      "Right": 1070,
+      "Bottom": 406,
+      "Left": 1037
+    },
+    "Name": {
+      "Id": 32,
+      "Name": "sports ball"
+    },
+    "Confidence": 0.8714856
+  },
+  {
+    "Bounds": {
+      "X": 374,
+      "Y": 434,
+      "Width": 85,
+      "Height": 108,
+      "Location": {
+        "X": 374,
+        "Y": 434,
+        "IsEmpty": false
+      },
+      "Size": {
+        "Width": 85,
+        "Height": 108,
+        "IsEmpty": false
+      },
+      "IsEmpty": false,
+      "Top": 434,
+      "Right": 459,
+      "Bottom": 542,
+      "Left": 374
+    },
+    "Name": {
+      "Id": 35,
+      "Name": "baseball glove"
+    },
+    "Confidence": 0.84934473
+  },
+  {
+    "Bounds": {
+      "X": 0,
+      "Y": 260,
+      "Width": 62,
+      "Height": 135,
+      "Location": {
+        "X": 0,
+        "Y": 260,
+        "IsEmpty": false
+      },
+      "Size": {
+        "Width": 62,
+        "Height": 135,
+        "IsEmpty": false
+      },
+      "IsEmpty": false,
+      "Top": 260,
+      "Right": 62,
+      "Bottom": 395,
+      "Left": 0
+    },
+    "Name": {
+      "Id": 35,
+      "Name": "baseball glove"
+    },
+    "Confidence": 0.38087004
+  }
+]
