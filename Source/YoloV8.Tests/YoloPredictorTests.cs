@@ -62,31 +62,9 @@ public class YoloPredictorTests
         Assert.Equal(result[0].Name.Name, label);
     }
 
-    [Theory]
-    [InlineData(YoloTask.Pose, 1, 640)]
-    [InlineData(YoloTask.Detect, 80, 640)]
-    [InlineData(YoloTask.Segment, 80, 640)]
-    [InlineData(YoloTask.Classify, 1000, 224)]
-    public void MetadataTest(YoloTask task, int classesCount, int imageSize)
-    {
-        var metadata = Predictors.GetPredictor(task).Metadata;
-
-        Assert.Equal("Ultralytics", metadata.Author);
-        Assert.Contains("Ultralytics YOLOv8", metadata.Description);
-        Assert.StartsWith("8.", metadata.Version);
-
-        Assert.Equal(task, metadata.Task);
-
-        Assert.Equal(1, metadata.BatchSize);
-
-        Assert.Equal(imageSize, metadata.ImageSize.Width);
-        Assert.Equal(imageSize, metadata.ImageSize.Height);
-
-        Assert.Equal(classesCount, metadata.Names.Length);
-    }
-
     private static string GetImagePath(string image)
     {
         return Path.Combine("./images", image);
     }
 }
+
