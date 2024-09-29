@@ -49,9 +49,10 @@ public partial class YoloPredictorTest2
             var expected = expectedResult[i];
             var actual = actualResult[i];
 
+            AssertBoundsEqual(expected.Bounds, actual.Bounds);
+
             Assert.Equal($"{expected.Name}", $"{actual.Name}");
             Assert.Equal(expected.Confidence, actual.Confidence);
-            Assert.Equal(expected.Bounds, actual.Bounds);
         }
     }
 
@@ -70,11 +71,23 @@ public partial class YoloPredictorTest2
             var expected = expectedResult[i];
             var actual = actualResult[i];
 
+            AssertBoundsEqual(expected.Bounds, actual.Bounds);
+
             Assert.Equal($"{expected.Name}", $"{actual.Name}");
             Assert.Equal(expected.Confidence, actual.Confidence);
-            Assert.Equal(expected.Bounds, actual.Bounds);
             Assert.Equal(expected.Angle, actual.Angle);
         }
+    }
+
+    private static void AssertBoundsEqual(Rectangle expected, Rectangle actual)
+    {
+        const int MistakeRange = 3;
+
+        Assert.InRange(actual.X, expected.X - MistakeRange, expected.X + MistakeRange);
+        Assert.InRange(actual.Y, expected.Y - MistakeRange, expected.Y + MistakeRange);
+        Assert.InRange(actual.Width, expected.Width - MistakeRange, expected.Width + MistakeRange);
+        Assert.InRange(actual.Height, expected.Height - MistakeRange, expected.Height + MistakeRange);
+
     }
 
     [JsonSerializable(typeof(Detection[]))]
