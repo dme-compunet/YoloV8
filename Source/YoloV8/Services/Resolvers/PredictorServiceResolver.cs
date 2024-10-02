@@ -71,7 +71,7 @@ internal class PredictorServiceResolver : IDisposable
 
         services
             .AddSingleton(metadata)
-            .AddSingleton<IPreprocessService, PreprocessService>()
+            .AddSingleton<IPixelsNormalizerService, PixelsNormalizerService>()
             .AddSingleton<ISessionRunnerService, SessionRunnerService>()
             .AddSingleton<IRawBoundingBoxParser, RawBoundingBoxParser>()
             .AddSingleton<IMemoryAllocatorService, MemoryAllocatorService>()
