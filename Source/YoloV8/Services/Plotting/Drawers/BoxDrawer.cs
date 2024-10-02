@@ -4,15 +4,15 @@ internal class BoxDrawer : IBoxDrawer
 {
     private const float BoxFillAlpha = .1f;
 
-    public void DrawBox(YoloPrediction prediction, PlottingContext context)
+    public void DrawBox(Detection prediction, PlottingContext context)
     {
-        PointF[] points = prediction switch
-        {
-            ObbDetection obb => GetBoxPoints(obb),
-            Detection detection => GetBoxPoints(detection),
-            _ => throw new InvalidOperationException("The prediction is not contains a bounding box"),
-        };
+        var points = GetBoxPoints(prediction);
 
+        DrawBox(prediction, points, context);
+    }
+
+    public void DrawBox(Detection prediction, PointF[] points, PlottingContext context)
+    {
         var polygon = new Polygon(points);
         var color = context.ColorPalette.GetColor(prediction.Name.Id);
 
@@ -37,12 +37,5 @@ internal class BoxDrawer : IBoxDrawer
             new PointF(rectangle.Right, rectangle.Bottom),
             new PointF(rectangle.Left, rectangle.Bottom),
         ];
-    }
-
-    private static PointF[] GetBoxPoints(ObbDetection detection)
-    {
-        var points = detection.GetCornerPoints();
-
-        return [.. points.Select(point => new PointF(point.X, point.Y))];
     }
 }

@@ -7,8 +7,17 @@ internal class ObbDetectionPlotter(IBoxDrawer boxPlotter,
     {
         foreach (var box in result)
         {
-            boxPlotter.DrawBox(box, context);
-            namePlotter.DrawName(box, box.Bounds.Location, false, context);
+            var points = GetBoxPoints(box);
+
+            boxPlotter.DrawBox(box, points, context);
+            namePlotter.DrawName(box, points[0], false, context);
         }
+    }
+
+    private static PointF[] GetBoxPoints(ObbDetection detection)
+    {
+        var points = detection.GetCornerPoints();
+
+        return [.. points.Select(point => new PointF(point.X, point.Y))];
     }
 }
