@@ -4,7 +4,7 @@ internal class SessionRunnerService(InferenceSession session,
                                     SessionTensorInfo tensorInfo,
                                     YoloConfiguration configuration,
                                     YoloMetadata metadata,
-                                    IPreprocessService preprocess,
+                                    IPixelsNormalizerService normalizer,
                                     IMemoryAllocatorService memoryAllocator) : ISessionRunnerService
 {
     private readonly object _lock = new();
@@ -89,7 +89,7 @@ internal class SessionRunnerService(InferenceSession session,
         using var resized = ResizeImage(image, out var padding);
 
         // Process the image to tensor
-        preprocess.ProcessImageToTensor(resized, target, padding);
+        normalizer.NormalizerPixelsToTensor(resized, target, padding);
 
         // Create ort values
         var ortInput = CreateOrtValue(target.Buffer, tensorInfo.Input0.Dimensions64);

@@ -1,8 +1,8 @@
 ﻿namespace Compunet.YoloV8.Services;
 
-internal class PreprocessService : IPreprocessService
+internal class PixelsNormalizerService : IPixelsNormalizerService
 {
-    public void ProcessImageToTensor(Image<Rgb24> image, DenseTensor<float> tensor, Vector<int> padding)
+    public void NormalizerPixelsToTensor(Image<Rgb24> image, DenseTensor<float> tensor, Vector<int> padding)
     {
         // Verify tensor dimensions
         if (image.Height + (padding.Y * 2) != tensor.Dimensions[2] && image.Width + (padding.X * 2) != tensor.Dimensions[3])
