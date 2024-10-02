@@ -1,4 +1,5 @@
 ﻿using Compunet.YoloV8;
+using Compunet.YoloV8.Plotting;
 using System.Diagnostics;
 
 Console.WriteLine("Loading pose estimation model...");
