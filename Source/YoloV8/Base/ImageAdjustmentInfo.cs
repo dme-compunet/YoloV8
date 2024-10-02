@@ -1,4 +1,4 @@
-﻿namespace Compunet.YoloV8.Utilities;
+﻿namespace Compunet.YoloV8;
 
 internal readonly struct ImageAdjustmentInfo(Vector<int> padding, Vector<float> ratio)
 {
