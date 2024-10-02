@@ -1,10 +1,10 @@
-﻿namespace Compunet.YoloV8.Utilities;
+﻿namespace Compunet.YoloV8.Services.Plotting;
 
-internal static class ImageContoursDetector
+internal class ImageContoursRecognizer : IImageContoursRecognizer
 {
-    private static readonly (Func<Point, Point> Func, int Neighborhood)[] _neighborhood;
+    private readonly (Func<Point, Point> Func, int Neighborhood)[] _neighborhood;
 
-    static ImageContoursDetector()
+    public ImageContoursRecognizer()
     {
         _neighborhood =
         [
@@ -19,12 +19,13 @@ internal static class ImageContoursDetector
         ];
     }
 
-    public static Point[][] FindContours(this Image image)
+    public Point[][] Recognize(Image image)
     {
-        var luminance = image.CloneAs<L8>();
+        using var luminance = image.CloneAs<L8>();
+
         var found = new HashSet<Point>();
-        var inside = false;
         var contours = new List<Point[]>();
+        var inside = false;
 
         for (var y = 0; y < luminance.Height; y++)
         {

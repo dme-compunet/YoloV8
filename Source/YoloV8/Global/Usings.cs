@@ -1,13 +1,14 @@
 ﻿global using Clipper2Lib;
 global using Compunet.YoloV8.Contracts.Services;
+global using Compunet.YoloV8.Contracts.Services.Plotting;
 global using Compunet.YoloV8.Data;
 global using Compunet.YoloV8.Extensions;
 global using Compunet.YoloV8.Memory;
 global using Compunet.YoloV8.Metadata;
 global using Compunet.YoloV8.Parsing;
 global using Compunet.YoloV8.Plotting;
+global using Compunet.YoloV8.Services.Plotting;
 global using Compunet.YoloV8.Services.Resolvers;
-global using Compunet.YoloV8.Utilities;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.ML.OnnxRuntime;
 global using Microsoft.ML.OnnxRuntime.Tensors;
