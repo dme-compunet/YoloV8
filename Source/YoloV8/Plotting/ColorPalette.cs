@@ -4,29 +4,15 @@ public class ColorPalette
 {
     public static ColorPalette Default { get; } = CreateDefault();
 
-    private readonly Func<int, string> _selector;
+    private readonly Func<int, string> _factory;
 
-    public ColorPalette(string color)
-    {
-        _selector = _ => color;
-    }
+    public ColorPalette(string color) => _factory = _ => color;
 
-    public ColorPalette(string[] colors)
-    {
-        _selector = index => colors[index % colors.Length];
-    }
+    public ColorPalette(string[] colors) => _factory = index => colors[index % colors.Length];
 
-    public ColorPalette(Func<int, string> selector)
-    {
-        _selector = selector;
-    }
+    public ColorPalette(Func<int, string> selector) => _factory = selector;
 
-    public Color GetColor(int index)
-    {
-        var hex = _selector(index);
-
-        return Color.ParseHex(hex);
-    }
+    public Color GetColor(int index) => Color.ParseHex(_factory(index));
 
     private static ColorPalette CreateDefault()
     {

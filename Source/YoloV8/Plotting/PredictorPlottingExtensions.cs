@@ -1,6 +1,6 @@
 ﻿using Path = System.IO.Path;
 
-namespace Compunet.YoloV8;
+namespace Compunet.YoloV8.Plotting;
 
 public static class PredictorPlottingExtensions
 {
