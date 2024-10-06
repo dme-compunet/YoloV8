@@ -1,6 +1,6 @@
 ﻿namespace Compunet.YoloV8.Metadata;
 
-internal class SessionTensorInfo
+internal class SessionIoShapeInfo
 {
     public TensorShape Input0 { get; }
 
@@ -26,7 +26,7 @@ internal class SessionTensorInfo
         }
     }
 
-    public SessionTensorInfo(InferenceSession session)
+    public SessionIoShapeInfo(InferenceSession session)
     {
         var inputMetadata = session.InputMetadata.Values;
         var outputMetadata = session.OutputMetadata.Values;

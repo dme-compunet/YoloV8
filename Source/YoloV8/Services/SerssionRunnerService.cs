@@ -1,7 +1,7 @@
 ﻿namespace Compunet.YoloV8.Services;
 
 internal class SessionRunnerService(InferenceSession session,
-                                    SessionTensorInfo tensorInfo,
+                                    SessionIoShapeInfo tensorInfo,
                                     YoloConfiguration configuration,
                                     YoloMetadata metadata,
                                     IPixelsNormalizerService normalizer,
