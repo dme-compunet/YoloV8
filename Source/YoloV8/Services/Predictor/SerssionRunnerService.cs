@@ -1,14 +1,16 @@
 ﻿namespace Compunet.YoloV8.Services;
 
-internal class SessionRunnerService(InferenceSession session,
-                                    SessionIoShapeInfo ioShapeInfo,
+internal class SessionRunnerService(YoloSession yoloSession,
                                     YoloConfiguration configuration,
-                                    YoloMetadata metadata,
                                     IPixelsNormalizerService normalizer,
                                     IMemoryAllocatorService memoryAllocator) : ISessionRunnerService
 {
     private readonly object _lock = new();
     private readonly RunOptions _options = new();
+
+    public InferenceSession Session => yoloSession.Session;
+
+    public SessionIoShapeInfo IoShapeInfo => yoloSession.ShapeInfo;
 
     public IYoloRawOutput PreprocessAndRun(Image<Rgb24> image, out PredictorTimer timer)
     {
@@ -19,7 +21,7 @@ internal class SessionRunnerService(InferenceSession session,
         timer.StartPreprocess();
 
         // Allocate the input tensor
-        using var input = memoryAllocator.AllocateTensor<float>(ioShapeInfo.Input0, true);
+        using var input = memoryAllocator.AllocateTensor<float>(IoShapeInfo.Input0, true);
 
         // Preprocess image to tensor and bind to ort binding
         NormalizeInput(image, input.Tensor);
@@ -27,7 +29,7 @@ internal class SessionRunnerService(InferenceSession session,
         // Start inference timer
         timer.StartInference();
 
-        if (ioShapeInfo.IsDynamicOutput)
+        if (IoShapeInfo.IsDynamicOutput)
         {
             return RunWithDynamicOutput(input.Tensor, ref timer);
         }
@@ -40,10 +42,10 @@ internal class SessionRunnerService(InferenceSession session,
     private YoloRawOutput RunWithFixedOutput(DenseTensor<float> input, ref PredictorTimer timer)
     {
         // Create io binding
-        using var binding = session.CreateIoBinding();
+        using var binding = Session.CreateIoBinding();
 
         // Bind the input
-        binding.BindInput(session.InputNames[0], CreateOrtValue(input.Buffer, ioShapeInfo.Input0.Dimensions64));
+        binding.BindInput(Session.InputNames[0], CreateOrtValue(input.Buffer, IoShapeInfo.Input0.Dimensions64));
 
         // Create and bind raw output
         var output = CreateRawOutput(binding);
@@ -53,12 +55,12 @@ internal class SessionRunnerService(InferenceSession session,
         {
             lock (_lock)
             {
-                session.RunWithBinding(_options, binding);
+                Session.RunWithBinding(_options, binding);
             }
         }
         else
         {
-            session.RunWithBinding(_options, binding);
+            Session.RunWithBinding(_options, binding);
         }
 
         // Return the yolo raw output
@@ -69,32 +71,32 @@ internal class SessionRunnerService(InferenceSession session,
     {
         var inputs = new NamedOnnxValue[]
         {
-            NamedOnnxValue.CreateFromTensor(session.InputNames[0], input)
+            NamedOnnxValue.CreateFromTensor(Session.InputNames[0], input)
         };
 
         if (configuration.SuppressParallelInference)
         {
             lock (_lock)
             {
-                return new OrtYoloRawOutput(session.Run(inputs));
+                return new OrtYoloRawOutput(Session.Run(inputs));
             }
         }
         else
         {
-            return new OrtYoloRawOutput(session.Run(inputs));
+            return new OrtYoloRawOutput(Session.Run(inputs));
         }
     }
 
     private YoloRawOutput CreateRawOutput(OrtIoBinding binding)
     {
-        var output0Info = ioShapeInfo.Output0;
-        var output1Info = ioShapeInfo.Output1;
+        var output0Info = IoShapeInfo.Output0;
+        var output1Info = IoShapeInfo.Output1;
 
         // Allocate output0 tensor buffer
         var output0 = memoryAllocator.AllocateTensor<float>(output0Info);
 
         // Bind tensor buffer to ort binding
-        binding.BindOutput(session.OutputNames[0], CreateOrtValue(output0.Tensor.Buffer, output0Info.Dimensions64));
+        binding.BindOutput(Session.OutputNames[0], CreateOrtValue(output0.Tensor.Buffer, output0Info.Dimensions64));
 
         if (output1Info != null)
         {
@@ -102,7 +104,7 @@ internal class SessionRunnerService(InferenceSession session,
             var output1 = memoryAllocator.AllocateTensor<float>(output1Info.Value);
 
             // Bind tensor buffer to ort binding
-            binding.BindOutput(session.OutputNames[1], CreateOrtValue(output1.Tensor.Buffer, output1Info.Value.Dimensions64));
+            binding.BindOutput(Session.OutputNames[1], CreateOrtValue(output1.Tensor.Buffer, output1Info.Value.Dimensions64));
 
             return new YoloRawOutput(output0, output1);
         }
@@ -131,7 +133,7 @@ internal class SessionRunnerService(InferenceSession session,
     private Image<Rgb24> ResizeImage(Image<Rgb24> image, out Vector<int> padding)
     {
         // Get the model image input size
-        var inputSize = metadata.ImageSize;
+        var inputSize = yoloSession.Metadata.ImageSize;
 
         // Create resize options
         var options = new ResizeOptions()
