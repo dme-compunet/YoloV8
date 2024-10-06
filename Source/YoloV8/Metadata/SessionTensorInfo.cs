@@ -8,6 +8,24 @@ internal class SessionTensorInfo
 
     public TensorShape? Output1 { get; }
 
+    public bool IsDynamicOutput
+    {
+        get
+        {
+            if (Output0.IsDynamic)
+            {
+                return true;
+            }
+
+            if (Output1 != null && Output1.Value.IsDynamic)
+            {
+                return true;
+            }
+
+            return false;
+        }
+    }
+
     public SessionTensorInfo(InferenceSession session)
     {
         var inputMetadata = session.InputMetadata.Values;

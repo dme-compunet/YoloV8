@@ -10,16 +10,10 @@ internal class SessionRunnerService(InferenceSession session,
     private readonly object _lock = new();
     private readonly RunOptions _options = new();
 
-    public YoloRawOutput PreprocessAndRun(Image<Rgb24> image, out PredictorTimer timer)
+    public IYoloRawOutput PreprocessAndRun(Image<Rgb24> image, out PredictorTimer timer)
     {
         // Create timer
         timer = new PredictorTimer();
-
-        // Create io binding
-        using var binding = session.CreateIoBinding();
-
-        // Create and bind raw output
-        var output = CreateRawOutput(binding);
 
         // Start pre-process timer
         timer.StartPreprocess();
@@ -28,10 +22,28 @@ internal class SessionRunnerService(InferenceSession session,
         using var input = memoryAllocator.AllocateTensor<float>(tensorInfo.Input0, true);
 
         // Preprocess image to tensor and bind to ort binding
-        ProcessInput(image, input.Tensor, binding);
+        NormalizeInput(image, input.Tensor);
 
         // Start inference timer
         timer.StartInference();
+
+        if (tensorInfo.IsDynamicOutput)
+        {
+            return RunWithDynamicOutput(input.Tensor, ref timer);
+        }
+        else
+        {
+            return RunWithFixedOutput(input.Tensor, ref timer);
+        }
+    }
+
+    private YoloRawOutput RunWithFixedOutput(DenseTensor<float> input, ref PredictorTimer timer)
+    {
+        // Create io binding
+        using var binding = session.CreateIoBinding();
+
+        // Create and bind raw output
+        var output = CreateRawOutput(binding);
 
         // Run the model
         if (configuration.SuppressParallelInference)
@@ -48,6 +60,26 @@ internal class SessionRunnerService(InferenceSession session,
 
         // Return the yolo raw output
         return output;
+    }
+
+    private OrtYoloRawOutput RunWithDynamicOutput(DenseTensor<float> input, ref PredictorTimer timer)
+    {
+        var inputs = new NamedOnnxValue[]
+        {
+            NamedOnnxValue.CreateFromTensor(session.InputNames[0], input)
+        };
+
+        if (configuration.SuppressParallelInference)
+        {
+            lock (_lock)
+            {
+                return new OrtYoloRawOutput(session.Run(inputs));
+            }
+        }
+        else
+        {
+            return new OrtYoloRawOutput(session.Run(inputs));
+        }
     }
 
     private YoloRawOutput CreateRawOutput(OrtIoBinding binding)
@@ -77,7 +109,7 @@ internal class SessionRunnerService(InferenceSession session,
 
     #region Preprocess
 
-    private void ProcessInput(Image<Rgb24> image, DenseTensor<float> target, OrtIoBinding binding)
+    private void NormalizeInput(Image<Rgb24> image, DenseTensor<float> target)
     {
         // Apply auto orient if required
         if (configuration.SkipImageAutoOrient == false)
@@ -90,13 +122,8 @@ internal class SessionRunnerService(InferenceSession session,
 
         // Process the image to tensor
         normalizer.NormalizerPixelsToTensor(resized, target, padding);
-
-        // Create ort values
-        var ortInput = CreateOrtValue(target.Buffer, tensorInfo.Input0.Dimensions64);
-
-        // Bind input to ort io binding
-        binding.BindInput(session.InputNames[0], ortInput);
     }
+
 
     private Image<Rgb24> ResizeImage(Image<Rgb24> image, out Vector<int> padding)
     {
@@ -108,7 +135,7 @@ internal class SessionRunnerService(InferenceSession session,
         {
             Size = inputSize,
 
-            // Select resize mode according to 'keepAspectRatio'
+            // Select resize mode according to 'KeepAspectRatio'
             Mode = configuration.KeepAspectRatio
                    ? ResizeMode.Max
                    : ResizeMode.Stretch,

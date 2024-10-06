@@ -2,7 +2,7 @@
 
 internal class ClassificationParser(YoloMetadata metadata) : IParser<Classification>
 {
-    public Classification[] ProcessTensorToResult(YoloRawOutput tensor, Size size)
+    public Classification[] ProcessTensorToResult(IYoloRawOutput tensor, Size size)
     {
         var tensorSpan = tensor.Output0.Buffer.Span;
 
