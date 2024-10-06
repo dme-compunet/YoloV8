@@ -4,4 +4,5 @@ public enum YoloArchitecture
 {
     YoloV8,
     YoloV10,
+    Yolo11,
 }
