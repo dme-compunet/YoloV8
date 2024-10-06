@@ -4,7 +4,7 @@ internal class PredictorServiceResolver : IDisposable
 {
     private readonly YoloMetadata _metadata;
     private readonly InferenceSession _session;
-    private readonly SessionTensorInfo _tensorInfo;
+    private readonly SessionIoShapeInfo _tensorInfo;
     private readonly YoloConfiguration _configuration;
 
     private readonly ServiceProvider _provider;
@@ -17,7 +17,7 @@ internal class PredictorServiceResolver : IDisposable
         _session = session;
         _configuration = configuration;
         _metadata = YoloMetadata.Parse(session);
-        _tensorInfo = new SessionTensorInfo(session);
+        _tensorInfo = new SessionIoShapeInfo(session);
 
         // Create default services
         var services = CreateDefaultServices(_metadata);
