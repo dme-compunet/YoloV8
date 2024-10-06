@@ -42,6 +42,9 @@ internal class SessionRunnerService(InferenceSession session,
         // Create io binding
         using var binding = session.CreateIoBinding();
 
+        // Bind the input to ort binding
+        binding.BindInput(session.InputNames[0], CreateOrtValue(input.Buffer, tensorInfo.Input0.Dimensions64));
+
         // Create and bind raw output
         var output = CreateRawOutput(binding);
 
