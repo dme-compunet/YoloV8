@@ -9,6 +9,7 @@ public class ClassificationPlottingOptions : PlottingOptions
     public ClassificationPlottingOptions()
     {
         FontSize = 16;
+        NamePadding = (12, 6);
         Location = new Point(30, 30);
     }
 }
