@@ -42,7 +42,7 @@ internal class SessionRunnerService(InferenceSession session,
         // Create io binding
         using var binding = session.CreateIoBinding();
 
-        // Bind the input to ort binding
+        // Bind the input
         binding.BindInput(session.InputNames[0], CreateOrtValue(input.Buffer, tensorInfo.Input0.Dimensions64));
 
         // Create and bind raw output
@@ -115,7 +115,7 @@ internal class SessionRunnerService(InferenceSession session,
     private void NormalizeInput(Image<Rgb24> image, DenseTensor<float> target)
     {
         // Apply auto orient if required
-        if (configuration.SkipImageAutoOrient == false)
+        if (configuration.ApplyAutoOrient)
         {
             image.AutoOrient();
         }
