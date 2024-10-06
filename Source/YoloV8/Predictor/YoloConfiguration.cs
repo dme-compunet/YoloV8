@@ -26,9 +26,9 @@ public class YoloConfiguration : IEquatable<YoloConfiguration>
     public bool KeepAspectRatio { get; set; } = true;
 
     /// <summary>
-    /// Specify whether to skip automatic image orientation correction on load (can improve performance). Default is false.
+    /// Specify whether to apply automatic image orientation correction on load. Default is true.
     /// </summary>
-    public bool SkipImageAutoOrient { get; set; } = false;
+    public bool ApplyAutoOrient { get; set; } = true;
 
     /// <summary>
     /// Specify whether to suppress parallel inference (pre-processing and post-processing will run in parallelly). Default is false.
@@ -50,7 +50,7 @@ public class YoloConfiguration : IEquatable<YoloConfiguration>
         return Confidence == other.Confidence
                && IoU == other.IoU
                && KeepAspectRatio == other.KeepAspectRatio
-               && SkipImageAutoOrient == other.SkipImageAutoOrient
+               && ApplyAutoOrient == other.ApplyAutoOrient
                && SuppressParallelInference == other.SuppressParallelInference;
     }
 
@@ -61,7 +61,7 @@ public class YoloConfiguration : IEquatable<YoloConfiguration>
         return Confidence.GetHashCode()
                ^ IoU.GetHashCode()
                ^ KeepAspectRatio.GetHashCode()
-               ^ SkipImageAutoOrient.GetHashCode()
+               ^ ApplyAutoOrient.GetHashCode()
                ^ SuppressParallelInference.GetHashCode();
     }
 }

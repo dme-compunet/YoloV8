@@ -101,23 +101,23 @@ public static class YoloPredictorExtensions
 
     private static Image<Rgb24> LoadImage(string path, YoloConfiguration configuration)
     {
-        return configuration.SkipImageAutoOrient
-               ? Image.Load<Rgb24>(_skipMetadataOptions, path)
-               : Image.Load<Rgb24>(path);
+        return configuration.ApplyAutoOrient
+               ? Image.Load<Rgb24>(path)
+               : Image.Load<Rgb24>(_skipMetadataOptions, path);
     }
 
     private static Image<Rgb24> LoadImage(Stream stream, YoloConfiguration configuration)
     {
-        return configuration.SkipImageAutoOrient
-               ? Image.Load<Rgb24>(_skipMetadataOptions, stream)
-               : Image.Load<Rgb24>(stream);
+        return configuration.ApplyAutoOrient
+               ? Image.Load<Rgb24>(stream)
+               : Image.Load<Rgb24>(_skipMetadataOptions, stream);
     }
 
     private static Image<Rgb24> LoadImage(byte[] buffer, YoloConfiguration configuration)
     {
-        return configuration.SkipImageAutoOrient
-               ? Image.Load<Rgb24>(_skipMetadataOptions, buffer)
-               : Image.Load<Rgb24>(buffer);
+        return configuration.ApplyAutoOrient
+               ? Image.Load<Rgb24>(buffer)
+               : Image.Load<Rgb24>(_skipMetadataOptions, buffer);
     }
 
     #endregion
