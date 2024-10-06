@@ -51,10 +51,10 @@ internal class ImageAdjustmentService(YoloConfiguration configuration, YoloMetad
 
         if (configuration.KeepAspectRatio)
         {
-            var maxRatio = Math.Max(xRatio, yRatio);
+            var ratio = Math.Max(xRatio, yRatio);
 
-            xRatio = maxRatio;
-            yRatio = maxRatio;
+            xRatio = ratio;
+            yRatio = ratio;
         }
 
         return new Vector<float>(xRatio, yRatio);
