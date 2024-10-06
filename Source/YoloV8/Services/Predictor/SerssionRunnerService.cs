@@ -153,7 +153,8 @@ internal class SessionRunnerService(YoloSession yoloSession,
         var resized = image.Clone(x => x.Resize(options));
 
         // Calculate padding
-        padding = new Vector<int>(
+        padding = 
+        (
             (inputSize.Width - resized.Size.Width) / 2,
             (inputSize.Height - resized.Size.Height) / 2
         );

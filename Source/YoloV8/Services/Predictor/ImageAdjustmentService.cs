@@ -39,7 +39,7 @@ internal class ImageAdjustmentService(YoloConfiguration configuration, YoloMetad
             yPadding = (int)((model.Height - size.Height * reductionRatio) / 2);
         }
 
-        return new Vector<int>(xPadding, yPadding);
+        return (xPadding, yPadding);
     }
 
     private Vector<float> CalculateRatio(Size size)
@@ -57,6 +57,6 @@ internal class ImageAdjustmentService(YoloConfiguration configuration, YoloMetad
             yRatio = ratio;
         }
 
-        return new Vector<float>(xRatio, yRatio);
+        return (xRatio, yRatio);
     }
 }
