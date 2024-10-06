@@ -20,9 +20,9 @@ public class YoloMetadata
 
     internal YoloMetadata(InferenceSession session)
         : 
-        this(session.ModelMetadata.CustomMetadataMap, GetYoloArchitecture(session)) 
+        this(session.ModelMetadata.CustomMetadataMap) 
     { }
-    internal YoloMetadata(Dictionary<string, string> metadata, YoloArchitecture architecture)
+    internal YoloMetadata(Dictionary<string, string> metadata)
     {
         Author = metadata["author"];
         Description = metadata["description"];
@@ -38,7 +38,7 @@ public class YoloMetadata
             _ => throw new InvalidOperationException("Unknow YoloV8 'task' value")
         };
 
-        Architecture = architecture;
+        Architecture = GetYoloArchitecture(Description);
         BatchSize = int.Parse(metadata["batch"]);
         ImageSize = ParseSize(metadata["imgsz"]);
         Names = ParseNames(metadata["names"]);
@@ -61,10 +61,8 @@ public class YoloMetadata
         }
     }
 
-    private static YoloArchitecture GetYoloArchitecture(InferenceSession session)
+    private static YoloArchitecture GetYoloArchitecture(string description)
     {
-        var description = session.ModelMetadata.CustomMetadataMap["description"];
-
         if (description.Contains("YOLOv8"))
         {
             return YoloArchitecture.YoloV8;

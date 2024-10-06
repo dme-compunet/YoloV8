@@ -38,7 +38,7 @@ public class YoloMetadataTests
             { nameof(names), $"{{{names[0]}, {names[1]}}}" }
         };
 
-        var metadata = new YoloMetadata(dictionary, YoloArchitecture.YoloV8);
+        var metadata = new YoloMetadata(dictionary);
 
         Assert.Equal(author, metadata.Author);
         Assert.Equal(description, metadata.Description);
@@ -50,5 +50,7 @@ public class YoloMetadataTests
         Assert.Equal(names.Length, metadata.Names.Length);
         Assert.Equal($"{names[0]}", $"{metadata.Names[0]}");
         Assert.Equal($"{names[1]}", $"{metadata.Names[1]}");
+
+        Assert.Equal(YoloArchitecture.YoloV8, metadata.Architecture);
     }
 }
