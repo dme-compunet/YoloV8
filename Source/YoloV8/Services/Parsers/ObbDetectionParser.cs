@@ -4,7 +4,7 @@ internal class ObbDetectionParser(YoloMetadata metadata,
                                   IImageAdjustmentService imageAdjustment, 
                                   IRawBoundingBoxParser rawBoundingBoxParser) : IParser<ObbDetection>
 {
-    public ObbDetection[] ProcessTensorToResult(YoloRawOutput output, Size size)
+    public ObbDetection[] ProcessTensorToResult(IYoloRawOutput output, Size size)
     {
         var adjustment = imageAdjustment.Calculate(size);
         var boxes = rawBoundingBoxParser.Parse<RawObbBoundingBox>(output.Output0);

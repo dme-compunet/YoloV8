@@ -2,5 +2,5 @@
 
 internal interface IParser<T> where T : IYoloPrediction<T>
 {
-    public T[] ProcessTensorToResult(YoloRawOutput output, Size size);
+    public T[] ProcessTensorToResult(IYoloRawOutput output, Size size);
 }

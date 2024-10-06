@@ -2,5 +2,5 @@
 
 internal interface ISessionRunnerService
 {
-    public YoloRawOutput PreprocessAndRun(Image<Rgb24> image, out PredictorTimer timer);
+    public IYoloRawOutput PreprocessAndRun(Image<Rgb24> image, out PredictorTimer timer);
 }

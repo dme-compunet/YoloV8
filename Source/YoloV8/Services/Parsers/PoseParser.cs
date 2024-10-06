@@ -4,7 +4,7 @@ internal class PoseParser(YoloPoseMetadata metadata,
                           IImageAdjustmentService imageAdjustment,
                           IRawBoundingBoxParser rawBoundingBoxParser) : IParser<Pose>
 {
-    public Pose[] ProcessTensorToResult(YoloRawOutput output, Size size)
+    public Pose[] ProcessTensorToResult(IYoloRawOutput output, Size size)
     {
         var tensor = output.Output0;
         var adjustment = imageAdjustment.Calculate(size);

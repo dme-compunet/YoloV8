@@ -1,6 +1,6 @@
 ﻿namespace Compunet.YoloV8.Memory;
 
-internal class YoloRawOutput(DenseTensorOwner<float> output0, DenseTensorOwner<float>? output1) : IDisposable
+internal class YoloRawOutput(DenseTensorOwner<float> output0, DenseTensorOwner<float>? output1) : IYoloRawOutput
 {
     private bool _disposed;
 

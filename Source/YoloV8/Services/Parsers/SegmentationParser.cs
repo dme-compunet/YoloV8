@@ -5,7 +5,7 @@ internal class SegmentationParser(YoloMetadata metadata,
                                   IMemoryAllocatorService memoryAllocator,
                                   IRawBoundingBoxParser rawBoundingBoxParser) : IParser<Segmentation>
 {
-    public Segmentation[] ProcessTensorToResult(YoloRawOutput output, Size size)
+    public Segmentation[] ProcessTensorToResult(IYoloRawOutput output, Size size)
     {
         var adjustment = imageAdjustment.Calculate(size);
 
