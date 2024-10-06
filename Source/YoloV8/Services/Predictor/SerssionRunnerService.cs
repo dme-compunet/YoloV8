@@ -1,7 +1,7 @@
 ﻿namespace Compunet.YoloV8.Services;
 
 internal class SessionRunnerService(InferenceSession session,
-                                    SessionIoShapeInfo tensorInfo,
+                                    SessionIoShapeInfo ioShapeInfo,
                                     YoloConfiguration configuration,
                                     YoloMetadata metadata,
                                     IPixelsNormalizerService normalizer,
@@ -19,7 +19,7 @@ internal class SessionRunnerService(InferenceSession session,
         timer.StartPreprocess();
 
         // Allocate the input tensor
-        using var input = memoryAllocator.AllocateTensor<float>(tensorInfo.Input0, true);
+        using var input = memoryAllocator.AllocateTensor<float>(ioShapeInfo.Input0, true);
 
         // Preprocess image to tensor and bind to ort binding
         NormalizeInput(image, input.Tensor);
@@ -27,7 +27,7 @@ internal class SessionRunnerService(InferenceSession session,
         // Start inference timer
         timer.StartInference();
 
-        if (tensorInfo.IsDynamicOutput)
+        if (ioShapeInfo.IsDynamicOutput)
         {
             return RunWithDynamicOutput(input.Tensor, ref timer);
         }
@@ -43,7 +43,7 @@ internal class SessionRunnerService(InferenceSession session,
         using var binding = session.CreateIoBinding();
 
         // Bind the input
-        binding.BindInput(session.InputNames[0], CreateOrtValue(input.Buffer, tensorInfo.Input0.Dimensions64));
+        binding.BindInput(session.InputNames[0], CreateOrtValue(input.Buffer, ioShapeInfo.Input0.Dimensions64));
 
         // Create and bind raw output
         var output = CreateRawOutput(binding);
@@ -87,8 +87,8 @@ internal class SessionRunnerService(InferenceSession session,
 
     private YoloRawOutput CreateRawOutput(OrtIoBinding binding)
     {
-        var output0Info = tensorInfo.Output0;
-        var output1Info = tensorInfo.Output1;
+        var output0Info = ioShapeInfo.Output0;
+        var output1Info = ioShapeInfo.Output1;
 
         // Allocate output0 tensor buffer
         var output0 = memoryAllocator.AllocateTensor<float>(output0Info);
