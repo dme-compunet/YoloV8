@@ -63,17 +63,24 @@ public class YoloMetadata
 
     private static YoloArchitecture GetYoloArchitecture(InferenceSession session)
     {
-        if (session.ModelMetadata.CustomMetadataMap["task"] != "detect")
+        var description = session.ModelMetadata.CustomMetadataMap["description"];
+
+        if (description.Contains("YOLOv8"))
         {
             return YoloArchitecture.YoloV8;
         }
 
-        if (session.OutputMetadata.Values.First().Dimensions[2] == 6) // YOLOv10 output shape => [<batch>, 300, 6]
+        if (description.Contains("YOLOv10"))
         {
             return YoloArchitecture.YoloV10;
         }
 
-        return YoloArchitecture.YoloV8;
+        if (description.Contains("YOLO11"))
+        {
+            return YoloArchitecture.Yolo11;
+        }
+
+        throw new NotSupportedException("Unrecognized YOLO model architecture");
     }
 
     #region Parsers
