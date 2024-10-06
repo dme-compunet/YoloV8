@@ -9,4 +9,6 @@ public readonly struct Vector<T>(T x, T y)
     public T Y => y;
 
     public override string ToString() => $"X = {x}, Y = {y}";
+
+    public static implicit operator Vector<T>(ValueTuple<T, T> tuple) => new(tuple.Item1, tuple.Item2);
 }

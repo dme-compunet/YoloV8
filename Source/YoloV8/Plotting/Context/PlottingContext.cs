@@ -129,7 +129,7 @@ internal class PlottingContext
         TextOptions = CreateTextOptions(options, gain);
         ColorPalette = options.Palette;
         BorderThickness = options.BorderThickness * gain;
-        NamePadding = new Vector<float>
+        NamePadding =
         (
             options.NamePadding.X * gain,
             options.NamePadding.Y * gain

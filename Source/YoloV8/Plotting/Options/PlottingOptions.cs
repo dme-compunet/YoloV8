@@ -17,7 +17,7 @@ public abstract class PlottingOptions
         FontFamily = GetDefaultFontFamily();
         FontSize = 12f;
         BorderThickness = 1;
-        NamePadding = new Vector<float>(6, 4);
+        NamePadding = (6, 4);
         Palette = ColorPalette.Default;
     }
 
