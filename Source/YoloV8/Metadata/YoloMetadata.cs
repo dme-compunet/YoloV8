@@ -63,17 +63,17 @@ public class YoloMetadata
 
     private static YoloArchitecture GetYoloArchitecture(string description)
     {
-        if (description.Contains("YOLOv8"))
+        if (description.Contains("yolov8", StringComparison.CurrentCultureIgnoreCase))
         {
             return YoloArchitecture.YoloV8;
         }
 
-        if (description.Contains("YOLOv10"))
+        if (description.Contains("yolov10", StringComparison.CurrentCultureIgnoreCase))
         {
             return YoloArchitecture.YoloV10;
         }
 
-        if (description.Contains("YOLO11"))
+        if (description.Contains("yolo11", StringComparison.CurrentCultureIgnoreCase))
         {
             return YoloArchitecture.Yolo11;
         }
