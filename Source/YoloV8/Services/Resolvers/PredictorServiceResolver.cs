@@ -15,7 +15,7 @@ internal class PredictorServiceResolver : IDisposable
         _configuration = configuration;
 
         var metadata = YoloMetadata.Parse(session);
-        var shapeInfo = new SessionIoShapeInfo(session);
+        var shapeInfo = new SessionIoShapeInfo(session, metadata);
 
         // Create default services
         var services = CreateDefaultServices(metadata);
