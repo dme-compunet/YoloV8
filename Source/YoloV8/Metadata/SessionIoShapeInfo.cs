@@ -26,12 +26,22 @@ internal class SessionIoShapeInfo
         }
     }
 
-    public SessionIoShapeInfo(InferenceSession session)
+    public SessionIoShapeInfo(InferenceSession session, YoloMetadata metadata)
     {
         var inputMetadata = session.InputMetadata.Values;
         var outputMetadata = session.OutputMetadata.Values;
 
-        Input0 = new TensorShape(inputMetadata.First().Dimensions);
+        var input0 = new TensorShape(inputMetadata.First().Dimensions);
+
+        if (input0.IsDynamic)
+        {
+            Input0 = new TensorShape([metadata.BatchSize, 3, metadata.ImageSize.Height, metadata.ImageSize.Width]);
+        }
+        else
+        {
+            Input0 = input0;
+        }
+
         Output0 = new TensorShape(outputMetadata.First().Dimensions);
 
         if (session.OutputMetadata.Count == 2)
