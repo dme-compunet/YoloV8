@@ -2,7 +2,6 @@
 
 public enum YoloArchitecture
 {
-    YoloV8,
-    YoloV10,
-    Yolo11,
+    YoloV8Or11,
+    YoloV10
 }

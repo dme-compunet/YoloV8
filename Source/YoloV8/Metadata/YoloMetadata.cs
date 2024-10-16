@@ -19,10 +19,11 @@ public class YoloMetadata
     public YoloArchitecture Architecture { get; }
 
     internal YoloMetadata(InferenceSession session)
-        : 
-        this(session.ModelMetadata.CustomMetadataMap) 
+        :
+        this(session.ModelMetadata.CustomMetadataMap, ParseYoloArchitecture(session))
     { }
-    internal YoloMetadata(Dictionary<string, string> metadata)
+
+    internal YoloMetadata(Dictionary<string, string> metadata, YoloArchitecture architecture)
     {
         Author = metadata["author"];
         Description = metadata["description"];
@@ -38,7 +39,7 @@ public class YoloMetadata
             _ => throw new InvalidOperationException("Unknow YoloV8 'task' value")
         };
 
-        Architecture = GetYoloArchitecture(Description);
+        Architecture = architecture;
         BatchSize = int.Parse(metadata["batch"]);
         ImageSize = ParseSize(metadata["imgsz"]);
         Names = ParseNames(metadata["names"]);
@@ -61,24 +62,26 @@ public class YoloMetadata
         }
     }
 
-    private static YoloArchitecture GetYoloArchitecture(string description)
+    private static YoloArchitecture ParseYoloArchitecture(InferenceSession session)
     {
-        if (description.Contains("yolov8", StringComparison.CurrentCultureIgnoreCase))
+        var metadata = session.ModelMetadata.CustomMetadataMap;
+
+        if (metadata.TryGetValue("task", out var task) == false)
         {
-            return YoloArchitecture.YoloV8;
+            throw new InvalidOperationException();
         }
 
-        if (description.Contains("yolov10", StringComparison.CurrentCultureIgnoreCase))
+        if (task == "detect")
         {
-            return YoloArchitecture.YoloV10;
+            var output0 = session.OutputMetadata["output0"];
+
+            if (output0.Dimensions[2] == 6) // YOLOv10 output0: [1, 300, 6]
+            {
+                return YoloArchitecture.YoloV10;
+            }
         }
 
-        if (description.Contains("yolo11", StringComparison.CurrentCultureIgnoreCase))
-        {
-            return YoloArchitecture.Yolo11;
-        }
-
-        throw new NotSupportedException("Unrecognized YOLO model architecture");
+        return YoloArchitecture.YoloV8Or11;
     }
 
     #region Parsers

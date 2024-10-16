@@ -18,7 +18,7 @@ internal class RawBoundingBoxParser(YoloMetadata metadata,
 
         var context = new RawParsingContext
         {
-            Architecture = YoloArchitecture.YoloV8,
+            Architecture = YoloArchitecture.YoloV8Or11,
             Tensor = tensor,
             Stride1 = stride1,
             NameCount = namesCount,
