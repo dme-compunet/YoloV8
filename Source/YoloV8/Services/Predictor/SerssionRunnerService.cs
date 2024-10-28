@@ -31,15 +31,15 @@ internal class SessionRunnerService(YoloSession yoloSession,
 
         if (IoShapeInfo.IsDynamicOutput)
         {
-            return RunWithDynamicOutput(input.Tensor, ref timer);
+            return RunWithDynamicOutput(input.Tensor);
         }
         else
         {
-            return RunWithFixedOutput(input.Tensor, ref timer);
+            return RunWithFixedOutput(input.Tensor);
         }
     }
 
-    private YoloRawOutput RunWithFixedOutput(DenseTensor<float> input, ref PredictorTimer timer)
+    private YoloRawOutput RunWithFixedOutput(DenseTensor<float> input)
     {
         // Create io binding
         using var binding = Session.CreateIoBinding();
@@ -67,7 +67,7 @@ internal class SessionRunnerService(YoloSession yoloSession,
         return output;
     }
 
-    private OrtYoloRawOutput RunWithDynamicOutput(DenseTensor<float> input, ref PredictorTimer timer)
+    private OrtYoloRawOutput RunWithDynamicOutput(DenseTensor<float> input)
     {
         var inputs = new NamedOnnxValue[]
         {
