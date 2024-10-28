@@ -15,7 +15,7 @@ internal class MaskDrawer(IImageContoursRecognizer contoursRecognizer) : IMaskDr
         {
             for (var y = 0; y < mask.Height; y++)
             {
-                var value = mask[x, y];
+                var value = mask[y, x];
 
                 if (value > context.MaskMinimumConfidence)
                 {
