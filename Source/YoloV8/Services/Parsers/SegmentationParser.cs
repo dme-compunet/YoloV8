@@ -12,19 +12,69 @@ internal class SegmentationParser(YoloMetadata metadata,
         var output0 = output.Output0;
         var output1 = output.Output1 ?? throw new Exception();
 
+        var output0Span = output0.Buffer.Span;
+        var output1Span = output1.Buffer.Span;
+
+        var output0Strides = output0.Strides;
+        var output1Strides = output1.Strides;
+
+        var maskWidth = output1.Dimensions[3];
+        var maskHeight = output1.Dimensions[2];
+        var maskChannels = output1.Dimensions[1];
+
+        var maskPaddingX = adjustment.Padding.X * maskWidth / metadata.ImageSize.Width;
+        var maskPaddingY = adjustment.Padding.Y * maskHeight / metadata.ImageSize.Height;
+
+        maskWidth -= maskPaddingX * 2;
+        maskHeight -= maskPaddingY * 2;
+
+        using var rawMaskBuffer = memoryAllocator.Allocate<float>(maskWidth * maskHeight);
+        using var weightsBuffer = memoryAllocator.Allocate<float>(maskChannels);
+
+        var weightsSpan = weightsBuffer.Memory.Span;
+        var rawMaskBitmap = new BitmapBuffer(rawMaskBuffer.Memory, maskWidth, maskHeight);
+
         var boxes = rawBoundingBoxParser.Parse<RawBoundingBox>(output0);
-        var maskChannelCount = output0.Dimensions[1] - 4 - metadata.Names.Length;
 
         var result = new Segmentation[boxes.Length];
 
         for (var index = 0; index < boxes.Length; index++)
         {
             var box = boxes[index];
+            var boxIndex = box.Index;
+
             var bounds = imageAdjustment.Adjust(box.Bounds, adjustment);
 
-            using var maskWeights = CollectMaskWeights(output0, box.Index, maskChannelCount, metadata.Names.Length + 4);
+            // Collect the weights for this box
+            for (var i = 0; i < maskChannels; i++)
+            {
+                var bufferIndex = GetIndex(output0Strides, 0, metadata.Names.Length + 4 + i, boxIndex);
 
-            var mask = ProcessMask(output1, maskWeights.Memory.Span, bounds, size, metadata.ImageSize, adjustment.Padding);
+                weightsSpan[i] = output0Span[bufferIndex];
+            }
+
+            rawMaskBitmap.Clear();
+
+            for (var y = 0; y < rawMaskBitmap.Height; y++)
+            {
+                for (var x = 0; x < rawMaskBitmap.Width; x++)
+                {
+                    var value = 0f;
+
+                    for (var i = 0; i < maskChannels; i++)
+                    {
+                        var bufferIndex = GetIndex(output1Strides, 0, i, y + maskPaddingY, x + maskPaddingX);
+
+                        value += output1Span[bufferIndex] * weightsSpan[i];
+                    }
+
+                    rawMaskBitmap[y, x] = Sigmoid(value);
+                }
+            }
+
+            var mask = new BitmapBuffer(bounds.Width, bounds.Height);
+
+            ResizeAndCrop(rawMaskBitmap, mask, bounds, size);
 
             result[index] = new Segmentation
             {
@@ -38,110 +88,51 @@ internal class SegmentationParser(YoloMetadata metadata,
         return result;
     }
 
-    private static SegmentationMask ProcessMask(Tensor<float> prototypes,
-                                                ReadOnlySpan<float> weights,
-                                                Rectangle bounds,
-                                                Size imageSize,
-                                                Size modelSize,
-                                                Vector<int> padding)
+    private static void ResizeAndCrop(BitmapBuffer source, BitmapBuffer target, Rectangle bounds, Size imageSize)
     {
-        var maskChannels = prototypes.Dimensions[1];
-        var maskHeight = prototypes.Dimensions[2];
-        var maskWidth = prototypes.Dimensions[3];
-
-        if (maskChannels != weights.Length)
+        for (var y = 0; y < bounds.Height; y++)
         {
-            throw new InvalidOperationException();
-        }
-
-        using var bitmap = new Image<L8>(maskWidth, maskHeight);
-
-        for (var y = 0; y < maskHeight; y++)
-        {
-            for (var x = 0; x < maskWidth; x++)
+            for (var x = 0; x < bounds.Width; x++)
             {
-                var value = 0F;
+                var sourceX = (float)(x + bounds.X) * (source.Width - 1) / (imageSize.Width - 1);
+                var sourceY = (float)(y + bounds.Y) * (source.Height - 1) / (imageSize.Height - 1);
 
-                for (int i = 0; i < maskChannels; i++)
-                {
-                    value += prototypes[0, i, y, x] * weights[i];
-                }
+                var x0 = (int)sourceX;
+                var y0 = (int)sourceY;
 
-                value = Sigmoid(value);
+                var x1 = Math.Min(x0 + 1, source.Width - 1);
+                var y1 = Math.Min(y0 + 1, source.Height - 1);
 
-                var color = GetLuminance(value);
-                var pixel = new L8(color);
+                var xLerp = sourceX - x0;
+                var yLerp = sourceY - y0;
 
-                bitmap[x, y] = pixel;
+                var top = Lerp(source[y0, x0], source[y0, x1], xLerp);
+                var bottom = Lerp(source[y1, x0], source[y1, x1], xLerp);
+
+                target[y, x] = Lerp(top, bottom, yLerp);
             }
         }
-
-        var xPadding = padding.X * maskWidth / modelSize.Width;
-        var yPadding = padding.Y * maskHeight / modelSize.Height;
-
-        var paddingCropRectangle = new Rectangle(xPadding,
-                                                 yPadding,
-                                                 maskWidth - xPadding * 2,
-                                                 maskHeight - yPadding * 2);
-
-        bitmap.Mutate(x =>
-        {
-            // Crop for preprocess resize padding
-            x.Crop(paddingCropRectangle);
-
-            // Resize to original image size
-            x.Resize(imageSize);
-
-            // Crop for getting the object segmentation only
-            x.Crop(bounds);
-        });
-
-        return CreateMaskFromBitmap(bitmap);
     }
 
-    private IMemoryOwner<float> CollectMaskWeights(Tensor<float> output, int boxIndex, int maskChannelCount, int maskWeightsOffset)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static int GetIndex(ReadOnlySpan<int> strides, int index0, int index1, int index2)
     {
-        var weights = memoryAllocator.Allocate<float>(maskChannelCount);
-        var weightsSpan = weights.Memory.Span;
+        Debug.Assert(strides.Length == 3);
 
-        for (int i = 0; i < maskChannelCount; i++)
-        {
-            weightsSpan[i] = output[0, maskWeightsOffset + i, boxIndex];
-        }
-
-        return weights;
+        return (strides[0] * index0) + (strides[1] * index1) + (strides[2] * index2);
     }
 
-    private static SegmentationMask CreateMaskFromBitmap(Image<L8> bitmap)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static int GetIndex(ReadOnlySpan<int> strides, int index0, int index1, int index2, int index3)
     {
-        var mask = new float[bitmap.Width, bitmap.Height];
+        Debug.Assert(strides.Length == 4);
 
-        bitmap.ProcessPixelRows(accessor =>
-        {
-            for (var y = 0; y < bitmap.Height; y++)
-            {
-                var row = accessor.GetRowSpan(y);
-
-                for (var x = 0; x < bitmap.Width; x++)
-                {
-                    mask[x, y] = GetConfidence(row[x].PackedValue);
-                }
-            }
-        });
-
-        return new SegmentationMask
-        {
-            Mask = mask
-        };
+        return (strides[0] * index0) + (strides[1] * index1) + (strides[2] * index2) + (strides[3] * index3);
     }
 
-    #region Helpers
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static float Lerp(float a, float b, float t) => a + (b - a) * t;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static float Sigmoid(float value) => 1 / (1 + MathF.Exp(-value));
-
-    private static byte GetLuminance(float confidence) => (byte)((confidence * 255 - 255) * -1);
-
-    private static float GetConfidence(byte luminance) => (luminance - 255) * -1 / 255F;
-
-    #endregion
 }

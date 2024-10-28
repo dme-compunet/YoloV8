@@ -2,7 +2,7 @@
 
 public class Segmentation : Detection, IYoloPrediction<Segmentation>
 {
-    public required SegmentationMask Mask { get; init; }
+    public required BitmapBuffer Mask { get; init; }
 
     static string IYoloPrediction<Segmentation>.Describe(Segmentation[] predictions) => predictions.Summary();
 }
