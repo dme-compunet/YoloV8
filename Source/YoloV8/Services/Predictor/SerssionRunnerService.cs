@@ -39,13 +39,13 @@ internal class SessionRunnerService(YoloSession yoloSession,
         }
     }
 
-    private YoloRawOutput RunWithFixedOutput(DenseTensor<float> input)
+    private YoloRawOutput RunWithFixedOutput(MemoryTensor<float> input)
     {
         // Create io binding
         using var binding = Session.CreateIoBinding();
 
         // Bind the input
-        binding.BindInput(Session.InputNames[0], CreateOrtValue(input.Buffer, IoShapeInfo.Input0.Dimensions64));
+        binding.BindInput(Session.InputNames[0], CreateOrtValue(input));
 
         // Create and bind raw output
         var output = CreateRawOutput(binding);
@@ -67,23 +67,30 @@ internal class SessionRunnerService(YoloSession yoloSession,
         return output;
     }
 
-    private OrtYoloRawOutput RunWithDynamicOutput(DenseTensor<float> input)
+    private OrtYoloRawOutput RunWithDynamicOutput(MemoryTensor<float> input)
     {
         var inputs = new NamedOnnxValue[]
         {
-            NamedOnnxValue.CreateFromTensor(Session.InputNames[0], input)
+            NamedOnnxValue.CreateFromTensor(Session.InputNames[0], new DenseTensor<float>(input.Buffer, input.Dimensions))
         };
+
+        OrtYoloRawOutput Run()
+        {
+            var result = Session.Run(inputs);
+
+            return new OrtYoloRawOutput(result);
+        }
 
         if (configuration.SuppressParallelInference)
         {
             lock (_lock)
             {
-                return new OrtYoloRawOutput(Session.Run(inputs));
+                return Run();
             }
         }
         else
         {
-            return new OrtYoloRawOutput(Session.Run(inputs));
+            return Run();
         }
     }
 
@@ -96,7 +103,7 @@ internal class SessionRunnerService(YoloSession yoloSession,
         var output0 = memoryAllocator.AllocateTensor<float>(output0Info);
 
         // Bind tensor buffer to ort binding
-        binding.BindOutput(Session.OutputNames[0], CreateOrtValue(output0.Tensor.Buffer, output0Info.Dimensions64));
+        binding.BindOutput(Session.OutputNames[0], CreateOrtValue(output0.Tensor));
 
         if (output1Info != null)
         {
@@ -104,7 +111,7 @@ internal class SessionRunnerService(YoloSession yoloSession,
             var output1 = memoryAllocator.AllocateTensor<float>(output1Info.Value);
 
             // Bind tensor buffer to ort binding
-            binding.BindOutput(Session.OutputNames[1], CreateOrtValue(output1.Tensor.Buffer, output1Info.Value.Dimensions64));
+            binding.BindOutput(Session.OutputNames[1], CreateOrtValue(output1.Tensor));
 
             return new YoloRawOutput(output0, output1);
         }
@@ -114,7 +121,7 @@ internal class SessionRunnerService(YoloSession yoloSession,
 
     #region Preprocess
 
-    private void NormalizeInput(Image<Rgb24> image, DenseTensor<float> target)
+    private void NormalizeInput(Image<Rgb24> image, MemoryTensor<float> target)
     {
         // Apply auto orient if required
         if (configuration.ApplyAutoOrient)
@@ -128,7 +135,6 @@ internal class SessionRunnerService(YoloSession yoloSession,
         // Process the image to tensor
         normalizer.NormalizerPixelsToTensor(resized, target, padding);
     }
-
 
     private Image<Rgb24> ResizeImage(Image<Rgb24> image, out Vector<int> padding)
     {
@@ -153,7 +159,7 @@ internal class SessionRunnerService(YoloSession yoloSession,
         var resized = image.Clone(x => x.Resize(options));
 
         // Calculate padding
-        padding = 
+        padding =
         (
             (inputSize.Width - resized.Size.Width) / 2,
             (inputSize.Height - resized.Size.Height) / 2
@@ -164,6 +170,11 @@ internal class SessionRunnerService(YoloSession yoloSession,
     }
 
     #endregion
+
+    private static OrtValue CreateOrtValue(MemoryTensor<float> tensor)
+    {
+        return CreateOrtValue(tensor.Buffer, tensor.Dimensions64);
+    }
 
     private static OrtValue CreateOrtValue(Memory<float> buffer, long[] shape)
     {

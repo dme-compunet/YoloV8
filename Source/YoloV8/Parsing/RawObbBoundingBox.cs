@@ -59,9 +59,9 @@ internal readonly struct RawObbBoundingBox : IRawBoundingBox<RawObbBoundingBox>
 
     public static RawObbBoundingBox Parse(ref RawParsingContext context, int index, int nameIndex, float confidence)
     {
-        var tensorSpan = context.Tensor.Buffer.Span;
-        var stride1 = context.Stride1;
         var nameCount = context.NameCount;
+        var tensorSpan = context.Tensor.Span;
+        var stride1 = context.Tensor.Strides[1];
 
         if (nameCount == 0)
         {

@@ -12,12 +12,6 @@ internal class SegmentationParser(YoloMetadata metadata,
         var output0 = output.Output0;
         var output1 = output.Output1 ?? throw new Exception();
 
-        var output0Span = output0.Buffer.Span;
-        var output1Span = output1.Buffer.Span;
-
-        var output0Strides = output0.Strides;
-        var output1Strides = output1.Strides;
-
         var maskWidth = output1.Dimensions[3];
         var maskHeight = output1.Dimensions[2];
         var maskChannels = output1.Dimensions[1];
@@ -48,9 +42,7 @@ internal class SegmentationParser(YoloMetadata metadata,
             // Collect the weights for this box
             for (var i = 0; i < maskChannels; i++)
             {
-                var bufferIndex = GetIndex(output0Strides, 0, metadata.Names.Length + 4 + i, boxIndex);
-
-                weightsSpan[i] = output0Span[bufferIndex];
+                weightsSpan[i] = output0[0, metadata.Names.Length + 4 + i, boxIndex];
             }
 
             rawMaskBitmap.Clear();
@@ -63,9 +55,7 @@ internal class SegmentationParser(YoloMetadata metadata,
 
                     for (var i = 0; i < maskChannels; i++)
                     {
-                        var bufferIndex = GetIndex(output1Strides, 0, i, y + maskPaddingY, x + maskPaddingX);
-
-                        value += output1Span[bufferIndex] * weightsSpan[i];
+                        value += output1[0, i, y + maskPaddingY, x + maskPaddingX] * weightsSpan[i];
                     }
 
                     rawMaskBitmap[y, x] = Sigmoid(value);
@@ -112,22 +102,6 @@ internal class SegmentationParser(YoloMetadata metadata,
                 target[y, x] = Lerp(top, bottom, yLerp);
             }
         }
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static int GetIndex(ReadOnlySpan<int> strides, int index0, int index1, int index2)
-    {
-        Debug.Assert(strides.Length == 3);
-
-        return (strides[0] * index0) + (strides[1] * index1) + (strides[2] * index2);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static int GetIndex(ReadOnlySpan<int> strides, int index0, int index1, int index2, int index3)
-    {
-        Debug.Assert(strides.Length == 4);
-
-        return (strides[0] * index0) + (strides[1] * index1) + (strides[2] * index2) + (strides[3] * index3);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
