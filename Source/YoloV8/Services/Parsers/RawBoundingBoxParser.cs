@@ -5,7 +5,7 @@ internal class RawBoundingBoxParser(YoloMetadata metadata,
                                     IMemoryAllocatorService memoryAllocator,
                                     INonMaxSuppressionService nonMaxSuppression) : IRawBoundingBoxParser
 {
-    private T[] ParseYoloV8<T>(DenseTensor<float> tensor) where T : IRawBoundingBox<T>
+    private T[] ParseYoloV8<T>(MemoryTensor<float> tensor) where T : IRawBoundingBox<T>
     {
         var stride1 = tensor.Strides[1];
         var boxesCount = tensor.Dimensions[2];
@@ -18,10 +18,9 @@ internal class RawBoundingBoxParser(YoloMetadata metadata,
 
         var context = new RawParsingContext
         {
-            Architecture = YoloArchitecture.YoloV8Or11,
             Tensor = tensor,
-            Stride1 = stride1,
             NameCount = namesCount,
+            Architecture = YoloArchitecture.YoloV8Or11,
         };
 
         for (var boxIndex = 0; boxIndex < boxesCount; boxIndex++)
@@ -49,7 +48,7 @@ internal class RawBoundingBoxParser(YoloMetadata metadata,
         return nonMaxSuppression.Suppress(boxesSpan[..boxesIndex], configuration.IoU);
     }
 
-    private T[] ParseYoloV10<T>(DenseTensor<float> tensor) where T : IRawBoundingBox<T>
+    private T[] ParseYoloV10<T>(MemoryTensor<float> tensor) where T : IRawBoundingBox<T>
     {
         var stride1 = tensor.Strides[1];
         var stride2 = tensor.Strides[2];
@@ -62,9 +61,8 @@ internal class RawBoundingBoxParser(YoloMetadata metadata,
 
         var context = new RawParsingContext
         {
-            Architecture = YoloArchitecture.YoloV10,
             Tensor = tensor,
-            Stride1 = stride1
+            Architecture = YoloArchitecture.YoloV10,
         };
 
         for (var index = 0; index < boxesCount; index++)
@@ -92,7 +90,7 @@ internal class RawBoundingBoxParser(YoloMetadata metadata,
         return nonMaxSuppression.Suppress(boxesSpan[..boxesIndex], configuration.IoU);
     }
 
-    public T[] Parse<T>(DenseTensor<float> tensor) where T : IRawBoundingBox<T>
+    public T[] Parse<T>(MemoryTensor<float> tensor) where T : IRawBoundingBox<T>
     {
         if (metadata.Architecture == YoloArchitecture.YoloV10)
         {

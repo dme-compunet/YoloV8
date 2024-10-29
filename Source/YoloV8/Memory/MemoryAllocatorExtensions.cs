@@ -2,10 +2,11 @@
 
 internal static class MemoryAllocatorExtensions
 {
-    public static DenseTensorOwner<T> AllocateTensor<T>(this IMemoryAllocatorService allocator, TensorShape shape, bool clean = false)
+    public static MemoryTensorOwner<T> AllocateTensor<T>(this IMemoryAllocatorService allocator, TensorShape shape, bool clean = false)
+        where T : unmanaged
     {
         var memory = allocator.Allocate<T>(shape.Length, clean);
 
-        return new DenseTensorOwner<T>(memory, shape.Dimensions);
+        return new MemoryTensorOwner<T>(memory, shape.Dimensions);
     }
 }

@@ -2,7 +2,7 @@
 
 internal class PixelsNormalizerService : IPixelsNormalizerService
 {
-    public void NormalizerPixelsToTensor(Image<Rgb24> image, DenseTensor<float> tensor, Vector<int> padding)
+    public void NormalizerPixelsToTensor(Image<Rgb24> image, MemoryTensor<float> tensor, Vector<int> padding)
     {
         // Verify tensor dimensions
         if (image.Height + (padding.Y * 2) != tensor.Dimensions[2] && image.Width + (padding.X * 2) != tensor.Dimensions[3])
@@ -14,7 +14,7 @@ internal class PixelsNormalizerService : IPixelsNormalizerService
         ProcessToTensorCore(image, tensor, padding);
     }
 
-    private static void ProcessToTensorCore(Image<Rgb24> image, DenseTensor<float> tensor, Vector<int> padding)
+    private static void ProcessToTensorCore(Image<Rgb24> image, MemoryTensor<float> tensor, Vector<int> padding)
     {
         var width = image.Width;
         var height = image.Height;
@@ -27,7 +27,7 @@ internal class PixelsNormalizerService : IPixelsNormalizerService
         var strideB = tensor.Strides[1] * 2;
 
         // Get a span of the whole tensor for fast access
-        var tensorSpan = tensor.Buffer.Span;
+        var tensorSpan = tensor.Span;
 
         // Try get continuous memory block of the entire image data
         if (image.DangerousTryGetSinglePixelMemory(out var memory))

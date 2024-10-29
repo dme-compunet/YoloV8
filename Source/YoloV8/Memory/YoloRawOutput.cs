@@ -1,10 +1,10 @@
 ﻿namespace Compunet.YoloV8.Memory;
 
-internal class YoloRawOutput(DenseTensorOwner<float> output0, DenseTensorOwner<float>? output1) : IYoloRawOutput
+internal class YoloRawOutput(MemoryTensorOwner<float> output0, MemoryTensorOwner<float>? output1) : IYoloRawOutput
 {
     private bool _disposed;
 
-    public DenseTensor<float> Output0
+    public MemoryTensor<float> Output0
     {
         get
         {
@@ -13,7 +13,7 @@ internal class YoloRawOutput(DenseTensorOwner<float> output0, DenseTensorOwner<f
         }
     }
 
-    public DenseTensor<float>? Output1
+    public MemoryTensor<float>? Output1
     {
         get
         {

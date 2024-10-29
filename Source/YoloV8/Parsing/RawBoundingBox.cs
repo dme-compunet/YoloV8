@@ -38,8 +38,8 @@ internal struct RawBoundingBox : IRawBoundingBox<RawBoundingBox>
     public static RawBoundingBox Parse(ref RawParsingContext context, int index, int nameIndex, float confidence)
     {
         var tensor = context.Tensor;
-        var tensorSpan = tensor.Buffer.Span;
-        var stride1 = context.Stride1;
+        var tensorSpan = tensor.Span;
+        var stride1 = tensor.Strides[1];
 
         RectangleF bounds;
 

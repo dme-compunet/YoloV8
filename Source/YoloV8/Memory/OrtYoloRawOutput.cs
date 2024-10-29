@@ -1,29 +1,33 @@
 ﻿namespace Compunet.YoloV8.Memory;
 
-internal class OrtYoloRawOutput(IDisposableReadOnlyCollection<DisposableNamedOnnxValue> result) : IYoloRawOutput
+internal class OrtYoloRawOutput : IYoloRawOutput
 {
-    public DenseTensor<float> Output0 => ForceDenseTensor(result[0]);
+    private readonly IDisposable _disposable;
 
-    public DenseTensor<float>? Output1
+    public OrtYoloRawOutput(IDisposableReadOnlyCollection<DisposableNamedOnnxValue> result)
     {
-        get
-        {
-            if (result.Count > 1)
-            {
-                return ForceDenseTensor(result[1]);
-            }
+        Output0 = CreateMemoryTensor(result[0]);
 
-            return null;
+        if (result.Count > 1)
+        {
+            Output1 = CreateMemoryTensor(result[1]);
         }
+;
+        _disposable = result;
     }
 
-    public void Dispose() => result.Dispose();
+    public MemoryTensor<float> Output0 { get; }
 
-    private static DenseTensor<float> ForceDenseTensor(NamedOnnxValue value)
+    public MemoryTensor<float>? Output1 { get; }
+
+    public void Dispose() => _disposable.Dispose();
+
+    private static MemoryTensor<float> CreateMemoryTensor(NamedOnnxValue value)
     {
-        return value.AsTensor<float>() as DenseTensor<float>
-               ?? 
-               throw new InvalidOperationException("The ort result is not DenseTensor");
+        var tensor = value.AsTensor<float>() as DenseTensor<float>
+                     ??
+                     throw new InvalidOperationException("The ort result is not DenseTensor");
+
+        return new MemoryTensor<float>(tensor.Buffer, [.. tensor.Dimensions]);
     }
 }
-

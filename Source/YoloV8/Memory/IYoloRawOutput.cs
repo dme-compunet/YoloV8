@@ -2,7 +2,7 @@
 
 internal interface IYoloRawOutput : IDisposable
 {
-    public DenseTensor<float> Output0 { get; }
+    public MemoryTensor<float> Output0 { get; }
 
-    public DenseTensor<float>? Output1 { get; }
+    public MemoryTensor<float>? Output1 { get; }
 }
