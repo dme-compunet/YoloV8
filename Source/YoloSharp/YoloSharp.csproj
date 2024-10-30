@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<RootNamespace>Compunet.YoloSharp</RootNamespace>
+		<IsAotCompatible>true</IsAotCompatible>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<PackageId>YoloSharp</PackageId>
+		<AssemblyName>YoloSharp</AssemblyName>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)' == 'GpuRelease'">
+		<PackageId>YoloSharp.Gpu</PackageId>
+		<AssemblyName>YoloSharp.Gpu</AssemblyName>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)' == 'Release' OR '$(Configuration)' == 'GpuRelease'">
+		<Optimize>true</Optimize>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Description>Use YOLO11 in real-time for object detection, instance segmentation, pose estimation and image classification, via ONNX Runtime</Description>
+		<RepositoryUrl>https://github.com/dme-compunet/YoloSharp</RepositoryUrl>
+		<PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageTags>image-classification object-detection pose-estimation instance-segmentation onnx imagesharp onnx-runtime ultralytics yolov8 yolov10 yolo11</PackageTags>
+		<PackageIcon>Icon.png</PackageIcon>
+		<Authors>Compunet</Authors>
+		<Version>5.3.0</Version>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\..\Icon.png" Pack="True" PackagePath="" Visible="False" />
+		<None Include="..\..\README.md" Pack="True" PackagePath="" Visible="False" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Clipper2" Version="1.4.0" />
+		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
+		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.4" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
+		<PackageReference Condition="'$(Configuration)' != 'GpuRelease'" Include="Microsoft.ML.OnnxRuntime" Version="1.19.2" />
+		<PackageReference Condition="'$(Configuration)' == 'GpuRelease'" Include="Microsoft.ML.OnnxRuntime.Gpu" Version="1.19.2" />
+	</ItemGroup>
+
+</Project>

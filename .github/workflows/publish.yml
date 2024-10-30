@@ -26,16 +26,16 @@ jobs:
 
       - name: Build
         run: |
-          dotnet build -c Release Source/YoloV8/YoloV8.csproj -p:Version=${{ env.VERSION }}
-          dotnet build -c GpuRelease Source/YoloV8/YoloV8.csproj -p:Version=${{ env.VERSION }}
+          dotnet build -c Release Source/YoloSharp/YoloSharp.csproj -p:Version=${{ env.VERSION }}
+          dotnet build -c GpuRelease Source/YoloSharp/YoloSharp.csproj -p:Version=${{ env.VERSION }}
 
       - name: Test
-        run: dotnet test Source/YoloV8.Tests/YoloV8.Tests.csproj
+        run: dotnet test Source/YoloSharp.Tests/YoloSharp.Tests.csproj
 
       - name: Pack
         run: |
-          dotnet pack -c Release -o . Source/YoloV8/YoloV8.csproj -p:Version=${{ env.VERSION }}
-          dotnet pack -c GpuRelease -o . Source/YoloV8/YoloV8.csproj -p:Version=${{ env.VERSION }}
+          dotnet pack -c Release -o . Source/YoloSharp/YoloSharp.csproj -p:Version=${{ env.VERSION }}
+          dotnet pack -c GpuRelease -o . Source/YoloSharp/YoloSharp.csproj -p:Version=${{ env.VERSION }}
 
       - name: Publish
         run: dotnet nuget push *.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate

@@ -397,5 +397,5 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-# YoloV8 Benchmark
-YoloV8.Benchmark
+# YoloSharp Benchmark
+YoloSharp.Benchmark
