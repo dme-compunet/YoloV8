@@ -10,7 +10,9 @@ internal class SegmentationParser(YoloMetadata metadata,
         var adjustment = imageAdjustment.Calculate(size);
 
         var output0 = output.Output0;
-        var output1 = output.Output1 ?? throw new Exception();
+        var output1 = output.Output1
+                      ??
+                      throw new InvalidOperationException();
 
         var maskWidth = output1.Dimensions[3];
         var maskHeight = output1.Dimensions[2];
@@ -28,6 +30,8 @@ internal class SegmentationParser(YoloMetadata metadata,
         var weightsSpan = weightsBuffer.Memory.Span;
         var rawMaskBitmap = new BitmapBuffer(rawMaskBuffer.Memory, maskWidth, maskHeight);
 
+        var maskDataOffset = metadata.Names.Length + 4;
+
         var boxes = rawBoundingBoxParser.Parse<RawBoundingBox>(output0);
 
         var result = new Segmentation[boxes.Length];
@@ -42,7 +46,7 @@ internal class SegmentationParser(YoloMetadata metadata,
             // Collect the weights for this box
             for (var i = 0; i < maskChannels; i++)
             {
-                weightsSpan[i] = output0[0, metadata.Names.Length + 4 + i, boxIndex];
+                weightsSpan[i] = output0[0, maskDataOffset + i, boxIndex];
             }
 
             rawMaskBitmap.Clear();
@@ -64,7 +68,7 @@ internal class SegmentationParser(YoloMetadata metadata,
 
             var mask = new BitmapBuffer(bounds.Width, bounds.Height);
 
-            ResizeAndCrop(rawMaskBitmap, mask, bounds, size);
+            ResizeToTarget(rawMaskBitmap, mask, bounds.Location, size);
 
             result[index] = new Segmentation
             {
@@ -78,14 +82,14 @@ internal class SegmentationParser(YoloMetadata metadata,
         return result;
     }
 
-    private static void ResizeAndCrop(BitmapBuffer source, BitmapBuffer target, Rectangle bounds, Size imageSize)
+    private static void ResizeToTarget(BitmapBuffer source, BitmapBuffer target, Point position, Size size)
     {
-        for (var y = 0; y < bounds.Height; y++)
+        for (var y = 0; y < target.Height; y++)
         {
-            for (var x = 0; x < bounds.Width; x++)
+            for (var x = 0; x < target.Width; x++)
             {
-                var sourceX = (float)(x + bounds.X) * (source.Width - 1) / (imageSize.Width - 1);
-                var sourceY = (float)(y + bounds.Y) * (source.Height - 1) / (imageSize.Height - 1);
+                var sourceX = (float)(x + position.X) * (source.Width - 1) / (size.Width - 1);
+                var sourceY = (float)(y + position.Y) * (source.Height - 1) / (size.Height - 1);
 
                 var x0 = (int)sourceX;
                 var y0 = (int)sourceY;
