@@ -1,4 +1,4 @@
-﻿namespace Compunet.YoloV8.Services;
+﻿namespace Compunet.YoloV8.Parsing.Parsers;
 
 internal class ClassificationParser(YoloMetadata metadata) : IParser<Classification>
 {

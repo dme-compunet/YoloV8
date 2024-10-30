@@ -1,7 +1,7 @@
-﻿namespace Compunet.YoloV8.Services;
+﻿namespace Compunet.YoloV8.Parsing.Parsers;
 
 internal class ObbDetectionParser(YoloMetadata metadata,
-                                  IImageAdjustmentService imageAdjustment, 
+                                  IImageAdjustmentService imageAdjustment,
                                   IRawBoundingBoxParser rawBoundingBoxParser) : IParser<ObbDetection>
 {
     public ObbDetection[] ProcessTensorToResult(IYoloRawOutput output, Size size)
