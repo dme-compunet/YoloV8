@@ -7,7 +7,7 @@ Use [YOLO11](https://github.com/ultralytics/ultralytics) in real-time for object
 - **High Performance** 🚀 Various techniques and use of .NET features to maximize performance
 - **Reduced Memory Usage** 🧠 By reusing memory blocks and reducing the pressure on the GC
 - **Plotting Options** ✏️ Draw the predictions on the target image to preview the model results
-- **YOLO Versions** 🔧 Includes support for: `YOLOv8` `YOLOv10` `YOLO11`
+- **YOLO Versions** 🔧 Includes support for: [YOLOv8](https://docs.ultralytics.com/models/yolov8) [YOLOv10](https://docs.ultralytics.com/models/yolov10) [YOLO11](https://docs.ultralytics.com/models/yolo11)
 
 # Installation
 This project provides two NuGet packages:
