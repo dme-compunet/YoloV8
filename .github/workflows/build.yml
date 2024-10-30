@@ -7,9 +7,9 @@ on:
     branches: ["main"]
 
 env:
-  MAIN_PROJECT: Source/YoloV8/YoloV8.csproj
-  DEMO_PROJECT: Source/YoloV8.Demo/YoloV8.Demo.csproj
-  TEST_PROJECT: Source/YoloV8.Tests/YoloV8.Tests.csproj
+  MAIN_PROJECT: Source/YoloSharp/YoloSharp.csproj
+  DEMO_PROJECT: Source/YoloSharp.Demo/YoloSharp.Demo.csproj
+  TEST_PROJECT: Source/YoloSharp.Tests/YoloSharp.Tests.csproj
 
 jobs:
   build:
@@ -24,10 +24,10 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Build YoloV8
+      - name: Build YoloSharp
         run: dotnet build ${{ env.MAIN_PROJECT }}
 
-      - name: Build YoloV8.Demo
+      - name: Build YoloSharp.Demo
         run: dotnet build ${{ env.DEMO_PROJECT }}
 
       - name: Run Tests

@@ -1,4 +1,4 @@
-# YoloV8
+# YoloSharp
 
 Use [YOLO11](https://github.com/ultralytics/ultralytics) in real-time for object detection tasks, powered by ONNX Runtime.
 
@@ -11,8 +11,8 @@ Use [YOLO11](https://github.com/ultralytics/ultralytics) in real-time for object
 
 # Installation
 This project provides two NuGet packages:
-- For CPU inference, use the package: [YoloV8](https://www.nuget.org/packages/YoloV8) (includes the [Microsoft.ML.OnnxRuntime](https://www.nuget.org/packages/Microsoft.ML.OnnxRuntime) package)
-- For GPU inference, use the package: [YoloV8.Gpu](https://www.nuget.org/packages/YoloV8.Gpu) (includes the [Microsoft.ML.OnnxRuntime.Gpu](https://www.nuget.org/packages/Microsoft.ML.OnnxRuntime.Gpu) package)
+- For CPU inference, use the package: [YoloSharp](https://www.nuget.org/packages/YoloSharp) (includes the [Microsoft.ML.OnnxRuntime](https://www.nuget.org/packages/Microsoft.ML.OnnxRuntime) package)
+- For GPU inference, use the package: [YoloSharp.Gpu](https://www.nuget.org/packages/YoloSharp.Gpu) (includes the [Microsoft.ML.OnnxRuntime.Gpu](https://www.nuget.org/packages/Microsoft.ML.OnnxRuntime.Gpu) package)
 
 # Usage
 
@@ -31,16 +31,16 @@ model.export(format='onnx')
 
 ### 2. Load the ONNX model with C#:
 
-Add the `YoloV8` (or `YoloV8.Gpu`) package to your project:
+Add the `YoloSharp` (or `YoloSharp.Gpu`) package to your project:
 ```shell
-dotnet add package YoloV8
+dotnet add package YoloSharp
 ```
 
 Use the following C# code to load the model and run basic prediction:
 ```csharp
-using Compunet.YoloV8;
+using Compunet.YoloSharp;
 
-// Load the YOLOv8 predictor
+// Load the YOLO predictor
 using var predictor = new YoloPredictor("path/to/model.onnx");
 
 // Run model
@@ -56,11 +56,11 @@ Console.WriteLine(result);
 You can to plot the target image for preview the model results, this code demonstrates how to run a inference, plot the results on image and save to file:
 
 ```csharp
-using Compunet.YoloV8;
-using Compunet.YoloV8.Plotting;
+using Compunet.YoloSharp;
+using Compunet.YoloSharp.Plotting;
 using SixLabors.ImageSharp;
 
-// Load the YOLOv8 predictor
+// Load the YOLO predictor
 using var predictor = new YoloPredictor("path/to/model.onnx");
 
 // Load the target image
@@ -79,11 +79,11 @@ plotted.Save("./pose_demo.jpg");
 You can also predict and save to file in one operation:
 
 ```csharp
-using Compunet.YoloV8;
-using Compunet.YoloV8.Plotting;
+using Compunet.YoloSharp;
+using Compunet.YoloSharp.Plotting;
 using SixLabors.ImageSharp;
 
-// Load the YOLOv8 predictor
+// Load the YOLO predictor
 using var predictor = new YoloPredictor("path/to/model.onnx");
 
 // Run model, plot predictions and write to file
@@ -93,15 +93,15 @@ predictor.PredictAndSaveAsync("path/to/image");
 
 #### Detection:
 
-![detect-demo!](https://raw.githubusercontent.com/dme-compunet/YOLOv8/main/Assets/detect-demo.jpg)
+![detect-demo!](https://raw.githubusercontent.com/dme-compunet/YoloSharp/main/Assets/detect-demo.jpg)
 
 #### Pose:
 
-![pose-demo!](https://raw.githubusercontent.com/dme-compunet/YOLOv8/main/Assets/pose-demo.jpg)
+![pose-demo!](https://raw.githubusercontent.com/dme-compunet/YoloSharp/main/Assets/pose-demo.jpg)
 
 #### Segmentation:
 
-![seg-demo!](https://raw.githubusercontent.com/dme-compunet/YOLOv8/main/Assets/seg-demo.jpg)
+![seg-demo!](https://raw.githubusercontent.com/dme-compunet/YoloSharp/main/Assets/seg-demo.jpg)
 
 # License
 
