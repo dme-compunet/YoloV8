@@ -1,13 +1,13 @@
 # YoloV8
 
-Integrate [YOLOv8](https://github.com/ultralytics/ultralytics) into your C# project for a variety of real-time tasks including object detection, instance segmentation, pose estimation and more, using ONNX Runtime.
+Use [YOLO11](https://github.com/ultralytics/ultralytics) in real-time for object detection tasks, powered by ONNX Runtime.
 
 # Features
-- **YOLOv8 Tasks** 🌟 Support for all YOLOv8 tasks ([Detect](https://docs.ultralytics.com/tasks/detect), [Segment](https://docs.ultralytics.com/tasks/segment), [Classify](https://docs.ultralytics.com/tasks/classify), [Pose](https://docs.ultralytics.com/tasks/pose) and [OBB](https://docs.ultralytics.com/tasks/obb))
+- **YOLO Tasks** 🌟 Support for all YOLO vision tasks ([Detect](https://docs.ultralytics.com/tasks/detect) | [OBB](https://docs.ultralytics.com/tasks/obb) | [Pose](https://docs.ultralytics.com/tasks/pose) | [Segment](https://docs.ultralytics.com/tasks/segment) | [Classify](https://docs.ultralytics.com/tasks/classify))
 - **High Performance** 🚀 Various techniques and use of .NET features to maximize performance
 - **Reduced Memory Usage** 🧠 By reusing memory blocks and reducing the pressure on the GC
-- **Plotting Options** ✏️ Plotting operations for preview of model results on the target image.
-- **YOLOv10 Support** 🔧 Includes additional support for [YOLOv10](https://docs.ultralytics.com/models/yolov10)
+- **Plotting Options** ✏️ Draw the predictions on the target image to preview the model results
+- **YOLO Versions** 🔧 Includes support for: `YOLOv8` `YOLOv10` `YOLO11`
 
 # Installation
 This project provides two NuGet packages:
