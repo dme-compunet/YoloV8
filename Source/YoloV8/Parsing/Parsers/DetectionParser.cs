@@ -1,4 +1,4 @@
-﻿namespace Compunet.YoloV8.Services;
+﻿namespace Compunet.YoloV8.Parsing.Parsers;
 
 internal class DetectionParser(YoloMetadata metadata,
                                IImageAdjustmentService imageAdjustment,
@@ -8,7 +8,7 @@ internal class DetectionParser(YoloMetadata metadata,
     {
         var adjustment = imageAdjustment.Calculate(size);
         var boxes = rawBoundingBoxParser.Parse<RawBoundingBox>(output.Output0);
-        
+
         var result = new Detection[boxes.Length];
 
         for (var i = 0; i < boxes.Length; i++)

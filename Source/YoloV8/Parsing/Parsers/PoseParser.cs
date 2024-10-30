@@ -1,4 +1,4 @@
-﻿namespace Compunet.YoloV8.Services;
+﻿namespace Compunet.YoloV8.Parsing.Parsers;
 
 internal class PoseParser(YoloPoseMetadata metadata,
                           IImageAdjustmentService imageAdjustment,
