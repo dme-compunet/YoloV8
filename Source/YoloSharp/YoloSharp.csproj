@@ -21,7 +21,7 @@
 	<PropertyGroup Condition="'$(Configuration)' == 'Release' OR '$(Configuration)' == 'GpuRelease'">
 		<Optimize>true</Optimize>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<Description>Use YOLO11 in real-time for object detection, instance segmentation, pose estimation and image classification, via ONNX Runtime</Description>
+		<Description>Use YOLO11 in real-time for object detection tasks, with edge performance, powered by ONNX-Runtime.</Description>
 		<RepositoryUrl>https://github.com/dme-compunet/YoloSharp</RepositoryUrl>
 		<PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
