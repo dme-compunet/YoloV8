@@ -44,11 +44,14 @@ internal class SessionRunnerService(YoloSession yoloSession,
         // Create io binding
         using var binding = Session.CreateIoBinding();
 
+        // Create ort input value
+        using var ortInput = CreateOrtValue(input);
+
         // Bind the input
-        binding.BindInput(Session.InputNames[0], CreateOrtValue(input));
+        binding.BindInput(Session.InputNames[0], ortInput);
 
         // Create and bind raw output
-        var output = CreateRawOutput(binding);
+        using var _ = CreateRawOutput(binding, out var output);
 
         // Run the model
         if (configuration.SuppressParallelInference)
@@ -94,7 +97,7 @@ internal class SessionRunnerService(YoloSession yoloSession,
         }
     }
 
-    private YoloRawOutput CreateRawOutput(OrtIoBinding binding)
+    private CompositeDisposable CreateRawOutput(OrtIoBinding binding, out YoloRawOutput output)
     {
         var output0Info = IoShapeInfo.Output0;
         var output1Info = IoShapeInfo.Output1;
@@ -102,21 +105,33 @@ internal class SessionRunnerService(YoloSession yoloSession,
         // Allocate output0 tensor buffer
         var output0 = memoryAllocator.AllocateTensor<float>(output0Info);
 
+        // Create ort output0 value
+        var ortOutput0 = CreateOrtValue(output0.Tensor);
+
         // Bind tensor buffer to ort binding
-        binding.BindOutput(Session.OutputNames[0], CreateOrtValue(output0.Tensor));
+        binding.BindOutput(Session.OutputNames[0], ortOutput0);
 
         if (output1Info != null)
         {
             // Allocate output1 tensor buffer
             var output1 = memoryAllocator.AllocateTensor<float>(output1Info.Value);
 
+            // Create ort output0 value
+            var ortOutput1 = CreateOrtValue(output1.Tensor);
+
             // Bind tensor buffer to ort binding
-            binding.BindOutput(Session.OutputNames[1], CreateOrtValue(output1.Tensor));
+            binding.BindOutput(Session.OutputNames[1], ortOutput1);
 
-            return new YoloRawOutput(output0, output1);
+            output = new YoloRawOutput(output0, output1);
+
+            return new CompositeDisposable([ortOutput0, ortOutput1]);
         }
+        else
+        {
+            output = new YoloRawOutput(output0, null);
 
-        return new YoloRawOutput(output0, null);
+            return new CompositeDisposable([ortOutput0]);
+        }
     }
 
     #region Preprocess
