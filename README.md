@@ -1,6 +1,6 @@
 # YoloSharp
 
-Use [YOLO11](https://github.com/ultralytics/ultralytics) in real-time for object detection tasks, powered by ONNX Runtime.
+Use [YOLO11](https://github.com/ultralytics/ultralytics) in real-time for object detection tasks 🚀 with edge performance ⚡️ powered by ONNX-Runtime.
 
 # Features
 - **YOLO Tasks** 🌟 Support for all YOLO vision tasks ([Detect](https://docs.ultralytics.com/tasks/detect) | [OBB](https://docs.ultralytics.com/tasks/obb) | [Pose](https://docs.ultralytics.com/tasks/pose) | [Segment](https://docs.ultralytics.com/tasks/segment) | [Classify](https://docs.ultralytics.com/tasks/classify))
