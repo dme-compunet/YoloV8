@@ -10,6 +10,7 @@ global using Compunet.YoloSharp.Parsing.Parsers;
 global using Compunet.YoloSharp.Plotting;
 global using Compunet.YoloSharp.Services.Plotting;
 global using Compunet.YoloSharp.Services.Resolvers;
+global using Compunet.YoloSharp.Utilities;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.ML.OnnxRuntime;
 global using Microsoft.ML.OnnxRuntime.Tensors;
