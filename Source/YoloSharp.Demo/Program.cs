@@ -3,19 +3,19 @@ using Compunet.YoloSharp.Plotting;
 using System.Diagnostics;
 
 Console.WriteLine("Loading pose estimation model...");
-using var posePredictor = new YoloPredictor("./models/yolov8n-pose-uint8.onnx");
+using var posePredictor = new YoloPredictor("./models/yolo11n-pose.onnx");
 
 Console.WriteLine("Loading detection model...");
-using var detectPredictor = new YoloPredictor("./models/yolov8n-uint8.onnx");
+using var detectPredictor = new YoloPredictor("./models/yolo11n.onnx");
 
 Console.WriteLine("Loading obb detection model...");
-using var obbPredictor = new YoloPredictor("./models/yolov8n-obb-uint8.onnx");
+using var obbPredictor = new YoloPredictor("./models/yolo11n-obb.onnx");
 
 Console.WriteLine("Loading segmentation model...");
-using var segmentPredictor = new YoloPredictor("./models/yolov8n-seg-uint8.onnx");
+using var segmentPredictor = new YoloPredictor("./models/yolo11n-seg.onnx");
 
 Console.WriteLine("Loading classification model...");
-using var classifyPredictor = new YoloPredictor("./models/yolov8n-cls-uint8.onnx");
+using var classifyPredictor = new YoloPredictor("./models/yolo11n-cls.onnx");
 
 Console.WriteLine();
 
