@@ -1,11 +1,9 @@
-﻿using Compunet.YoloSharp.Parsing;
-
-namespace YoloSharp.Tests;
+﻿namespace YoloSharp.Tests;
 
 public class NonMaxSuppressionTests
 {
     [Fact]
-    public void NonMaxSuppressionBasicTest()
+    public void NonMaxSuppressionTest()
     {
         var nonMaxSuppression = new NonMaxSuppressionService();
 
