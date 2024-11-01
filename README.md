@@ -1,8 +1,9 @@
 # YoloSharp
 
-Use [YOLO11](https://github.com/ultralytics/ultralytics) in real-time for object detection tasks 🚀 with edge performance ⚡️ powered by ONNX-Runtime.
+🎥 Use [YOLO11](https://github.com/ultralytics/ultralytics) in real-time for object detection tasks 🚀 with edge performance ⚡️ powered by ONNX-Runtime.
 
 # Features
+
 - **YOLO Tasks** 🌟 Support for all YOLO vision tasks ([Detect](https://docs.ultralytics.com/tasks/detect) | [OBB](https://docs.ultralytics.com/tasks/obb) | [Pose](https://docs.ultralytics.com/tasks/pose) | [Segment](https://docs.ultralytics.com/tasks/segment) | [Classify](https://docs.ultralytics.com/tasks/classify))
 - **High Performance** 🚀 Various techniques and use of .NET features to maximize performance
 - **Reduced Memory Usage** 🧠 By reusing memory blocks and reducing the pressure on the GC
@@ -10,7 +11,9 @@ Use [YOLO11](https://github.com/ultralytics/ultralytics) in real-time for object
 - **YOLO Versions** 🔧 Includes support for: [YOLOv8](https://docs.ultralytics.com/models/yolov8) [YOLOv10](https://docs.ultralytics.com/models/yolov10) [YOLO11](https://docs.ultralytics.com/models/yolo11)
 
 # Installation
+
 This project provides two NuGet packages:
+
 - For CPU inference, use the package: [YoloSharp](https://www.nuget.org/packages/YoloSharp) (includes the [Microsoft.ML.OnnxRuntime](https://www.nuget.org/packages/Microsoft.ML.OnnxRuntime) package)
 - For GPU inference, use the package: [YoloSharp.Gpu](https://www.nuget.org/packages/YoloSharp.Gpu) (includes the [Microsoft.ML.OnnxRuntime.Gpu](https://www.nuget.org/packages/Microsoft.ML.OnnxRuntime.Gpu) package)
 
@@ -19,6 +22,7 @@ This project provides two NuGet packages:
 ### 1. Export model to ONNX format:
 
 For convert the pre-trained PyTorch model to ONNX format, run the following Python code:
+
 ```python
 from ultralytics import YOLO
 
@@ -32,11 +36,13 @@ model.export(format='onnx')
 ### 2. Load the ONNX model with C#:
 
 Add the `YoloSharp` (or `YoloSharp.Gpu`) package to your project:
+
 ```shell
 dotnet add package YoloSharp
 ```
 
 Use the following C# code to load the model and run basic prediction:
+
 ```csharp
 using Compunet.YoloSharp;
 
@@ -51,6 +57,7 @@ var result = await predictor.DetectAsync("path/to/image.jpg");
 // Write result summary to terminal
 Console.WriteLine(result);
 ```
+
 # Plotting
 
 You can to plot the target image for preview the model results, this code demonstrates how to run a inference, plot the results on image and save to file:
@@ -89,6 +96,7 @@ using var predictor = new YoloPredictor("path/to/model.onnx");
 // Run model, plot predictions and write to file
 predictor.PredictAndSaveAsync("path/to/image");
 ```
+
 ## Example Images:
 
 #### Detection:
