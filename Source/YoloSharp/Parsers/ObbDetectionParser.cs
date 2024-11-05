@@ -1,13 +1,14 @@
-﻿namespace Compunet.YoloSharp.Parsing.Parsers;
+﻿namespace Compunet.YoloSharp.Parsers;
 
 internal class ObbDetectionParser(YoloMetadata metadata,
-                                  IImageAdjustmentService imageAdjustment,
-                                  IRawBoundingBoxParser rawBoundingBoxParser) : IParser<ObbDetection>
+                                  IRawBoundingBoxParser rawBoundingBoxParser,
+                                  IImageAdjustmentService imageAdjustment) : IParser<ObbDetection>
 {
     public ObbDetection[] ProcessTensorToResult(IYoloRawOutput output, Size size)
     {
+        var boxes = rawBoundingBoxParser.Parse(output.Output0);
+
         var adjustment = imageAdjustment.Calculate(size);
-        var boxes = rawBoundingBoxParser.Parse<RawObbBoundingBox>(output.Output0);
 
         var result = new ObbDetection[boxes.Length];
 

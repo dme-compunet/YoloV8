@@ -4,8 +4,8 @@ internal class MemoryTensorOwner<T>(IMemoryOwner<T> owner, int[] dimensions) : I
 {
     private MemoryTensor<T>? _tensor = new(owner.Memory, dimensions);
 
-    public MemoryTensor<T> Tensor => _tensor 
-                                     ?? 
+    public MemoryTensor<T> Tensor => _tensor
+                                     ??
                                      throw new ObjectDisposedException(nameof(MemoryTensorOwner<T>));
 
     ~MemoryTensorOwner() => Dispose();

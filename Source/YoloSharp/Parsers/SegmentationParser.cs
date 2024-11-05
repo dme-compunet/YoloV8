@@ -1,4 +1,4 @@
-﻿namespace Compunet.YoloSharp.Parsing.Parsers;
+﻿namespace Compunet.YoloSharp.Parsers;
 
 internal class SegmentationParser(YoloMetadata metadata,
                                   IImageAdjustmentService imageAdjustment,
@@ -32,7 +32,7 @@ internal class SegmentationParser(YoloMetadata metadata,
 
         var maskDataOffset = metadata.Names.Length + 4;
 
-        var boxes = rawBoundingBoxParser.Parse<RawBoundingBox>(output0);
+        var boxes = rawBoundingBoxParser.Parse(output0);
 
         var result = new Segmentation[boxes.Length];
 

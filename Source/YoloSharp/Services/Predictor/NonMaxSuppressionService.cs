@@ -2,7 +2,7 @@
 
 internal class NonMaxSuppressionService : INonMaxSuppressionService
 {
-    public T[] Suppress<T>(Span<T> boxes, float iouThreshold) where T : IRawBoundingBox<T>
+    public ImmutableArray<RawBoundingBox> Apply(Span<RawBoundingBox> boxes, float iouThreshold)
     {
         if (boxes.Length == 0)
         {
@@ -13,7 +13,7 @@ internal class NonMaxSuppressionService : INonMaxSuppressionService
         boxes.Sort((x, y) => y.CompareTo(x));
 
         // Initialize result with highest confidence box
-        var result = new List<T>(4)
+        var result = new List<RawBoundingBox>(8)
         {
             boxes[0]
         };
@@ -35,7 +35,7 @@ internal class NonMaxSuppressionService : INonMaxSuppressionService
                 }
 
                 // If the box overlaps another box already in the results 
-                if (T.CalculateIoU(ref box1, ref box2) > iouThreshold)
+                if (CalculateIoU(box1, box2) > iouThreshold)
                 {
                     addToResult = false;
                     break;
@@ -49,5 +49,30 @@ internal class NonMaxSuppressionService : INonMaxSuppressionService
         }
 
         return [.. result];
+    }
+
+    protected virtual float CalculateIoU(RawBoundingBox box1, RawBoundingBox box2)
+    {
+        var rect1 = box1.Bounds;
+        var rect2 = box2.Bounds;
+
+        var area1 = rect1.Width * rect1.Height;
+
+        if (area1 <= 0f)
+        {
+            return 0f;
+        }
+
+        var area2 = rect2.Width * rect2.Height;
+
+        if (area2 <= 0f)
+        {
+            return 0f;
+        }
+
+        var intersection = RectangleF.Intersect(rect1, rect2);
+        var intersectionArea = intersection.Width * intersection.Height;
+
+        return (float)intersectionArea / (area1 + area2 - intersectionArea);
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Compunet.YoloSharp.Parsing.Parsers;
+﻿namespace Compunet.YoloSharp.Parsers;
 
 internal class PoseParser(YoloPoseMetadata metadata,
                           IImageAdjustmentService imageAdjustment,
@@ -9,13 +9,13 @@ internal class PoseParser(YoloPoseMetadata metadata,
         var tensor = output.Output0;
         var adjustment = imageAdjustment.Calculate(size);
 
-        var boxes = rawBoundingBoxParser.Parse<RawBoundingBox>(tensor);
+        var boxes = rawBoundingBoxParser.Parse(tensor);
 
         var shape = metadata.KeypointShape;
         var result = new Pose[boxes.Length];
 
-        var tensorSpan = tensor.Buffer.Span;
-        var boxInfoStride = tensor.Strides[1];
+        var tensorSpan = tensor.Span;
+        var dataStride = tensor.Strides[1];
 
         for (var i = 0; i < boxes.Length; i++)
         {
@@ -26,13 +26,13 @@ internal class PoseParser(YoloPoseMetadata metadata,
             {
                 var offset = index * shape.Channels + 4 + metadata.Names.Length;
 
-                var pointX = (int)((tensorSpan[offset * boxInfoStride + box.Index] - adjustment.Padding.X) * adjustment.Ratio.X);
-                var pointY = (int)((tensorSpan[(offset + 1) * boxInfoStride + box.Index] - adjustment.Padding.Y) * adjustment.Ratio.Y);
+                var pointX = (int)((tensorSpan[offset * dataStride + box.Index] - adjustment.Padding.X) * adjustment.Ratio.X);
+                var pointY = (int)((tensorSpan[(offset + 1) * dataStride + box.Index] - adjustment.Padding.Y) * adjustment.Ratio.Y);
 
                 var pointConfidence = metadata.KeypointShape.Channels switch
                 {
                     2 => 1f,
-                    3 => tensorSpan[(offset + 2) * boxInfoStride + box.Index],
+                    3 => tensorSpan[(offset + 2) * dataStride + box.Index],
                     _ => throw new InvalidOperationException("Unexpected keypoint shape")
                 };
 

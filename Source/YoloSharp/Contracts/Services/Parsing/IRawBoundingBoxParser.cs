@@ -2,5 +2,5 @@
 
 internal interface IRawBoundingBoxParser
 {
-    public T[] Parse<T>(MemoryTensor<float> tensor) where T : IRawBoundingBox<T>;
+    public ImmutableArray<RawBoundingBox> Parse(MemoryTensor<float> tensor);
 }

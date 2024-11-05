@@ -7,9 +7,9 @@ internal static class OrientedBoundingBoxExtensions
         return GetCornerPoints(obb.Bounds, obb.Angle);
     }
 
-    public static Point[] GetCornerPoints(this RawObbBoundingBox obb)
+    public static Point[] GetCornerPoints(this RawBoundingBox box)
     {
-        return GetCornerPoints(obb.Bounds, obb.Angle);
+        return GetCornerPoints(box.Bounds, box.Angle);
     }
 
     private static Point[] GetCornerPoints(RectangleF bounds, float angle)

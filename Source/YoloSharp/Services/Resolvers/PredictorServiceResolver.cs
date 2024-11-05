@@ -70,14 +70,20 @@ internal class PredictorServiceResolver : IDisposable
 
         services
             .AddSingleton(metadata)
-            .AddSingleton<IPixelsNormalizerService, PixelsNormalizerService>()
             .AddSingleton<ISessionRunnerService, SessionRunnerService>()
-            .AddSingleton<IRawBoundingBoxParser, RawBoundingBoxParser>()
             .AddSingleton<IMemoryAllocatorService, MemoryAllocatorService>()
             .AddSingleton<IImageAdjustmentService, ImageAdjustmentService>()
-            .AddSingleton<INonMaxSuppressionService, NonMaxSuppressionService>();
+            .AddSingleton<IPixelsNormalizerService, PixelsNormalizerService>();
 
-        switch (metadata.Task)
+        var task = metadata.Task;
+        var version = metadata.Architecture;
+
+        var obb = task == YoloTask.Obb;
+
+        AddNonMaxSuppression(services, obb);
+        AddRawBoundingBoxParser(services, version, obb);
+
+        switch (task)
         {
             case YoloTask.Pose:
                 services.AddSingleton<IParser<Pose>, PoseParser>();
@@ -101,6 +107,38 @@ internal class PredictorServiceResolver : IDisposable
         }
 
         return services;
+    }
+
+    private static void AddNonMaxSuppression(ServiceCollection services, bool obb)
+    {
+        if (obb)
+        {
+            services.AddSingleton<INonMaxSuppressionService, ObbNonMaxSuppressionService>();
+        }
+        else
+        {
+            services.AddSingleton<INonMaxSuppressionService, NonMaxSuppressionService>();
+        }
+    }
+
+    private static void AddRawBoundingBoxParser(ServiceCollection services, YoloArchitecture architecture, bool obb)
+    {
+        if (architecture == YoloArchitecture.YoloV10)
+        {
+            services.AddSingleton<IRawBoundingBoxParser, YoloV10RawBoundingBoxParser>();
+        }
+        else
+        {
+            if (obb)
+            {
+                services.AddSingleton<IRawBoundingBoxParser, Yolo11RawOrientedBoundingBoxParser>();
+            }
+            else
+            {
+                services.AddSingleton<IRawBoundingBoxParser, Yolo11RawBoundingBoxParser>();
+            }
+        }
+
     }
 
     public void Dispose()
