@@ -1,6 +1,6 @@
 # YoloSharp
 
-🎥 Use [YOLO11](https://github.com/ultralytics/ultralytics) in real-time for object detection tasks 🚀 with edge performance ⚡️ powered by ONNX-Runtime.
+🚀 Use [YOLO11](https://github.com/ultralytics/ultralytics) in real-time for object detection tasks, with edge performance ⚡️ powered by ONNX-Runtime.
 
 # Features
 
