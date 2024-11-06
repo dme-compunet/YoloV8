@@ -42,7 +42,7 @@ public class NonMaxSuppressionTests
             },
         ];
 
-        var selected = nonMaxSuppression.Suppress(boxes.AsSpan(), .5f);
+        var selected = nonMaxSuppression.Apply(boxes.AsSpan(), .5f);
 
         Assert.Equal([1, 2, 3], selected.Select(x => x.Index).Order());
     }
